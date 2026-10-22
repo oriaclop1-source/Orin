@@ -1,0 +1,751 @@
+<section class="ballers-italian-page" dir="rtl">
+
+  {% assign italian_collection = collections['serie-a'] %}
+  {% if italian_collection == blank %}
+    {% assign italian_collection = collections['italian-league'] %}
+  {% endif %}
+  {% if italian_collection == blank %}
+    {% assign italian_collection = collections['ליגה-איטלקית'] %}
+  {% endif %}
+  {% if italian_collection == blank %}
+    {% assign italian_collection = collections['ליגה איטלקית'] %}
+  {% endif %}
+  {% if italian_collection == blank %}
+    {% assign italian_collection = collections['הליגה-האיטלקית'] %}
+  {% endif %}
+  {% if italian_collection == blank %}
+    {% assign italian_collection = collections['הליגה האיטלקית'] %}
+  {% endif %}
+
+  <div class="ballers-italian-container">
+
+    <header class="ballers-italian-hero">
+      <div class="ballers-italian-eyebrow">ITALIAN LEAGUE</div>
+
+      <h1>הליגה האיטלקית</h1>
+
+      <p>
+        חולצות מהכדורגל האיטלקי — מילאן, אינטר, יובנטוס, נאפולי, רומא ועוד קבוצות ענק מהסרייה א׳ במקום אחד.
+      </p>
+    </header>
+
+    {% if italian_collection != blank and italian_collection.products_count > 0 %}
+
+      <div class="ballers-italian-toolbar">
+        <div class="ballers-italian-count">
+          {{ italian_collection.products_count }} מוצרים בקולקציית הליגה האיטלקית
+        </div>
+
+        <a class="ballers-italian-back-home" href="/">
+          חזרה לעמוד הבית
+        </a>
+      </div>
+
+      {% paginate italian_collection.products by 96 %}
+
+        <div class="ballers-italian-grid" id="BallersItalianGrid-{{ section.id }}">
+
+          {% for product in italian_collection.products %}
+            <article class="ballers-italian-card{% if product.images[1] != blank %} has-hover-image{% endif %}">
+
+              <a href="{{ product.url }}" class="ballers-italian-image-box" aria-label="{{ product.title | escape }}">
+
+                {% if product.featured_image != blank %}
+
+                  {% assign second_image = product.images[1] %}
+
+                  <img
+                    src="{{ product.featured_image | image_url: width: 900 }}"
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    class="ballers-italian-img-main"
+                  >
+
+                  {% if second_image != blank %}
+                    <img
+                      src="{{ second_image | image_url: width: 900 }}"
+                      alt="{{ product.title | escape }}"
+                      loading="lazy"
+                      class="ballers-italian-img-hover"
+                    >
+                  {% endif %}
+
+                {% else %}
+                  <div class="ballers-italian-no-image">
+                    אין תמונה
+                  </div>
+                {% endif %}
+
+              </a>
+
+              <div class="ballers-italian-content">
+
+                <h2 class="ballers-italian-title">
+                  <a href="{{ product.url }}">
+                    {{ product.title }}
+                  </a>
+                </h2>
+
+                <div class="ballers-italian-price">
+                  {% if product.price_varies %}
+                    <span>החל מ־{{ product.price_min | money_without_currency }} ₪</span>
+                  {% else %}
+                    <span>{{ product.price | money_without_currency }} ₪</span>
+                  {% endif %}
+
+                  {% if product.compare_at_price_max > product.price %}
+                    <del>{{ product.compare_at_price_max | money_without_currency }} ₪</del>
+                  {% endif %}
+                </div>
+
+                <a href="{{ product.url }}" class="ballers-italian-button">
+                  לצפייה במוצר
+                </a>
+
+              </div>
+
+            </article>
+          {% endfor %}
+
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="ballers-italian-pagination" aria-label="עמודי קולקציה">
+
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="ballers-italian-page-link">
+                הקודם
+              </a>
+            {% endif %}
+
+            <span class="ballers-italian-page-status">
+              עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}
+            </span>
+
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="ballers-italian-page-link">
+                הבא
+              </a>
+            {% endif %}
+
+          </nav>
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <div class="ballers-italian-empty">
+        <h2>לא נמצאו מוצרים בליגה האיטלקית</h2>
+        <p>
+          בדוק שהקולקציה קיימת ושיש בה מוצרים. מומלץ שה־handle יהיה אחד מאלה: serie-a / italian-league / ליגה-איטלקית / הליגה-האיטלקית
+        </p>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+  .ballers-italian-page,
+  .ballers-italian-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-italian-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(0,0,0,0.045), transparent 34%),
+      linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+    padding: 34px 18px 64px;
+    overflow: hidden;
+  }
+
+  .ballers-italian-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .ballers-italian-hero {
+    position: relative;
+    overflow: hidden;
+    background: #101112;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 34px 22px;
+    text-align: center;
+    margin-bottom: 26px;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.16);
+    animation: ballersItalianFadeUp 0.5s ease both;
+  }
+
+  .ballers-italian-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px;
+    left: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ballers-italian-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+  }
+
+  .ballers-italian-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+
+  .ballers-italian-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(34px, 4.5vw, 58px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-italian-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-italian-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+    animation: ballersItalianFadeUp 0.5s ease both;
+    animation-delay: 0.06s;
+  }
+
+  .ballers-italian-count {
+    color: #111111;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ballers-italian-back-home {
+    color: #111111 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #111111;
+    transition:
+      transform 0.22s ease,
+      color 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .ballers-italian-back-home:hover {
+    color: #555555 !important;
+    border-color: #555555;
+    transform: translateY(-2px);
+  }
+
+  .ballers-italian-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .ballers-italian-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    animation: ballersItalianCardIn 0.48s ease both;
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease,
+      background 0.24s ease;
+  }
+
+  .ballers-italian-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.14);
+    border-color: rgba(0,0,0,0.18);
+  }
+
+  .ballers-italian-image-box {
+    position: relative;
+    width: 100%;
+    height: 285px;
+    padding: 16px;
+    background: linear-gradient(135deg, #eeeeee 0%, #ffffff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-italian-img-main,
+  .ballers-italian-img-hover {
+    position: absolute;
+    inset: 16px;
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.32s ease;
+  }
+
+  .ballers-italian-img-main {
+    opacity: 1;
+  }
+
+  .ballers-italian-img-hover {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ballers-italian-img-hover {
+      display: none;
+    }
+  }
+
+  .ballers-italian-no-image {
+    color: rgba(0,0,0,0.55);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-italian-content {
+    padding: 17px 15px 19px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+  }
+
+  .ballers-italian-title {
+    margin: 0 0 12px !important;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .ballers-italian-title a {
+    color: #000000 !important;
+    text-decoration: none !important;
+    font: inherit !important;
+    transition: color 0.2s ease;
+  }
+
+  .ballers-italian-card:hover .ballers-italian-title a {
+    color: #333333 !important;
+  }
+
+  .ballers-italian-price {
+    margin-bottom: 17px;
+    min-height: 27px;
+    color: #111111;
+    font-size: 19px;
+    font-weight: 900;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-italian-price del {
+    color: rgba(0,0,0,0.36);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-italian-button {
+    margin-top: auto;
+    width: 100%;
+    min-height: 45px;
+    border-radius: 12px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-italian-button:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.22);
+  }
+
+  .ballers-italian-pagination {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-italian-page-link {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    transition:
+      background 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-italian-page-link:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+  }
+
+  .ballers-italian-page-status {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-italian-empty {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 46px 20px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+  }
+
+  .ballers-italian-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-italian-empty p {
+    margin: 0 auto !important;
+    max-width: 760px;
+    color: rgba(0,0,0,0.64);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  body.ballers-site-dark .ballers-italian-page {
+    background: #070707 !important;
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-italian-card,
+  body.ballers-site-dark .ballers-italian-empty {
+    background: #151515 !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.12) !important;
+    box-shadow: 0 14px 32px rgba(0,0,0,0.42) !important;
+  }
+
+  body.ballers-site-dark .ballers-italian-image-box {
+    background: #1f1f1f !important;
+  }
+
+  body.ballers-site-dark .ballers-italian-count,
+  body.ballers-site-dark .ballers-italian-back-home,
+  body.ballers-site-dark .ballers-italian-title,
+  body.ballers-site-dark .ballers-italian-title a,
+  body.ballers-site-dark .ballers-italian-price,
+  body.ballers-site-dark .ballers-italian-page-status,
+  body.ballers-site-dark .ballers-italian-empty h2,
+  body.ballers-site-dark .ballers-italian-empty p,
+  body.ballers-site-dark .ballers-italian-no-image {
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-italian-price del {
+    color: rgba(255,255,255,0.45) !important;
+  }
+
+  body.ballers-site-dark .ballers-italian-back-home {
+    border-bottom-color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-italian-button,
+  body.ballers-site-dark .ballers-italian-page-link {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  body.ballers-site-dark .ballers-italian-button:hover,
+  body.ballers-site-dark .ballers-italian-page-link:hover {
+    background: #e6e6e6 !important;
+    color: #000000 !important;
+  }
+
+  @keyframes ballersItalianFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ballersItalianCardIn {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media screen and (max-width: 1250px) {
+    .ballers-italian-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ballers-italian-image-box {
+      height: 270px;
+    }
+  }
+
+  @media screen and (max-width: 860px) {
+    .ballers-italian-page {
+      padding: 26px 14px 52px;
+    }
+
+    .ballers-italian-hero {
+      padding: 30px 16px;
+      border-radius: 17px;
+      margin-bottom: 24px;
+    }
+
+    .ballers-italian-hero h1 {
+      font-size: 38px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-italian-hero p {
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .ballers-italian-toolbar {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ballers-italian-count {
+      font-size: 15px;
+    }
+
+    .ballers-italian-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .ballers-italian-card {
+      border-radius: 16px;
+      min-height: 380px;
+    }
+
+    .ballers-italian-image-box {
+      height: 220px;
+      padding: 13px;
+    }
+
+    .ballers-italian-content {
+      padding: 14px 11px 15px;
+    }
+
+    .ballers-italian-title {
+      font-size: 15.5px !important;
+      min-height: 48px;
+    }
+
+    .ballers-italian-price {
+      font-size: 16px;
+      margin-bottom: 13px;
+    }
+
+    .ballers-italian-button {
+      min-height: 41px;
+      font-size: 14px;
+      border-radius: 10px;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .ballers-italian-page {
+      padding: 20px 10px 42px;
+    }
+
+    .ballers-italian-hero {
+      padding: 28px 13px;
+      border-radius: 16px;
+    }
+
+    .ballers-italian-hero h1 {
+      font-size: 34px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-italian-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .ballers-italian-card {
+      min-height: auto;
+    }
+
+    .ballers-italian-image-box {
+      height: 300px;
+    }
+
+    .ballers-italian-title {
+      font-size: 18px !important;
+      min-height: auto;
+    }
+
+    .ballers-italian-price {
+      font-size: 19px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var grid = document.getElementById('BallersItalianGrid-{{ section.id }}');
+
+    if (!grid) {
+      return;
+    }
+
+    function shuffleItalianProducts() {
+      var cards = Array.from(grid.querySelectorAll('.ballers-italian-card'));
+
+      if (cards.length <= 1) {
+        return;
+      }
+
+      for (var i = cards.length - 1; i > 0; i--) {
+        var randomIndex = Math.floor(Math.random() * (i + 1));
+        var temp = cards[i];
+        cards[i] = cards[randomIndex];
+        cards[randomIndex] = temp;
+      }
+
+      cards.forEach(function (card) {
+        grid.appendChild(card);
+      });
+    }
+
+    shuffleItalianProducts();
+
+    var multiCards = Array.from(grid.querySelectorAll('.ballers-italian-card.has-hover-image'));
+
+    if (multiCards.length === 0) {
+      return;
+    }
+
+    var showingHover = multiCards.map(function () {
+      return false;
+    });
+
+    setInterval(function () {
+      multiCards.forEach(function (card, i) {
+        var main = card.querySelector('.ballers-italian-img-main');
+        var hover = card.querySelector('.ballers-italian-img-hover');
+
+        if (!main || !hover) {
+          return;
+        }
+
+        showingHover[i] = !showingHover[i];
+        main.style.opacity = showingHover[i] ? '0' : '1';
+        hover.style.opacity = showingHover[i] ? '1' : '0';
+      });
+    }, 2500);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Ballers Italian  Page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers Italian League Page"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,162 @@
+{% comment %}
+  FAQ, customer gallery and contact box for the home page.
+  Params: section_id
+{% endcomment %}
+
+<section class="ballers-home-faq-contact" dir="rtl" aria-label="שאלות נפוצות ויצירת קשר">
+
+  <div class="ballers-faq-title">
+    <h2 class="faq-title-gradient">שאלות נפוצות</h2>
+    <p>כל מה שחשוב לדעת לפני שמזמינים</p>
+  </div>
+
+  <div class="ballers-faq-list">
+
+    <details class="ballers-faq-item" open>
+      <summary>
+        <span>מה זמני המשלוח?</span>
+        <span class="faq-arrow" aria-hidden="true">⌃</span>
+      </summary>
+      <div class="ballers-faq-answer">
+        <p>אנו שולחים הזמנות בין 7–15 ימי עסקים.</p>
+        <p>יכולים להיות עיכובים בעקבות מצב ביטחוני.</p>
+      </div>
+    </details>
+
+    <details class="ballers-faq-item">
+      <summary>
+        <span>מה מדיניות ההחזרות?</span>
+        <span class="faq-arrow" aria-hidden="true">⌃</span>
+      </summary>
+      <div class="ballers-faq-answer">
+        <p>ניתן להחזיר מוצרים תוך 30 יום מיום הקנייה בתנאי שיש פגם או טעות במוצר.</p>
+      </div>
+    </details>
+
+    <details class="ballers-faq-item">
+      <summary>
+        <span>איך אני יכול לעקוב אחרי ההזמנה שלי?</span>
+        <span class="faq-arrow" aria-hidden="true">⌃</span>
+      </summary>
+      <div class="ballers-faq-answer">
+        <p>כל שאלה בנושא המשלוח נא לפנות אלינו בטיקטוק או באינסטגרם.</p>
+        <p>אפשרי גם במספרי הטלפון שרשומים למטה.</p>
+      </div>
+    </details>
+
+    <details class="ballers-faq-item">
+      <summary>
+        <span>לאן החבילה שלי מגיעה?</span>
+        <span class="faq-arrow" aria-hidden="true">⌃</span>
+      </summary>
+      <div class="ballers-faq-answer">
+        <p>החבילה מגיעה לנקודת חלוקה של EPOST הקרובה לביתכם.</p>
+      </div>
+    </details>
+
+  </div>
+
+  <style>
+    .ballers-customers-gallery .bcg-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ballers-customers-gallery .bcg-card img {
+      flex: 1 1 auto;
+      height: auto;
+      min-height: 0;
+    }
+
+    .ballers-customers-gallery .bcg-stars {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 10px 10px;
+      background: #ffffff;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      color: #f5a623;
+      font-size: 20px;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .ballers-customers-gallery .bcg-stars-num {
+      color: #111111;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+  </style>
+
+  <section class="ballers-customers-gallery" dir="rtl" aria-labelledby="bcg-title-{{ section_id }}">
+
+    <div class="bcg-header">
+      <span class="bcg-kicker">לקוחות אמיתיים</span>
+
+      <h2 id="bcg-title-{{ section_id }}">לקוחות מרוצים</h2>
+
+      <p>תמונות ופידבקים אמיתיים מהלקוחות שלנו</p>
+
+      <button class="bcg-pause" type="button" aria-pressed="false">השהיית הגלילה</button>
+    </div>
+
+    <div class="bcg-marquee-wrap" role="group" aria-label="תמונות של לקוחות עם החולצות שהזמינו">
+      <div class="bcg-marquee-track">
+
+        {% assign customer_images = 'WhatsApp_Image_2026-06-08_at_6.11.18_PM_1.jpg,WhatsApp_Image_2026-06-08_at_4.00.41_PM_1.jpg,WhatsApp_Image_2026-06-08_at_4.00.41_PM_4.jpg,WhatsApp_Image_2026-06-08_at_4.00.41_PM_3.jpg,WhatsApp_Image_2026-06-08_at_6.11.18_PM.jpg,WhatsApp_Image_2026-06-08_at_4.03.27_PM.jpg,WhatsApp_Image_2026-06-08_at_4.03.27_PM.jpg,WhatsApp_Image_2026-06-08_at_4.00.41_PM_2.jpg' | split: ',' %}
+
+        {% for i in (1..2) %}
+          {% if forloop.first %}
+            {% assign cust_alt = 'תמונה של לקוח עם חולצה שהזמין מהחנות' %}
+            {% assign cust_wrap = '' %}
+            {% assign cust_stars_attrs = 'role="img" aria-label="דירוג 5 מתוך 5"' %}
+          {% else %}
+            {% assign cust_alt = '' %}
+            {% assign cust_wrap = 'aria-hidden="true"' %}
+            {% assign cust_stars_attrs = '' %}
+          {% endif %}
+
+          {% for file in customer_images %}
+            <article class="bcg-card" {{ cust_wrap }}>
+              <img src="https://cdn.shopify.com/s/files/1/0843/2746/5200/files/{{ file }}?v=1781097731" alt="{{ cust_alt }}" loading="lazy">
+              <div class="bcg-stars" {{ cust_stars_attrs }}>
+                <span aria-hidden="true">★★★★★</span>
+                <span class="bcg-stars-num" aria-hidden="true">5/5</span>
+              </div>
+            </article>
+          {% endfor %}
+        {% endfor %}
+
+      </div>
+    </div>
+
+    <div class="bcg-footer">
+      <span>רוצים להופיע כאן? שלחו לנו תמונה באינסטגרם או בטיקטוק</span>
+    </div>
+
+  </section>
+
+  <div class="ballers-contact-box">
+    <div class="ballers-contact-title">
+      <span>צריכים עזרה?</span>
+      <strong>דברו איתנו</strong>
+    </div>
+
+    <p>
+      לשאלות, פניות והזמנות תתקשרו אלינו — אפשר להזמין גם בביט
+    </p>
+
+    <div class="ballers-bit-badge">
+      <strong>הזמנות ותשלום גם דרך Bit</strong>
+    </div>
+
+    <div class="ballers-contact-buttons">
+      <a href="tel:0528825211">052-8825211</a>
+      <a href="tel:0502174441">050-2174441</a>
+    </div>
+  </div>
+
+</section>

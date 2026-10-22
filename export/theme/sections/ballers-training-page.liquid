@@ -1,0 +1,563 @@
+<section class="ballers-training-page" dir="rtl">
+
+  {% assign training_collection = collections['חליפות-אימון'] %}
+
+  {% if training_collection == blank or training_collection.products_count == 0 %}
+    {% assign training_collection = collections['חליפות אימון'] %}
+  {% endif %}
+
+  {% if training_collection == blank or training_collection.products_count == 0 %}
+    {% assign training_collection = collections['training-suits'] %}
+  {% endif %}
+
+  <div class="ballers-training-container">
+
+    <header class="ballers-training-hero">
+      <div class="ballers-training-eyebrow">TRAINING SUITS</div>
+      <h1>חליפות אימון</h1>
+      <p>חליפות אימון של קבוצות ונבחרות — נוחות, איכותיות ומתאימות ליום־יום.</p>
+    </header>
+
+    {% if training_collection != blank and training_collection.products_count > 0 %}
+
+      <div class="ballers-training-toolbar">
+        <div class="ballers-training-count">
+          {{ training_collection.products_count }} מוצרים בקולקציה
+        </div>
+
+        <a class="ballers-training-back-home" href="/">
+          חזרה לעמוד הבית
+        </a>
+      </div>
+
+      {% paginate training_collection.products by 96 %}
+
+        <div class="ballers-training-grid">
+
+          {% for product in training_collection.products %}
+
+            <article class="ballers-training-card">
+
+              <a href="{{ product.url }}" class="ballers-training-image-box" aria-label="{{ product.title | escape }}">
+
+                {% if product.featured_image != blank %}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 900 }}"
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    width="{{ product.featured_image.width }}"
+                    height="{{ product.featured_image.height }}"
+                  >
+                {% else %}
+                  <div class="ballers-training-no-image">
+                    אין תמונה
+                  </div>
+                {% endif %}
+
+              </a>
+
+              <div class="ballers-training-content">
+
+                <h2 class="ballers-training-title">
+                  <a href="{{ product.url }}">
+                    {{ product.title }}
+                  </a>
+                </h2>
+
+                <div class="ballers-training-price">
+                  {% if product.price_varies %}
+                    <span>החל מ־{{ product.price_min | money_without_currency }} ₪</span>
+                  {% else %}
+                    <span>{{ product.price | money_without_currency }} ₪</span>
+                  {% endif %}
+
+                  {% if product.compare_at_price_max > product.price %}
+                    <del>{{ product.compare_at_price_max | money_without_currency }} ₪</del>
+                  {% endif %}
+                </div>
+
+                <a href="{{ product.url }}" class="ballers-training-button">
+                  לצפייה במוצר
+                </a>
+
+              </div>
+
+            </article>
+
+          {% endfor %}
+
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="ballers-training-pagination" aria-label="עמודי קולקציה">
+
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="ballers-training-page-link">
+                הקודם
+              </a>
+            {% endif %}
+
+            <span class="ballers-training-page-status">
+              עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}
+            </span>
+
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="ballers-training-page-link">
+                הבא
+              </a>
+            {% endif %}
+
+          </nav>
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <div class="ballers-training-empty">
+        <h2>לא נמצאו חליפות אימון</h2>
+        <p>
+          בדוק שה־handle של הקולקציה הוא:
+          <strong>חליפות-אימון</strong>
+          או
+          <strong>training-suits</strong>.
+        </p>
+
+        <a href="/collections/all">
+          חזרה לכל המוצרים
+        </a>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+  .ballers-training-page,
+  .ballers-training-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-training-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(9,105,216,0.10), transparent 34%),
+      linear-gradient(180deg, #f5f6f7 0%, #ffffff 100%);
+    padding: 34px 18px 64px;
+    overflow: hidden;
+  }
+
+  .ballers-training-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .ballers-training-hero {
+    position: relative;
+    overflow: hidden;
+    background: #071d46;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 38px 22px;
+    text-align: center;
+    margin-bottom: 26px;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.16);
+  }
+
+  .ballers-training-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px;
+    left: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    background: rgba(74,163,255,0.18);
+  }
+
+  .ballers-training-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.055);
+  }
+
+  .ballers-training-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.24);
+    color: rgba(255,255,255,0.78);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+
+  .ballers-training-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(34px, 4.5vw, 60px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-training-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 860px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.84);
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-training-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .ballers-training-count {
+    color: #111111;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ballers-training-back-home {
+    color: #111111 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #111111;
+  }
+
+  .ballers-training-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .ballers-training-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 430px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease;
+  }
+
+  .ballers-training-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.14);
+    border-color: rgba(0,0,0,0.18);
+  }
+
+  .ballers-training-image-box {
+    width: 100%;
+    height: 285px;
+    padding: 16px;
+    background: linear-gradient(135deg, #eeeeee 0%, #ffffff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-training-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition:
+      transform 0.28s ease,
+      filter 0.28s ease;
+  }
+
+  .ballers-training-card:hover .ballers-training-image-box img {
+    transform: scale(1.045);
+    filter: drop-shadow(0 14px 14px rgba(0,0,0,0.14));
+  }
+
+  .ballers-training-no-image {
+    color: rgba(0,0,0,0.55);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-training-content {
+    padding: 17px 15px 19px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+  }
+
+  .ballers-training-title {
+    margin: 0 0 12px !important;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .ballers-training-title a {
+    color: #000000 !important;
+    text-decoration: none !important;
+    font: inherit !important;
+  }
+
+  .ballers-training-price {
+    margin-bottom: 17px;
+    min-height: 27px;
+    color: #111111;
+    font-size: 19px;
+    font-weight: 900;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-training-price del {
+    color: rgba(0,0,0,0.36);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-training-button {
+    margin-top: auto;
+    width: 100%;
+    min-height: 45px;
+    border-radius: 12px;
+    background: #071d46;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-training-button:hover {
+    background: #0969d8;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.22);
+  }
+
+  .ballers-training-pagination {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-training-page-link {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: #071d46;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-training-page-status {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-training-empty {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 46px 20px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+  }
+
+  .ballers-training-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-training-empty p {
+    margin: 0 auto 20px !important;
+    max-width: 760px;
+    color: rgba(0,0,0,0.64);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .ballers-training-empty a {
+    min-height: 44px;
+    border-radius: 999px;
+    background: #071d46;
+    color: #ffffff !important;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  body.ballers-site-dark .ballers-training-page {
+    background: #070707 !important;
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-training-card,
+  body.ballers-site-dark .ballers-training-empty {
+    background: #151515 !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+
+  body.ballers-site-dark .ballers-training-image-box {
+    background: #1f1f1f !important;
+  }
+
+  body.ballers-site-dark .ballers-training-count,
+  body.ballers-site-dark .ballers-training-back-home,
+  body.ballers-site-dark .ballers-training-title,
+  body.ballers-site-dark .ballers-training-title a,
+  body.ballers-site-dark .ballers-training-price,
+  body.ballers-site-dark .ballers-training-page-status,
+  body.ballers-site-dark .ballers-training-empty h2,
+  body.ballers-site-dark .ballers-training-empty p,
+  body.ballers-site-dark .ballers-training-no-image {
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-training-back-home {
+    border-bottom-color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-training-button,
+  body.ballers-site-dark .ballers-training-page-link,
+  body.ballers-site-dark .ballers-training-empty a {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  @media screen and (max-width: 1250px) {
+    .ballers-training-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ballers-training-image-box {
+      height: 270px;
+    }
+  }
+
+  @media screen and (max-width: 860px) {
+    .ballers-training-page {
+      padding: 26px 14px 52px;
+    }
+
+    .ballers-training-hero {
+      padding: 30px 16px;
+      border-radius: 17px;
+    }
+
+    .ballers-training-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .ballers-training-card {
+      min-height: 380px;
+    }
+
+    .ballers-training-image-box {
+      height: 220px;
+      padding: 13px;
+    }
+
+    .ballers-training-title {
+      font-size: 15.5px !important;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .ballers-training-page {
+      padding: 20px 10px 42px;
+    }
+
+    .ballers-training-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ballers-training-image-box {
+      height: 300px;
+    }
+
+    .ballers-training-title {
+      font-size: 18px !important;
+      min-height: auto;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Ballers training page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers training page"
+    }
+  ]
+}
+{% endschema %}

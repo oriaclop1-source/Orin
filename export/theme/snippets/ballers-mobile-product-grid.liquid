@@ -1,0 +1,45 @@
+{% comment %}
+  Mobile layout for product grids on collection pages and search results:
+  two products per row instead of one.
+  The grid and card class names come from the ballers-*-page / ballers-*-collection sections
+  and from ballers-search-results. Add a new grid class to every list below if a new page is added.
+{% endcomment %}
+<style>
+  @media screen and (max-width: 520px) {
+    :is(.ballers-extra-products-grid, .ballers-israeli-grid, .ballers-italian-grid, .ballers-kids-grid, .ballers-mundial-grid, .ballers-mystery-collection-grid, .ballers-national-grid, .ballers-nba-grid, .ballers-nike-mind-grid, .ballers-premier-grid, .ballers-rest-world-grid, .ballers-retro-grid, .ballers-season-grid, .ballers-spanish-grid, .ballers-specials-grid, .ballers-stussy-grid, .ballers-training-grid, .ballers-search-grid) {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      gap: 12px !important;
+    }
+
+    :is(.ballers-extra-products-grid, .ballers-israeli-grid, .ballers-italian-grid, .ballers-kids-grid, .ballers-mundial-grid, .ballers-mystery-collection-grid, .ballers-national-grid, .ballers-nba-grid, .ballers-nike-mind-grid, .ballers-premier-grid, .ballers-rest-world-grid, .ballers-retro-grid, .ballers-season-grid, .ballers-spanish-grid, .ballers-specials-grid, .ballers-stussy-grid, .ballers-training-grid, .ballers-search-grid) > * {
+      min-height: 0 !important;
+      border-radius: 14px !important;
+    }
+
+    :is(.ballers-extra-products-grid, .ballers-israeli-grid, .ballers-italian-grid, .ballers-kids-grid, .ballers-mundial-grid, .ballers-mystery-collection-grid, .ballers-national-grid, .ballers-nba-grid, .ballers-nike-mind-grid, .ballers-premier-grid, .ballers-rest-world-grid, .ballers-retro-grid, .ballers-season-grid, .ballers-spanish-grid, .ballers-specials-grid, .ballers-stussy-grid, .ballers-training-grid, .ballers-search-grid) [class*="-image-box"] {
+      height: 200px !important;
+      padding: 10px !important;
+    }
+
+    :is(.ballers-extra-products-grid, .ballers-israeli-grid, .ballers-italian-grid, .ballers-kids-grid, .ballers-mundial-grid, .ballers-mystery-collection-grid, .ballers-national-grid, .ballers-nba-grid, .ballers-nike-mind-grid, .ballers-premier-grid, .ballers-rest-world-grid, .ballers-retro-grid, .ballers-season-grid, .ballers-spanish-grid, .ballers-specials-grid, .ballers-stussy-grid, .ballers-training-grid, .ballers-search-grid) [class*="-content"] {
+      padding: 10px 8px 12px !important;
+    }
+
+    :is(.ballers-extra-products-grid, .ballers-israeli-grid, .ballers-italian-grid, .ballers-kids-grid, .ballers-mundial-grid, .ballers-mystery-collection-grid, .ballers-national-grid, .ballers-nba-grid, .ballers-nike-mind-grid, .ballers-premier-grid, .ballers-rest-world-grid, .ballers-retro-grid, .ballers-season-grid, .ballers-spanish-grid, .ballers-specials-grid, .ballers-stussy-grid, .ballers-training-grid, .ballers-search-grid) [class*="-title"] {
+      font-size: 14px !important;
+      line-height: 1.2 !important;
+      min-height: 40px !important;
+    }
+
+    :is(.ballers-extra-products-grid, .ballers-israeli-grid, .ballers-italian-grid, .ballers-kids-grid, .ballers-mundial-grid, .ballers-mystery-collection-grid, .ballers-national-grid, .ballers-nba-grid, .ballers-nike-mind-grid, .ballers-premier-grid, .ballers-rest-world-grid, .ballers-retro-grid, .ballers-season-grid, .ballers-spanish-grid, .ballers-specials-grid, .ballers-stussy-grid, .ballers-training-grid, .ballers-search-grid) [class*="-price"] {
+      font-size: 15px !important;
+      margin-bottom: 10px !important;
+    }
+
+    :is(.ballers-extra-products-grid, .ballers-israeli-grid, .ballers-italian-grid, .ballers-kids-grid, .ballers-mundial-grid, .ballers-mystery-collection-grid, .ballers-national-grid, .ballers-nba-grid, .ballers-nike-mind-grid, .ballers-premier-grid, .ballers-rest-world-grid, .ballers-retro-grid, .ballers-season-grid, .ballers-spanish-grid, .ballers-specials-grid, .ballers-stussy-grid, .ballers-training-grid, .ballers-search-grid) [class*="-button"] {
+      min-height: 38px !important;
+      font-size: 13px !important;
+      border-radius: 10px !important;
+    }
+  }
+</style>

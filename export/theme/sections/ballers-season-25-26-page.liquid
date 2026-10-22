@@ -1,0 +1,659 @@
+<section class="ballers-season-page" dir="rtl">
+
+  {% assign season_collection = collection %}
+
+  {% if season_collection == blank or season_collection.products_count == 0 %}
+    {% if collections['season-25-26'] != blank %}
+      {% assign season_collection = collections['season-25-26'] %}
+    {% elsif collections['עונת-25-26'] != blank %}
+      {% assign season_collection = collections['עונת-25-26'] %}
+    {% elsif collections['עונת 25/26'] != blank %}
+      {% assign season_collection = collections['עונת 25/26'] %}
+    {% elsif collections['25-26'] != blank %}
+      {% assign season_collection = collections['25-26'] %}
+    {% endif %}
+  {% endif %}
+
+  <div class="ballers-season-container">
+
+    <header class="ballers-season-hero">
+      <div class="ballers-season-eyebrow">SEASON 25/26</div>
+
+      <h1>קולקציית עונת 25/26</h1>
+
+      <p>
+        החולצות החדשות של עונת 2025/2026 — קבוצות, נבחרות, בית, חוץ ושלישית במקום אחד.
+      </p>
+    </header>
+
+    {% if season_collection != blank and season_collection.products_count > 0 %}
+
+      <div class="ballers-season-toolbar">
+        <div class="ballers-season-count">
+          {{ season_collection.products_count }} מוצרים בקולקציה
+        </div>
+
+        <a class="ballers-season-back-home" href="/">
+          חזרה לעמוד הבית
+        </a>
+      </div>
+
+      {% paginate season_collection.products by 96 %}
+
+        <div class="ballers-season-grid" id="BallersSeasonGrid-{{ section.id }}">
+
+          {% for product in season_collection.products %}
+            <article class="ballers-season-card{% if product.images[1] != blank %} has-hover-image{% endif %}">
+
+              <a href="{{ product.url }}" class="ballers-season-image-box" aria-label="{{ product.title | escape }}">
+
+                {% if product.featured_image != blank %}
+
+                  {% assign second_image = product.images[1] %}
+
+                  <img
+                    src="{{ product.featured_image | image_url: width: 900 }}"
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    class="ballers-season-img-main"
+                  >
+
+                  {% if second_image != blank %}
+                    <img
+                      src="{{ second_image | image_url: width: 900 }}"
+                      alt="{{ product.title | escape }}"
+                      loading="lazy"
+                      class="ballers-season-img-hover"
+                    >
+                  {% endif %}
+
+                {% else %}
+                  <div class="ballers-season-no-image">
+                    אין תמונה
+                  </div>
+                {% endif %}
+
+              </a>
+
+              <div class="ballers-season-content">
+
+                <h2 class="ballers-season-title">
+                  <a href="{{ product.url }}">
+                    {{ product.title }}
+                  </a>
+                </h2>
+
+                <div class="ballers-season-price">
+                  {% if product.price_varies %}
+                    <span>החל מ־{{ product.price_min | money_without_currency }} ₪</span>
+                  {% else %}
+                    <span>{{ product.price | money_without_currency }} ₪</span>
+                  {% endif %}
+
+                  {% if product.compare_at_price_max > product.price %}
+                    <del>{{ product.compare_at_price_max | money_without_currency }} ₪</del>
+                  {% endif %}
+                </div>
+
+                <a href="{{ product.url }}" class="ballers-season-button">
+                  לצפייה במוצר
+                </a>
+
+              </div>
+
+            </article>
+          {% endfor %}
+
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="ballers-season-pagination" aria-label="עמודי קולקציה">
+
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="ballers-season-page-link">
+                הקודם
+              </a>
+            {% endif %}
+
+            <span class="ballers-season-page-status">
+              עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}
+            </span>
+
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="ballers-season-page-link">
+                הבא
+              </a>
+            {% endif %}
+
+          </nav>
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <div class="ballers-season-empty">
+        <h2>לא נמצאו מוצרים בעונת 25/26</h2>
+        <p>
+          ודא שהמוצרים משויכים לקולקציה או שיש להם תגית עונת 25/26, ושהקולקציה זמינה ב־Online Store.
+        </p>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .ballers-season-page,
+  .ballers-season-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-season-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(0,0,0,0.045), transparent 34%),
+      linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+    padding: 34px 18px 64px;
+    overflow: hidden;
+  }
+
+  .ballers-season-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .ballers-season-hero {
+    position: relative;
+    overflow: hidden;
+    background: #101112;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 34px 22px;
+    text-align: center;
+    margin-bottom: 26px;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.16);
+    animation: ballersSeasonFadeUp 0.5s ease both;
+  }
+
+  .ballers-season-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px;
+    left: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ballers-season-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+  }
+
+  .ballers-season-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+
+  .ballers-season-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(34px, 4.5vw, 58px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-season-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-season-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+    animation: ballersSeasonFadeUp 0.5s ease both;
+    animation-delay: 0.06s;
+  }
+
+  .ballers-season-count {
+    color: #111111;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ballers-season-back-home {
+    color: #111111 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #111111;
+    transition:
+      transform 0.22s ease,
+      color 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .ballers-season-back-home:hover {
+    color: #555555 !important;
+    border-color: #555555;
+    transform: translateY(-2px);
+  }
+
+  .ballers-season-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .ballers-season-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    animation: ballersSeasonCardIn 0.48s ease both;
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease;
+  }
+
+  .ballers-season-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.14);
+    border-color: rgba(0,0,0,0.18);
+  }
+
+  .ballers-season-image-box {
+    position: relative;
+    width: 100%;
+    height: 285px;
+    padding: 16px;
+    background: linear-gradient(135deg, #eeeeee 0%, #ffffff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-season-img-main,
+  .ballers-season-img-hover {
+    position: absolute;
+    inset: 16px;
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.32s ease;
+  }
+
+  .ballers-season-img-main { opacity: 1; }
+  .ballers-season-img-hover { opacity: 0; pointer-events: none; }
+
+  @media screen and (max-width: 768px) {
+    .ballers-season-img-hover { display: none; }
+  }
+
+  .ballers-season-no-image {
+    color: rgba(0,0,0,0.55);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-season-content {
+    padding: 17px 15px 19px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+  }
+
+  .ballers-season-title {
+    margin: 0 0 12px !important;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .ballers-season-title a {
+    color: #000000 !important;
+    text-decoration: none !important;
+    font: inherit !important;
+    transition: color 0.2s ease;
+  }
+
+  .ballers-season-card:hover .ballers-season-title a {
+    color: #333333 !important;
+  }
+
+  .ballers-season-price {
+    margin-bottom: 17px;
+    min-height: 27px;
+    color: #111111;
+    font-size: 19px;
+    font-weight: 900;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-season-price del {
+    color: rgba(0,0,0,0.36);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-season-button {
+    margin-top: auto;
+    width: 100%;
+    min-height: 45px;
+    border-radius: 12px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-season-button:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.22);
+  }
+
+  .ballers-season-pagination {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-season-page-link {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    transition:
+      background 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-season-page-link:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+  }
+
+  .ballers-season-page-status {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-season-empty {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 46px 20px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+  }
+
+  .ballers-season-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-season-empty p {
+    margin: 0 auto !important;
+    max-width: 760px;
+    color: rgba(0,0,0,0.64);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  @keyframes ballersSeasonFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ballersSeasonCardIn {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media screen and (max-width: 1250px) {
+    .ballers-season-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ballers-season-image-box {
+      height: 270px;
+    }
+  }
+
+  @media screen and (max-width: 860px) {
+    .ballers-season-page {
+      padding: 26px 14px 52px;
+    }
+
+    .ballers-season-hero {
+      padding: 30px 16px;
+      border-radius: 17px;
+      margin-bottom: 24px;
+    }
+
+    .ballers-season-hero h1 {
+      font-size: 38px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-season-hero p {
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .ballers-season-toolbar {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ballers-season-count {
+      font-size: 15px;
+    }
+
+    .ballers-season-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .ballers-season-card {
+      border-radius: 16px;
+      min-height: 380px;
+    }
+
+    .ballers-season-image-box {
+      height: 220px;
+      padding: 13px;
+    }
+
+    .ballers-season-content {
+      padding: 14px 11px 15px;
+    }
+
+    .ballers-season-title {
+      font-size: 15.5px !important;
+      min-height: 48px;
+    }
+
+    .ballers-season-price {
+      font-size: 16px;
+      margin-bottom: 13px;
+    }
+
+    .ballers-season-button {
+      min-height: 41px;
+      font-size: 14px;
+      border-radius: 10px;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .ballers-season-page {
+      padding: 20px 10px 42px;
+    }
+
+    .ballers-season-hero {
+      padding: 28px 13px;
+      border-radius: 16px;
+    }
+
+    .ballers-season-hero h1 {
+      font-size: 34px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-season-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .ballers-season-card {
+      min-height: auto;
+    }
+
+    .ballers-season-image-box {
+      height: 300px;
+    }
+
+    .ballers-season-title {
+      font-size: 18px !important;
+      min-height: auto;
+    }
+
+    .ballers-season-price {
+      font-size: 19px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var grid = document.getElementById('BallersSeasonGrid-{{ section.id }}');
+    if (!grid) return;
+
+    var multiCards = Array.from(grid.querySelectorAll('.ballers-season-card.has-hover-image'));
+    if (multiCards.length === 0) return;
+
+    var showingHover = multiCards.map(function () { return false; });
+
+    setInterval(function () {
+      multiCards.forEach(function (card, i) {
+        var main  = card.querySelector('.ballers-season-img-main');
+        var hover = card.querySelector('.ballers-season-img-hover');
+        if (!main || !hover) return;
+
+        showingHover[i] = !showingHover[i];
+        main.style.opacity  = showingHover[i] ? '0' : '1';
+        hover.style.opacity = showingHover[i] ? '1' : '0';
+      });
+    }, 2500);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Season 25/26",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Season 25/26"
+    }
+  ]
+}
+{% endschema %}

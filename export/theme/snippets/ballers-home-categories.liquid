@@ -1,0 +1,232 @@
+{% comment %}
+  Categories grid for the home page.
+  Params: season_banner (image), season_banner_alt (text), season_banner_link (url)
+{% endcomment %}
+
+{% assign newseason_collection = collections['עונת-2026-2027'] %}
+{% assign newseason_collection_url = '/collections/עונת-2026-2027' %}
+{% if newseason_collection != blank %}
+  {% assign newseason_collection_url = newseason_collection.url %}
+{% endif %}
+
+{% assign kids_collection_url = '/collections/חליפות-ילדים' %}
+{% if collections['חליפות-ילדים'] != blank %}
+  {% assign kids_collection_url = collections['חליפות-ילדים'].url %}
+{% endif %}
+
+{% assign mystery_collection_url = '/collections/מיסטרי-בוקס' %}
+{% if collections['מיסטרי-בוקס'] != blank %}
+  {% assign mystery_collection_url = collections['מיסטרי-בוקס'].url %}
+{% elsif collections['mystery-box'] != blank %}
+  {% assign mystery_collection_url = collections['mystery-box'].url %}
+{% endif %}
+
+{% assign retro_collection_url = '/collections/רטרו' %}
+{% if collections['רטרו'] != blank %}
+  {% assign retro_collection_url = collections['רטרו'].url %}
+{% elsif collections['retro'] != blank %}
+  {% assign retro_collection_url = collections['retro'].url %}
+{% endif %}
+
+{% assign mundial_collection_url = '/collections/מונדיאל-2026' %}
+{% if collections['מונדיאל-2026'] != blank %}
+  {% assign mundial_collection_url = collections['מונדיאל-2026'].url %}
+{% elsif collections['מונדיאל'] != blank %}
+  {% assign mundial_collection_url = collections['מונדיאל'].url %}
+{% elsif collections['mundial-2026'] != blank %}
+  {% assign mundial_collection_url = collections['mundial-2026'].url %}
+{% elsif collections['world-cup-2026'] != blank %}
+  {% assign mundial_collection_url = collections['world-cup-2026'].url %}
+{% endif %}
+
+{% assign special_collection_url = '/collections/ספיישל' %}
+{% if collections['ספיישל'] != blank %}
+  {% assign special_collection_url = collections['ספיישל'].url %}
+{% elsif collections['special'] != blank %}
+  {% assign special_collection_url = collections['special'].url %}
+{% elsif collections['specials'] != blank %}
+  {% assign special_collection_url = collections['specials'].url %}
+{% elsif collections['ספיישלים'] != blank %}
+  {% assign special_collection_url = collections['ספיישלים'].url %}
+{% endif %}
+
+{% assign legioners_collection_url = '/collections/legioners' %}
+{% if collections['legioners'] != blank %}
+  {% assign legioners_collection_url = collections['legioners'].url %}
+{% elsif collections['ליגיונרים'] != blank %}
+  {% assign legioners_collection_url = collections['ליגיונרים'].url %}
+{% endif %}
+
+{% assign english_collection_url = '/collections/premier-league' %}
+{% if collections['premier-league'] != blank %}
+  {% assign english_collection_url = collections['premier-league'].url %}
+{% elsif collections['ליגה-אנגלית'] != blank %}
+  {% assign english_collection_url = collections['ליגה-אנגלית'].url %}
+{% endif %}
+
+{% assign spanish_collection_url = '/collections/spanish-league' %}
+{% if collections['spanish-league'] != blank %}
+  {% assign spanish_collection_url = collections['spanish-league'].url %}
+{% elsif collections['ליגה-ספרדית'] != blank %}
+  {% assign spanish_collection_url = collections['ליגה-ספרדית'].url %}
+{% endif %}
+
+{% assign italian_collection_url = '/collections/italian-league' %}
+{% if collections['italian-league'] != blank %}
+  {% assign italian_collection_url = collections['italian-league'].url %}
+{% elsif collections['ליגה-איטלקית'] != blank %}
+  {% assign italian_collection_url = collections['ליגה-איטלקית'].url %}
+{% endif %}
+
+{% assign israel_collection_url = '/collections/ליגה-ישראלית' %}
+{% if collections['ליגה-ישראלית'] != blank %}
+  {% assign israel_collection_url = collections['ליגה-ישראלית'].url %}
+{% endif %}
+
+{% assign stussy_collection_url = '/collections/stussy' %}
+{% if collections['stussy'] != blank %}
+  {% assign stussy_collection_url = collections['stussy'].url %}
+{% elsif collections['STUSSY'] != blank %}
+  {% assign stussy_collection_url = collections['STUSSY'].url %}
+{% elsif collections['סטוסי'] != blank %}
+  {% assign stussy_collection_url = collections['סטוסי'].url %}
+{% elsif collections['stussy-football'] != blank %}
+  {% assign stussy_collection_url = collections['stussy-football'].url %}
+{% endif %}
+
+{% assign rest_collection_url = '/collections/שאר-העולם' %}
+{% if collections['שאר-העולם'] != blank %}
+  {% assign rest_collection_url = collections['שאר-העולם'].url %}
+{% elsif collections['שאר העולם'] != blank %}
+  {% assign rest_collection_url = collections['שאר העולם'].url %}
+{% elsif collections['rest-world'] != blank %}
+  {% assign rest_collection_url = collections['rest-world'].url %}
+{% elsif collections['rest-of-world'] != blank %}
+  {% assign rest_collection_url = collections['rest-of-world'].url %}
+{% elsif collections['rest'] != blank %}
+  {% assign rest_collection_url = collections['rest'].url %}
+{% elsif collections['world'] != blank %}
+  {% assign rest_collection_url = collections['world'].url %}
+{% endif %}
+
+<style>
+  .ballers-newseason-card .ballers-home-banner img {
+    object-fit: cover;
+    border-radius: 18px;
+  }
+</style>
+
+<div class="ballers-title-row ballers-categories-title">
+  <span></span>
+  <h2>קטגוריות</h2>
+  <span></span>
+</div>
+
+<div class="ballers-home-banners">
+
+  <a href="{{ newseason_collection_url }}" class="ballers-home-banner-card ballers-newseason-card">
+    {% if newseason_collection.image != blank %}
+      <span class="ballers-home-banner ballers-image-banner">
+        {{ newseason_collection.image | image_url: width: 800 | image_tag: loading: 'lazy', alt: '', widths: '400, 600, 800', sizes: '(min-width: 750px) 33vw, 100vw' }}
+      </span>
+    {% else %}
+      <span class="ballers-home-banner ballers-image-banner" style="display:flex;align-items:center;justify-content:center;min-height:140px;background:linear-gradient(135deg,#071d46 0%,#0b3a88 55%,#0969d8 100%);color:#fff;font-weight:900;font-size:clamp(34px,5vw,56px);letter-spacing:1px;" aria-hidden="true">26/27</span>
+    {% endif %}
+    <span class="ballers-home-banner-title">עונת 2026/2027</span>
+  </a>
+
+  {% if season_banner != blank %}
+    {% assign season_link = season_banner_link | default: '/collections/all' %}
+    <a href="{{ season_link }}" class="ballers-home-banner-card ballers-season-card">
+      <span class="ballers-season-banner">
+        {{ season_banner | image_url: width: 1600 | image_tag: loading: 'eager', alt: season_banner_alt, widths: '600, 900, 1200, 1600', sizes: '(min-width: 1500px) 1500px, 100vw' }}
+      </span>
+      <span class="ballers-home-banner-title">לצפייה בכל החולצות</span>
+    </a>
+  {% else %}
+    <a href="{{ mundial_collection_url }}" class="ballers-home-banner-card ballers-worldcup-card">
+      <span class="ballers-home-banner ballers-image-banner">
+        <img src="{{ 'home.png' | asset_url }}" alt="">
+      </span>
+      <span class="ballers-home-banner-title ballers-worldcup-title">מונדיאל 2026</span>
+    </a>
+  {% endif %}
+
+  <a href="{{ kids_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'house.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">חליפות ילדים</span>
+  </a>
+
+  <a href="{{ special_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'special.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">ספיישל</span>
+  </a>
+
+  <a href="{{ retro_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'retro.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">רטרו</span>
+  </a>
+
+  <a href="{{ legioners_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'noam.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">ליגיונרים</span>
+  </a>
+
+  <a href="{{ mystery_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'mystery.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">מיסטרי בוקס</span>
+  </a>
+
+  <a href="{{ english_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'english.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">הליגה האנגלית</span>
+  </a>
+
+  <a href="{{ spanish_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'spain.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">הליגה הספרדית</span>
+  </a>
+
+  <a href="{{ italian_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'italy.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">הליגה האיטלקית</span>
+  </a>
+
+  <a href="{{ israel_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'israel.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">הליגה הישראלית</span>
+  </a>
+
+  <a href="{{ stussy_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'stussy.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">STUSSY</span>
+  </a>
+
+  <a href="{{ rest_collection_url }}" class="ballers-home-banner-card">
+    <span class="ballers-home-banner ballers-image-banner">
+      <img src="{{ 'rest.png' | asset_url }}" alt="">
+    </span>
+    <span class="ballers-home-banner-title">שאר העולם</span>
+  </a>
+
+</div>

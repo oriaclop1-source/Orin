@@ -1,0 +1,298 @@
+<section class="ballers-header-wrapper" dir="rtl">
+
+  {% assign kids_collection_url = '/collections/חליפות-ילדים' %}
+  {% if collections['חליפות-ילדים'] != blank %}
+    {% assign kids_collection_url = collections['חליפות-ילדים'].url %}
+  {% endif %}
+
+  {% assign training_collection_url = '/collections/חליפות-אימון' %}
+  {% if collections['חליפות-אימון'] != blank %}
+    {% assign training_collection_url = collections['חליפות-אימון'].url %}
+  {% elsif collections['חליפות אימון'] != blank %}
+    {% assign training_collection_url = collections['חליפות אימון'].url %}
+  {% elsif collections['training-suits'] != blank %}
+    {% assign training_collection_url = collections['training-suits'].url %}
+  {% endif %}
+
+  {% assign season_collection_url = '/collections/עונת-25-26' %}
+  {% if collections['עונת-25-26'] != blank %}
+    {% assign season_collection_url = collections['עונת-25-26'].url %}
+  {% endif %}
+
+  {% assign season_new_collection_url = '/collections/עונת-2026-2027' %}
+  {% if collections['עונת-2026-2027'] != blank %}
+    {% assign season_new_collection_url = collections['עונת-2026-2027'].url %}
+  {% endif %}
+
+  {% assign mystery_collection_url = '/collections/מיסטרי-בוקס' %}
+  {% if collections['מיסטרי-בוקס'] != blank %}
+    {% assign mystery_collection_url = collections['מיסטרי-בוקס'].url %}
+  {% endif %}
+
+  {% assign retro_collection_url = '/collections/רטרו' %}
+  {% if collections['רטרו'] != blank %}
+    {% assign retro_collection_url = collections['רטרו'].url %}
+  {% endif %}
+
+  {% assign special_collection_url = '/collections/ספיישל' %}
+  {% if collections['ספיישל'] != blank %}
+    {% assign special_collection_url = collections['ספיישל'].url %}
+  {% endif %}
+
+  {% assign national_collection_url = '/collections/נבחרות' %}
+  {% if collections['נבחרות'] != blank %}
+    {% assign national_collection_url = collections['נבחרות'].url %}
+  {% endif %}
+
+  {% assign nba_collection_url = '/collections/nba' %}
+  {% if collections['nba'] != blank %}
+    {% assign nba_collection_url = collections['nba'].url %}
+  {% endif %}
+
+  {% assign extra_products_collection_url = '/collections/מוצרים-נוספים' %}
+  {% if collections['מוצרים-נוספים'] != blank %}
+    {% assign extra_products_collection_url = collections['מוצרים-נוספים'].url %}
+  {% elsif collections['מוצרים נוספים'] != blank %}
+    {% assign extra_products_collection_url = collections['מוצרים נוספים'].url %}
+  {% elsif collections['extra-products'] != blank %}
+    {% assign extra_products_collection_url = collections['extra-products'].url %}
+  {% endif %}
+
+  {% assign nike_mind_collection_url = '/collections/nike-mind' %}
+  {% if collections['nike-mind'] != blank %}
+    {% assign nike_mind_collection_url = collections['nike-mind'].url %}
+  {% elsif collections['NIKE MIND'] != blank %}
+    {% assign nike_mind_collection_url = collections['NIKE MIND'].url %}
+  {% elsif collections['nike mind'] != blank %}
+    {% assign nike_mind_collection_url = collections['nike mind'].url %}
+  {% elsif collections['נייק-מיינד'] != blank %}
+    {% assign nike_mind_collection_url = collections['נייק-מיינד'].url %}
+  {% endif %}
+
+  <div class="ballers-announcement-bar">
+    <div class="ballers-announcement-track">
+      <span>משלוח חינם לכל הארץ</span>
+      <span>איכות מעולה</span>
+      <span>על כל האתר 3+1</span>
+      <span>שירות לקוחות זמין</span>
+    </div>
+  </div>
+
+  <header class="ballers-main-header">
+
+    <div class="ballers-header-icons ballers-header-icons-left">
+      <button type="button" class="ballers-header-icon ballers-cart-icon" id="BallersOpenCartDrawer" aria-label="פתיחת עגלה">
+        <span class="ballers-cart-count">{{ cart.item_count }}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2ZM7.2 14.5h8.9c.8 0 1.5-.5 1.8-1.2L21 6H6.2L5.7 3.8C5.5 2.7 4.6 2 3.5 2H2v2h1.5c.2 0 .4.1.4.3l2.2 10.1c.2.9 1 1.6 2 1.6H19v-2H7.2Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <a href="/" class="ballers-logo-link" aria-label="עמוד הבית">
+      <div class="ballers-logo-circle">
+        <img
+          src="{{ 'logo.png' | asset_url }}"
+          alt="{{ shop.name | escape }}"
+          class="ballers-logo-img"
+          loading="eager"
+        >
+      </div>
+    </a>
+
+    <div class="ballers-header-icons ballers-header-icons-right">
+      <button type="button" class="ballers-header-icon ballers-search-toggle" aria-label="חיפוש">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9.8 3C6.1 3 3 6.1 3 9.8s3.1 6.8 6.8 6.8c1.5 0 2.9-.5 4-1.3l4.4 4.4 1.5-1.5-4.4-4.4c.8-1.1 1.3-2.5 1.3-4C16.6 6.1 13.5 3 9.8 3Zm0 2.1c2.6 0 4.7 2.1 4.7 4.7s-2.1 4.7-4.7 4.7-4.7-2.1-4.7-4.7 2.1-4.7 4.7-4.7Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ballers-search-panel" id="BallersSearchPanel">
+      <form action="/search" method="get" role="search" class="ballers-search-form">
+        <input
+          type="search"
+          name="q"
+          class="ballers-search-input"
+          placeholder="חפש חולצה..."
+          aria-label="חיפוש מוצרים"
+          autocomplete="off"
+          value="{{ search.terms | escape }}"
+        >
+
+        <input type="hidden" name="type" value="product">
+
+        <button type="submit" class="ballers-search-submit" aria-label="חיפוש">
+          חפש
+        </button>
+      </form>
+    </div>
+
+    <nav class="ballers-nav" aria-label="ניווט ראשי">
+      <div class="ballers-nav-scroll">
+
+        <a href="/" class="ballers-nav-link {% if request.page_type == 'index' %}active{% endif %}"{% if request.page_type == 'index' %} aria-current="page"{% endif %}>
+          עמוד הבית
+        </a>
+
+        <a href="{{ season_new_collection_url }}" class="ballers-nav-link {% if collection.handle == 'עונת-2026-2027' %}active{% endif %}">
+          עונת 26/27
+        </a>
+
+        <a href="{{ season_collection_url }}" class="ballers-nav-link {% if collection.handle == 'עונת-25-26' or collection.title contains '25/26' or collection.title contains '25-26' %}active{% endif %}">
+          עונת 25/26
+        </a>
+
+        <a href="{{ training_collection_url }}" class="ballers-nav-link {% if collection.handle == 'חליפות-אימון' or collection.title contains 'חליפות אימון' or collection.handle == 'training-suits' %}active{% endif %}">
+          חליפות אימון
+        </a>
+
+        <a href="{{ mystery_collection_url }}" class="ballers-nav-link {% if collection.handle == 'מיסטרי-בוקס' or collection.title contains 'מיסטרי' %}active{% endif %}">
+          מיסטרי בוקס
+        </a>
+
+        <a href="{{ retro_collection_url }}" class="ballers-nav-link {% if collection.title == 'רטרו' or collection.handle == 'רטרו' %}active{% endif %}">
+          רטרו
+        </a>
+
+        <a href="{{ kids_collection_url }}" class="ballers-nav-link {% if collection.title contains 'חליפות ילדים' or collection.handle contains 'חליפות-ילדים' or collection.handle contains 'kids' %}active{% endif %}">
+          חליפות ילדים
+        </a>
+
+        <a href="{{ special_collection_url }}" class="ballers-nav-link {% if collection.title contains 'ספיישל' or collection.handle == 'ספיישל' %}active{% endif %}">
+          ספיישל
+        </a>
+
+        <a href="{{ national_collection_url }}" class="ballers-nav-link {% if collection.handle == 'נבחרות' or collection.title contains 'נבחרות' %}active{% endif %}">
+          נבחרות
+        </a>
+
+        <a href="{{ nba_collection_url }}" class="ballers-nav-link {% if collection.title contains 'NBA' or collection.handle contains 'nba' %}active{% endif %}">
+          NBA
+        </a>
+
+      </div>
+    </nav>
+
+    <nav class="ballers-nav ballers-nav-secondary" aria-label="ניווט מוצרים נוסף">
+      <div class="ballers-nav-scroll ballers-nav-scroll-secondary">
+
+        <a href="{{ extra_products_collection_url }}" class="ballers-nav-link {% if collection.handle == 'מוצרים-נוספים' or collection.title contains 'מוצרים נוספים' or collection.handle == 'extra-products' %}active{% endif %}">
+          מוצרים נוספים
+        </a>
+
+        <a href="{{ nike_mind_collection_url }}" class="ballers-nav-link {% if collection.handle == 'nike-mind' or collection.title contains 'NIKE MIND' or collection.title contains 'Nike Mind' or collection.title contains 'נייק' %}active{% endif %}">
+          NIKE MIND
+        </a>
+
+      </div>
+    </nav>
+
+  </header>
+
+  {% render 'ballers-header-drawer' %}
+
+</section>
+
+{% render 'ballers-header-css-main' %}
+{% render 'ballers-header-css-drawer' %}
+{% render 'ballers-header-css-responsive' %}
+
+<style>
+  .ballers-header-wrapper a:focus-visible,
+  .ballers-header-wrapper button:focus-visible,
+  .ballers-header-wrapper input:focus-visible {
+    outline: 3px solid #ffd400 !important;
+    outline-offset: 3px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var searchToggle = document.querySelector('.ballers-search-toggle');
+    var searchPanel = document.getElementById('BallersSearchPanel');
+    var searchInput = document.querySelector('.ballers-search-input');
+
+    if (searchToggle && searchPanel) {
+      searchToggle.setAttribute('aria-expanded', 'false');
+      searchToggle.addEventListener('click', function () {
+        searchPanel.classList.toggle('open');
+        var isOpen = searchPanel.classList.contains('open');
+        searchToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        if (isOpen && searchInput) {
+          setTimeout(function () {
+            searchInput.focus();
+          }, 120);
+        }
+      });
+    }
+
+    var openCartButton = document.getElementById('BallersOpenCartDrawer');
+    var closeCartButton = document.getElementById('BallersCloseCartDrawer');
+    var continueShoppingButton = document.getElementById('BallersContinueShopping');
+    var cartDrawer = document.getElementById('BallersCartDrawer');
+    var cartOverlay = document.getElementById('BallersCartDrawerOverlay');
+
+    function openCartDrawer() {
+      if (!cartDrawer || !cartOverlay) {
+        return;
+      }
+
+      cartDrawer.classList.add('open');
+      cartOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (closeCartButton) {
+        closeCartButton.focus();
+      }
+    }
+
+    function closeCartDrawer() {
+      if (!cartDrawer || !cartOverlay) {
+        return;
+      }
+
+      cartDrawer.classList.remove('open');
+      cartOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    if (openCartButton) {
+      openCartButton.addEventListener('click', openCartDrawer);
+    }
+
+    if (closeCartButton) {
+      closeCartButton.addEventListener('click', closeCartDrawer);
+    }
+
+    if (continueShoppingButton) {
+      continueShoppingButton.addEventListener('click', closeCartDrawer);
+    }
+
+    if (cartOverlay) {
+      cartOverlay.addEventListener('click', closeCartDrawer);
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        if (searchPanel) {
+          searchPanel.classList.remove('open');
+        }
+
+        closeCartDrawer();
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Ballers custom header",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers custom header"
+    }
+  ]
+}
+{% endschema %}

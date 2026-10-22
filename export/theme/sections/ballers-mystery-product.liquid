@@ -1,0 +1,1609 @@
+<section class="ballers-mystery-product" dir="rtl">
+
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  <div class="bmp-container">
+
+    <div class="bmp-grid">
+
+      <div class="bmp-gallery">
+        <div class="bmp-image-box">
+          {% if product.featured_image %}
+            <img
+              src="{{ product.featured_image | image_url: width: 1200 }}"
+              alt="{{ product.title | escape }}"
+              class="bmp-main-image"
+              loading="eager"
+            >
+          {% else %}
+            <div class="bmp-no-image">
+              תמונה תתווסף בקרוב
+            </div>
+          {% endif %}
+        </div>
+
+        {% if product.images.size > 1 %}
+          <div class="bmp-thumbs">
+            {% for image in product.images limit: 6 %}
+              <button type="button" class="bmp-thumb">
+                <img
+                  src="{{ image | image_url: width: 180 }}"
+                  data-large="{{ image | image_url: width: 1200 }}"
+                  alt="{{ product.title | escape }}"
+                >
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="bmp-info">
+
+        <div class="bmp-badge">מיסטרי בוקס</div>
+
+        <h1 class="bmp-title">
+          {{ product.title }}
+        </h1>
+
+        <div class="bmp-price">
+          <span id="BmpPrice">
+            {{ current_variant.price | money_without_currency }} ₪
+          </span>
+
+          {% if current_variant.compare_at_price > current_variant.price %}
+            <del id="BmpComparePrice">
+              {{ current_variant.compare_at_price | money_without_currency }} ₪
+            </del>
+          {% else %}
+            <del id="BmpComparePrice" style="display:none;"></del>
+          {% endif %}
+        </div>
+
+        <div class="bmp-description">
+          {% if product.description != blank %}
+            {{ product.description }}
+          {% else %}
+            <p>
+              בחרו למי הבוקס מיועד, מידה, סוג שרוול והאם להוסיף פאץ׳ תואם — ואנחנו נבחר עבורכם חולצה מפתיעה מתוך הקולקציה.
+            </p>
+          {% endif %}
+        </div>
+
+        <div class="bmp-size-box">
+          <h3>טבלאות מידות</h3>
+          <p>מומלץ לבדוק מידה לפני הזמנה</p>
+
+          <div class="bmp-size-buttons">
+            <button type="button" class="bmp-size-table-btn" data-modal="kids">
+              טבלת מידות ילדים
+            </button>
+
+            <button type="button" class="bmp-size-table-btn" data-modal="adult">
+              טבלת מידות בוגרים
+            </button>
+          </div>
+        </div>
+
+        {% form 'product', product, class: 'bmp-form', id: 'BmpForm' %}
+
+          {% if product.has_only_default_variant %}
+            <input type="hidden" name="id" id="BmpVariantId" value="{{ current_variant.id }}">
+          {% else %}
+            <input type="hidden" name="id" id="BmpVariantId" value="">
+          {% endif %}
+
+          {% unless product.has_only_default_variant %}
+
+            <div class="bmp-options">
+
+              {% assign adult_check = '|S|M|L|XL|2XL|3XL|4XL|5XL|' %}
+              {% assign kids_check = '|6|8|10|12|14|16|18|' %}
+
+              {% for option in product.options_with_values %}
+
+                {% assign option_name_down = option.name | downcase %}
+                {% assign option_type = 'regular' %}
+
+                {% if option.name contains 'למי' or option.name contains 'בוקס' or option_name_down contains 'audience' %}
+                  {% assign option_type = 'audience' %}
+                {% elsif option.name contains 'מיד' or option_name_down contains 'size' %}
+                  {% assign option_type = 'size' %}
+                {% elsif option.name contains 'שרוול' or option_name_down contains 'sleeve' %}
+                  {% assign option_type = 'sleeve' %}
+                {% elsif option.name contains 'פאץ' or option.name contains 'פאצ' or option_name_down contains 'patch' %}
+                  {% assign option_type = 'patch' %}
+                {% endif %}
+
+                {% if option_type == 'size' %}
+
+                  <div class="bmp-option-group bmp-combined-size-group" data-option-type="size" data-option-position="{{ option.position }}">
+                    <label class="bmp-option-label">
+                      בחר מידה
+                    </label>
+
+                    <div class="bmp-size-hint" id="BmpSizeHint">
+                      קודם בחרו אם הבוקס מיועד לבוגרים או לילדים.
+                    </div>
+
+                    <div class="bmp-option-values bmp-clean-size-values" data-clean-size-wrapper data-original-option-position="{{ option.position }}">
+
+                      {% assign shown_sizes = '' %}
+
+                      {% for value in option.values %}
+                        {% assign clean_value = value %}
+                        {% assign clean_value = clean_value | replace: ' - שרוול קצר', '' %}
+                        {% assign clean_value = clean_value | replace: ' - שרוול ארוך', '' %}
+                        {% assign clean_value = clean_value | replace: 'שרוול קצר', '' %}
+                        {% assign clean_value = clean_value | replace: 'שרוול ארוך', '' %}
+                        {% assign clean_value = clean_value | replace: '-', '' %}
+                        {% assign clean_value = clean_value | strip %}
+
+                        {% assign size_marker = '|' | append: clean_value | append: '|' %}
+
+                        {% unless shown_sizes contains size_marker %}
+
+                          {% assign shown_sizes = shown_sizes | append: size_marker %}
+
+                          {% assign size_type = 'other' %}
+                          {% if adult_check contains size_marker %}
+                            {% assign size_type = 'adult' %}
+                          {% elsif kids_check contains size_marker %}
+                            {% assign size_type = 'kids' %}
+                          {% endif %}
+
+                          <button
+                            type="button"
+                            class="bmp-option-btn bmp-clean-size-btn"
+                            data-clean-size="{{ clean_value | escape }}"
+                            data-size-type="{{ size_type }}"
+                          >
+                            {{ clean_value }}
+                          </button>
+
+                        {% endunless %}
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                  <div class="bmp-option-group bmp-sleeve-display-group" data-option-type="sleeve-display">
+                    <label class="bmp-option-label">
+                      סוג שרוול
+                    </label>
+
+                    <div class="bmp-option-values">
+                      <button
+                        type="button"
+                        class="bmp-option-btn bmp-sleeve-display-btn active"
+                        data-clean-sleeve="שרוול קצר"
+                      >
+                        שרוול קצר
+                      </button>
+
+                      <button
+                        type="button"
+                        class="bmp-option-btn bmp-sleeve-display-btn"
+                        data-clean-sleeve="שרוול ארוך"
+                      >
+                        שרוול ארוך +10 ₪
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="bmp-option-values bmp-hidden-original-size-options" data-option-position="{{ option.position }}">
+                    {% for value in option.values %}
+                      <button
+                        type="button"
+                        class="bmp-option-btn bmp-hidden-size-option"
+                        data-option-position="{{ option.position }}"
+                        data-option-value="{{ value | escape }}"
+                        data-original-size-value="{{ value | escape }}"
+                      >
+                        {{ value }}
+                      </button>
+                    {% endfor %}
+                  </div>
+
+                {% else %}
+
+                  <div class="bmp-option-group" data-option-type="{{ option_type }}" data-option-position="{{ option.position }}">
+
+                    <label class="bmp-option-label">
+                      {% if option_type == 'audience' %}
+                        למי הבוקס?
+                      {% elsif option_type == 'sleeve' %}
+                        סוג שרוול
+                      {% elsif option_type == 'patch' %}
+                        הוספת פאץ׳ תואם
+                      {% else %}
+                        {{ option.name }}
+                      {% endif %}
+                    </label>
+
+                    <div class="bmp-option-values" data-option-position="{{ option.position }}">
+
+                      {% if option_type == 'sleeve' %}
+
+                        {% for value in option.values %}
+                          {% assign value_down = value | downcase %}
+                          {% assign display_value = value %}
+
+                          {% if value contains 'ארוך' or value_down contains 'long' %}
+                            {% assign display_value = 'שרוול ארוך +10 ₪' %}
+                          {% elsif value contains 'קצר' or value_down contains 'short' %}
+                            {% assign display_value = 'שרוול קצר' %}
+                          {% endif %}
+
+                          <button
+                            type="button"
+                            class="bmp-option-btn"
+                            data-option-position="{{ option.position }}"
+                            data-option-value="{{ value | escape }}"
+                          >
+                            {{ display_value }}
+                          </button>
+                        {% endfor %}
+
+                      {% elsif option_type == 'patch' %}
+
+                        {% for value in option.values %}
+                          {% assign value_down = value | downcase %}
+                          {% assign display_value = value %}
+
+                          {% if value contains 'ללא' or value contains 'בלי' or value_down contains 'no' %}
+                            {% assign display_value = 'ללא פאץ׳' %}
+                          {% elsif value contains 'הוסף' or value contains 'תואם' or value contains 'פאץ' or value contains 'פאצ' or value_down contains 'patch' %}
+                            {% assign display_value = 'הוסף פאץ׳ תואם +5 ₪' %}
+                          {% endif %}
+
+                          <button
+                            type="button"
+                            class="bmp-option-btn"
+                            data-option-position="{{ option.position }}"
+                            data-option-value="{{ value | escape }}"
+                          >
+                            {{ display_value }}
+                          </button>
+                        {% endfor %}
+
+                      {% else %}
+
+                        {% for value in option.values %}
+                          {% assign display_value = value %}
+
+                          {% if option_type == 'audience' %}
+                            {% if value contains 'בוגר' %}
+                              {% assign display_value = 'בוגרים' %}
+                            {% elsif value contains 'ילד' %}
+                              {% assign display_value = 'ילדים' %}
+                            {% endif %}
+                          {% endif %}
+
+                          <button
+                            type="button"
+                            class="bmp-option-btn"
+                            data-option-position="{{ option.position }}"
+                            data-option-value="{{ value | escape }}"
+                          >
+                            {{ display_value }}
+                          </button>
+                        {% endfor %}
+
+                      {% endif %}
+
+                    </div>
+
+                  </div>
+
+                {% endif %}
+
+              {% endfor %}
+
+            </div>
+
+            <div class="bmp-message" id="BmpMessage">
+              יש לבחור למי הבוקס מיועד, מידה וסוג שרוול לפני הוספה לעגלה. ברירת המחדל היא ללא פאץ׳.
+            </div>
+
+          {% endunless %}
+
+          <div class="bmp-extra">
+
+            <div class="bmp-field">
+              <label for="BmpTeams">
+                קבוצות שאתם פחות אוהבים <span>אופציונלי</span>
+              </label>
+
+              <textarea
+                id="BmpTeams"
+                name="properties[קבוצות שפחות אוהבים]"
+                rows="3"
+                placeholder="לדוגמה: ריאל מדריד, ארסנל, ברצלונה"
+              ></textarea>
+
+              <p>
+                נשתדל לא לבחור עבורכם חולצה מהקבוצות האלו.
+              </p>
+            </div>
+
+            <div class="bmp-field">
+              <label>
+                צבעים שאתם פחות אוהבים <span>אופציונלי</span>
+              </label>
+
+              <input
+                type="hidden"
+                id="BmpColorsInput"
+                name="properties[צבעים שפחות אוהבים]"
+                value=""
+              >
+
+              <div class="bmp-colors">
+                {% assign colors = 'שחור,לבן,אדום,כחול,ירוק,צהוב,סגול,ורוד,כתום,אפור,תכלת' | split: ',' %}
+
+                {% for color in colors %}
+                  {% assign chip_bg = '#ffffff' %}
+                  {% assign chip_text = '#111111' %}
+                  {% assign chip_border = '#d8d8d8' %}
+
+                  {% case color %}
+                    {% when 'שחור' %}
+                      {% assign chip_bg = '#111111' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#111111' %}
+                    {% when 'לבן' %}
+                      {% assign chip_bg = '#ffffff' %}
+                      {% assign chip_text = '#111111' %}
+                      {% assign chip_border = '#d8d8d8' %}
+                    {% when 'אדום' %}
+                      {% assign chip_bg = '#e53935' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#e53935' %}
+                    {% when 'כחול' %}
+                      {% assign chip_bg = '#1e64ff' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#1e64ff' %}
+                    {% when 'ירוק' %}
+                      {% assign chip_bg = '#16a34a' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#16a34a' %}
+                    {% when 'צהוב' %}
+                      {% assign chip_bg = '#facc15' %}
+                      {% assign chip_text = '#111111' %}
+                      {% assign chip_border = '#eab308' %}
+                    {% when 'סגול' %}
+                      {% assign chip_bg = '#7c3aed' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#7c3aed' %}
+                    {% when 'ורוד' %}
+                      {% assign chip_bg = '#ff5fa2' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#ff5fa2' %}
+                    {% when 'כתום' %}
+                      {% assign chip_bg = '#f97316' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#f97316' %}
+                    {% when 'אפור' %}
+                      {% assign chip_bg = '#9ca3af' %}
+                      {% assign chip_text = '#ffffff' %}
+                      {% assign chip_border = '#9ca3af' %}
+                    {% when 'תכלת' %}
+                      {% assign chip_bg = '#38bdf8' %}
+                      {% assign chip_text = '#111111' %}
+                      {% assign chip_border = '#38bdf8' %}
+                  {% endcase %}
+
+                  <label
+                    class="bmp-color-chip"
+                    style="--chip-bg: {{ chip_bg }}; --chip-text: {{ chip_text }}; --chip-border: {{ chip_border }};"
+                  >
+                    <input type="checkbox" value="{{ color }}" class="BmpColorCheckbox">
+                    <span>{{ color }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="bmp-note">
+            במיסטרי בוקס אין בחירת שם ומספר. הבחירה נעשית לפי סוג הבוקס, קהל יעד, מידה, סוג שרוול והעדפות כלליות.
+          </div>
+
+          <button
+            type="submit"
+            name="add"
+            class="bmp-add-btn"
+            {% unless product.has_only_default_variant %}disabled{% endunless %}
+            {% if product.has_only_default_variant %}
+              {% unless current_variant.available %}disabled{% endunless %}
+            {% endif %}
+          >
+            {% if product.has_only_default_variant %}
+              {% if current_variant.available %}
+                הוסף לעגלה
+              {% else %}
+                אזל מהמלאי
+              {% endif %}
+            {% else %}
+              בחר אפשרויות
+            {% endif %}
+          </button>
+
+        {% endform %}
+
+        <div class="bmp-service">
+          <div>
+            <strong>משלוחים חינם לכל הארץ</strong>
+          </div>
+
+          <div>
+            <strong>קנייה מאובטחת</strong>
+          </div>
+
+          <div>
+            <strong>מענה מהיר ויעיל</strong>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="bmp-modal" id="BmpKidsModal">
+    <div class="bmp-modal-inner">
+      <button type="button" class="bmp-modal-close">×</button>
+      <h3>טבלת מידות ילדים</h3>
+      <img src="{{ 'kids.png' | asset_url }}" alt="טבלת מידות ילדים">
+    </div>
+  </div>
+
+  <div class="bmp-modal" id="BmpAdultModal">
+    <div class="bmp-modal-inner">
+      <button type="button" class="bmp-modal-close">×</button>
+      <h3>טבלת מידות בוגרים</h3>
+      <img src="{{ 'mature.png' | asset_url }}" alt="טבלת מידות בוגרים">
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .ballers-mystery-product,
+  .ballers-mystery-product * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-mystery-product {
+    width: 100%;
+    direction: rtl;
+    background:
+      radial-gradient(circle at top right, rgba(47,127,111,0.10), transparent 32%),
+      linear-gradient(180deg, #f5f6f7 0%, #ffffff 100%);
+    padding: 42px 18px 70px;
+  }
+
+  .bmp-container {
+    max-width: 1450px;
+    margin: 0 auto;
+  }
+
+  .bmp-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+    gap: 34px;
+    align-items: start;
+  }
+
+  .bmp-image-box {
+    min-height: 620px;
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.08);
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bmp-main-image {
+    width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .bmp-no-image {
+    color: rgba(0,0,0,0.48);
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .bmp-thumbs {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    overflow-x: auto;
+  }
+
+  .bmp-thumb {
+    width: 88px;
+    height: 88px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 7px;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+
+  .bmp-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .bmp-info {
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.08);
+    padding: 28px;
+    position: sticky;
+    top: 18px;
+  }
+
+  .bmp-badge {
+    display: inline-flex;
+    background: #111111;
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 900;
+    margin-bottom: 14px;
+  }
+
+  .bmp-title {
+    margin: 0 0 14px !important;
+    color: #111111 !important;
+    font-size: clamp(32px, 3.5vw, 52px) !important;
+    font-weight: 900 !important;
+    line-height: 1.06 !important;
+  }
+
+  .bmp-price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: #111111;
+    font-size: 30px;
+    font-weight: 900;
+    margin-bottom: 18px;
+  }
+
+  .bmp-price del {
+    color: rgba(0,0,0,0.35);
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .bmp-description {
+    color: rgba(0,0,0,0.72);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.65;
+    margin-bottom: 18px;
+  }
+
+  .bmp-description p {
+    margin: 0 !important;
+  }
+
+  .bmp-size-box {
+    background: #f4f7f6;
+    border: 1px solid rgba(47,127,111,0.20);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 18px 0;
+  }
+
+  .bmp-size-box h3 {
+    margin: 0 0 4px !important;
+    color: #111111 !important;
+    font-size: 19px !important;
+    font-weight: 900 !important;
+  }
+
+  .bmp-size-box p {
+    margin: 0 0 12px !important;
+    color: rgba(0,0,0,0.58);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .bmp-size-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .bmp-size-table-btn {
+    min-height: 42px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #111111;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .bmp-options {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .bmp-option-group {
+    display: grid;
+    gap: 9px;
+  }
+
+  .bmp-option-label {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .bmp-size-hint {
+    color: rgba(0,0,0,0.55);
+    font-size: 12.5px;
+    font-weight: 800;
+  }
+
+  .bmp-option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+
+  .bmp-option-btn {
+    min-width: 56px;
+    min-height: 42px;
+    border: 1px solid rgba(0,0,0,0.14);
+    border-radius: 11px;
+    background: #ffffff;
+    color: #111111;
+    padding: 0 14px;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .bmp-option-btn:hover,
+  .bmp-option-btn.active {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+    transform: translateY(-2px);
+  }
+
+  .bmp-option-btn.hidden-by-audience {
+    display: none;
+  }
+
+  .bmp-hidden-original-size-options {
+    display: none !important;
+  }
+
+  .bmp-message {
+    margin: 0 0 16px;
+    padding: 11px 13px;
+    border-radius: 12px;
+    background: #fff4e5;
+    color: #8a4b00;
+    border: 1px solid rgba(138,75,0,0.18);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.45;
+  }
+
+  .bmp-message.ready {
+    background: #eef8f2;
+    color: #1d6b3a;
+    border-color: rgba(29,107,58,0.20);
+  }
+
+  .bmp-message.error {
+    background: #ffecec;
+    color: #a40000;
+    border-color: rgba(164,0,0,0.22);
+  }
+
+  .bmp-extra {
+    display: grid;
+    gap: 15px;
+    margin: 18px 0 14px;
+  }
+
+  .bmp-field {
+    display: grid;
+    gap: 9px;
+  }
+
+  .bmp-field label {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .bmp-field label span {
+    color: rgba(0,0,0,0.52);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .bmp-field textarea {
+    width: 100%;
+    min-height: 84px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 13px;
+    padding: 12px 13px;
+    font-size: 14px;
+    font-weight: 700;
+    resize: vertical;
+    outline: none;
+  }
+
+  .bmp-field p {
+    margin: 0 !important;
+    color: rgba(0,0,0,0.56);
+    font-size: 12.5px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .bmp-colors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .bmp-color-chip {
+    cursor: pointer;
+  }
+
+  .bmp-color-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bmp-color-chip span {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--chip-border);
+    background: var(--chip-bg);
+    color: var(--chip-text);
+    border-radius: 999px;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 900;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease,
+      outline 0.18s ease;
+  }
+
+  .bmp-color-chip input:checked + span {
+    outline: 3px solid rgba(17,17,17,0.28);
+    outline-offset: 3px;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+  }
+
+  .bmp-note {
+    background: #f6f6f6;
+    border-radius: 12px;
+    padding: 11px 13px;
+    color: rgba(0,0,0,0.65);
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .bmp-add-btn {
+    width: 100%;
+    min-height: 54px;
+    border: none;
+    border-radius: 14px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.18);
+  }
+
+  .bmp-add-btn:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    background: #777777;
+    box-shadow: none;
+  }
+
+  .bmp-service {
+    margin-top: 18px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .bmp-service div {
+    padding: 16px 15px;
+    border-radius: 14px;
+    background: #f7f8f8;
+    border: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 54px;
+  }
+
+  .bmp-service strong {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .bmp-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: rgba(0,0,0,0.72);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
+
+  .bmp-modal.open {
+    display: flex;
+  }
+
+  .bmp-modal-inner {
+    width: min(900px, 96vw);
+    max-height: 90vh;
+    overflow: auto;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+  }
+
+  .bmp-modal-inner h3 {
+    margin: 0 0 16px !important;
+    color: #111111 !important;
+    font-size: 24px !important;
+    font-weight: 900 !important;
+  }
+
+  .bmp-modal-inner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+  }
+
+  .bmp-modal-close {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #111111;
+    font-size: 30px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 1050px) {
+    .bmp-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .bmp-info {
+      position: relative;
+      top: auto;
+    }
+
+    .bmp-image-box {
+      min-height: 480px;
+    }
+  }
+
+  @media screen and (max-width: 620px) {
+    .ballers-mystery-product {
+      padding: 24px 10px 50px;
+    }
+
+    .bmp-image-box {
+      min-height: 350px;
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .bmp-info {
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .bmp-title {
+      font-size: 30px !important;
+    }
+
+    .bmp-price {
+      font-size: 25px;
+    }
+
+    .bmp-size-buttons {
+      grid-template-columns: 1fr;
+    }
+
+    .bmp-service div {
+      justify-content: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var section = document.querySelector('.ballers-mystery-product');
+
+    if (!section) {
+      return;
+    }
+
+    var variants = {{ product.variants | json }};
+    var productHasOnlyDefaultVariant = {{ product.has_only_default_variant | json }};
+
+    var variantInput = section.querySelector('#BmpVariantId');
+    var priceBox = section.querySelector('#BmpPrice');
+    var comparePriceBox = section.querySelector('#BmpComparePrice');
+    var addButton = section.querySelector('.bmp-add-btn');
+    var requiredMessage = section.querySelector('#BmpMessage');
+    var productForm = section.querySelector('#BmpForm');
+    var sizeHint = section.querySelector('#BmpSizeHint');
+    var colorChecks = section.querySelectorAll('.BmpColorCheckbox');
+    var colorsInput = section.querySelector('#BmpColorsInput');
+    var mainImage = section.querySelector('.bmp-main-image');
+
+    var selectedCleanSize = '';
+    var selectedCleanSleeve = 'שרוול קצר';
+
+    function normalize(value) {
+      return String(value || '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function cleanSize(value) {
+      return String(value || '')
+        .replace(/\s*-\s*שרוול\s*קצר/g, '')
+        .replace(/\s*-\s*שרוול\s*ארוך/g, '')
+        .replace(/שרוול\s*קצר/g, '')
+        .replace(/שרוול\s*ארוך/g, '')
+        .replace(/-/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function isLongSleeve(value) {
+      var v = normalize(value);
+      return v.indexOf('ארוך') !== -1 || v.indexOf('long') !== -1;
+    }
+
+    function isShortSleeve(value) {
+      var v = normalize(value);
+      return v.indexOf('קצר') !== -1 || v.indexOf('short') !== -1;
+    }
+
+    function isNoPatchValue(value) {
+      var v = normalize(value);
+
+      return (
+        v.indexOf('ללא') !== -1 ||
+        v.indexOf('בלי') !== -1 ||
+        v.indexOf('no') !== -1 ||
+        v.indexOf('without') !== -1
+      );
+    }
+
+    function isAdult(value) {
+      var v = normalize(value);
+      return v.indexOf('בוגר') !== -1 || v.indexOf('adult') !== -1 || v.indexOf('men') !== -1;
+    }
+
+    function isKids(value) {
+      var v = normalize(value);
+      return v.indexOf('ילד') !== -1 || v.indexOf('kids') !== -1 || v.indexOf('child') !== -1;
+    }
+
+    function formatPrice(cents) {
+      return (cents / 100).toFixed(2).replace('.00', '') + ' ₪';
+    }
+
+    function getCombinedSizePosition() {
+      var wrapper = section.querySelector('[data-clean-size-wrapper]');
+
+      if (!wrapper) {
+        return null;
+      }
+
+      var position = Number(wrapper.getAttribute('data-original-option-position'));
+
+      if (!position || isNaN(position)) {
+        return null;
+      }
+
+      return position;
+    }
+
+    function prepareCleanSizeGroupAsRealOption() {
+      var wrapper = section.querySelector('[data-clean-size-wrapper]');
+      var position = getCombinedSizePosition();
+
+      if (!wrapper || !position) {
+        return;
+      }
+
+      wrapper.setAttribute('data-option-position', position);
+
+      section.querySelectorAll('.bmp-clean-size-btn').forEach(function (button) {
+        button.setAttribute('data-option-position', position);
+      });
+    }
+
+    function findOriginalSizeSleeveValue(cleanSizeValue, cleanSleeveValue) {
+      var hiddenButtons = Array.from(section.querySelectorAll('.bmp-hidden-size-option'));
+
+      var match = hiddenButtons.find(function (button) {
+        var original = button.getAttribute('data-original-size-value') || '';
+        var originalCleanSize = cleanSize(original);
+
+        var sizeMatch = originalCleanSize === cleanSizeValue;
+        var sleeveMatch = false;
+
+        if (cleanSleeveValue === 'שרוול ארוך') {
+          sleeveMatch = isLongSleeve(original);
+        } else {
+          sleeveMatch = isShortSleeve(original);
+        }
+
+        return sizeMatch && sleeveMatch;
+      });
+
+      if (match) {
+        return match.getAttribute('data-option-value') || '';
+      }
+
+      return '';
+    }
+
+    function updateCleanSizeButtonsRealValues() {
+      section.querySelectorAll('.bmp-clean-size-btn').forEach(function (button) {
+        var cleanSizeValue = button.getAttribute('data-clean-size') || '';
+        var realOptionValue = findOriginalSizeSleeveValue(cleanSizeValue, selectedCleanSleeve);
+
+        button.setAttribute('data-option-value', realOptionValue);
+
+        if (!realOptionValue) {
+          button.classList.add('hidden-by-audience');
+        }
+      });
+    }
+
+    function getAudienceType() {
+      var active = section.querySelector('[data-option-type="audience"] .bmp-option-btn.active');
+
+      if (!active) {
+        return '';
+      }
+
+      var value = active.getAttribute('data-option-value') || active.textContent || '';
+
+      if (isAdult(value)) {
+        return 'adult';
+      }
+
+      if (isKids(value)) {
+        return 'kids';
+      }
+
+      return '';
+    }
+
+    function updateSizesByAudience() {
+      var audience = getAudienceType();
+      var sizeButtons = section.querySelectorAll('[data-size-type]');
+
+      sizeButtons.forEach(function (button) {
+        var type = button.getAttribute('data-size-type');
+        var realOptionValue = button.getAttribute('data-option-value') || '';
+
+        button.classList.remove('hidden-by-audience');
+
+        if (!audience) {
+          button.classList.add('hidden-by-audience');
+          button.classList.remove('active');
+
+          if (button.getAttribute('data-clean-size') === selectedCleanSize) {
+            selectedCleanSize = '';
+          }
+
+          return;
+        }
+
+        if (!realOptionValue) {
+          button.classList.add('hidden-by-audience');
+          button.classList.remove('active');
+
+          if (button.getAttribute('data-clean-size') === selectedCleanSize) {
+            selectedCleanSize = '';
+          }
+
+          return;
+        }
+
+        if (type !== audience && type !== 'other') {
+          button.classList.add('hidden-by-audience');
+          button.classList.remove('active');
+
+          if (button.getAttribute('data-clean-size') === selectedCleanSize) {
+            selectedCleanSize = '';
+          }
+        }
+      });
+
+      if (sizeHint) {
+        if (!audience) {
+          sizeHint.textContent = 'קודם בחרו אם הבוקס מיועד לבוגרים או לילדים.';
+        } else if (audience === 'adult') {
+          sizeHint.textContent = 'מוצגות מידות בוגרים בלבד.';
+        } else {
+          sizeHint.textContent = 'מוצגות מידות ילדים בלבד.';
+        }
+      }
+    }
+
+    function setDefaultNoPatch() {
+      section.querySelectorAll('[data-option-type="patch"] .bmp-option-values').forEach(function (group) {
+        var activeButton = group.querySelector('.bmp-option-btn.active');
+
+        if (activeButton) {
+          return;
+        }
+
+        var buttons = Array.from(group.querySelectorAll('.bmp-option-btn'));
+
+        var noPatchButton = buttons.find(function (button) {
+          var value = button.getAttribute('data-option-value') || button.textContent || '';
+          return isNoPatchValue(value);
+        });
+
+        if (noPatchButton) {
+          noPatchButton.classList.add('active');
+        }
+      });
+    }
+
+    function getOptionGroups() {
+      return Array.from(section.querySelectorAll('.bmp-option-values[data-option-position]')).filter(function (group) {
+        return !group.classList.contains('bmp-hidden-original-size-options');
+      });
+    }
+
+    function getSelectedOptions() {
+      var selected = [];
+
+      getOptionGroups().forEach(function (group) {
+        var position = Number(group.getAttribute('data-option-position'));
+        var active = group.querySelector('.bmp-option-btn.active');
+
+        if (!position || isNaN(position)) {
+          return;
+        }
+
+        selected[position - 1] = active ? active.getAttribute('data-option-value') : null;
+      });
+
+      return selected;
+    }
+
+    function hasAnySelection() {
+      var selectedOptions = getSelectedOptions();
+
+      return (
+        selectedOptions.some(function (value) {
+          return value !== null && value !== '';
+        }) ||
+        selectedCleanSleeve === 'שרוול ארוך'
+      );
+    }
+
+    function allOptionsSelected() {
+      if (productHasOnlyDefaultVariant) {
+        return true;
+      }
+
+      var selectedOptions = getSelectedOptions();
+      var optionGroups = getOptionGroups();
+
+      if (optionGroups.length === 0) {
+        return false;
+      }
+
+      for (var i = 0; i < optionGroups.length; i++) {
+        var position = Number(optionGroups[i].getAttribute('data-option-position'));
+
+        if (!position || !selectedOptions[position - 1]) {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function findMatchedVariant() {
+      var selectedOptions = getSelectedOptions();
+
+      if (!allOptionsSelected()) {
+        return null;
+      }
+
+      return variants.find(function (variant) {
+        return variant.options.every(function (optionValue, index) {
+          return String(optionValue || '').trim() === String(selectedOptions[index] || '').trim();
+        });
+      }) || null;
+    }
+
+    function findPreviewVariant() {
+      var selectedOptions = getSelectedOptions();
+      var combinedPosition = getCombinedSizePosition();
+
+      if (!hasAnySelection()) {
+        return null;
+      }
+
+      var matchingVariants = variants.filter(function (variant) {
+        return variant.options.every(function (optionValue, index) {
+          var selectedValue = selectedOptions[index];
+
+          if (combinedPosition && index === combinedPosition - 1) {
+            if (selectedValue) {
+              return String(optionValue || '').trim() === String(selectedValue || '').trim();
+            }
+
+            if (selectedCleanSleeve === 'שרוול ארוך') {
+              return isLongSleeve(optionValue);
+            }
+
+            if (selectedCleanSleeve === 'שרוול קצר') {
+              return isShortSleeve(optionValue);
+            }
+
+            return true;
+          }
+
+          if (selectedValue === null || selectedValue === '' || typeof selectedValue === 'undefined') {
+            return true;
+          }
+
+          return String(optionValue || '').trim() === String(selectedValue || '').trim();
+        });
+      });
+
+      if (matchingVariants.length === 0) {
+        return null;
+      }
+
+      matchingVariants.sort(function (a, b) {
+        return a.price - b.price;
+      });
+
+      var availableVariant = matchingVariants.find(function (variant) {
+        return variant.available;
+      });
+
+      return availableVariant || matchingVariants[0];
+    }
+
+    function updateDisplayedPrice(variant) {
+      if (!variant || !priceBox) {
+        return;
+      }
+
+      priceBox.textContent = formatPrice(variant.price);
+
+      if (comparePriceBox) {
+        if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+          comparePriceBox.textContent = formatPrice(variant.compare_at_price);
+          comparePriceBox.style.display = '';
+        } else {
+          comparePriceBox.textContent = '';
+          comparePriceBox.style.display = 'none';
+        }
+      }
+    }
+
+    function updateColorsInput() {
+      if (!colorsInput) {
+        return;
+      }
+
+      var selectedColors = [];
+
+      colorChecks.forEach(function (checkbox) {
+        if (checkbox.checked) {
+          selectedColors.push(checkbox.value);
+        }
+      });
+
+      colorsInput.value = selectedColors.join(', ');
+    }
+
+    function updateButtonState() {
+      if (productHasOnlyDefaultVariant) {
+        return;
+      }
+
+      updateCleanSizeButtonsRealValues();
+      updateSizesByAudience();
+
+      var matchedVariant = findMatchedVariant();
+      var previewVariant = findPreviewVariant();
+
+      if (matchedVariant) {
+        updateDisplayedPrice(matchedVariant);
+      } else if (previewVariant) {
+        updateDisplayedPrice(previewVariant);
+      }
+
+      if (!allOptionsSelected()) {
+        if (variantInput) {
+          variantInput.value = '';
+        }
+
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'בחר אפשרויות';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('ready');
+          requiredMessage.classList.remove('error');
+          requiredMessage.textContent = 'יש לבחור למי הבוקס מיועד ומידה לפני הוספה לעגלה. אפשר לבחור סוג שרוול לפני המידה.';
+        }
+
+        return;
+      }
+
+      if (!matchedVariant) {
+        if (variantInput) {
+          variantInput.value = '';
+        }
+
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'השילוב שבחרת לא זמין';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('ready');
+          requiredMessage.classList.add('error');
+          requiredMessage.textContent = 'השילוב שבחרת לא זמין. נסה לבחור אפשרות אחרת.';
+        }
+
+        return;
+      }
+
+      if (variantInput) {
+        variantInput.value = matchedVariant.id;
+      }
+
+      updateDisplayedPrice(matchedVariant);
+
+      if (matchedVariant.available) {
+        if (addButton) {
+          addButton.disabled = false;
+          addButton.textContent = 'הוסף לעגלה';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('error');
+          requiredMessage.classList.add('ready');
+          requiredMessage.textContent = 'מעולה, אפשר להוסיף לעגלה.';
+        }
+      } else {
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'אזל מהמלאי';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('ready');
+          requiredMessage.classList.add('error');
+          requiredMessage.textContent = 'האפשרות שבחרת אזלה מהמלאי.';
+        }
+      }
+    }
+
+    section.querySelectorAll('.bmp-clean-size-btn').forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (button.classList.contains('hidden-by-audience')) {
+          return;
+        }
+
+        section.querySelectorAll('.bmp-clean-size-btn').forEach(function (btn) {
+          btn.classList.remove('active');
+        });
+
+        selectedCleanSize = button.getAttribute('data-clean-size') || '';
+        button.classList.add('active');
+
+        updateCleanSizeButtonsRealValues();
+        updateButtonState();
+      });
+    });
+
+    section.querySelectorAll('.bmp-sleeve-display-btn').forEach(function (button) {
+      button.addEventListener('click', function () {
+        section.querySelectorAll('.bmp-sleeve-display-btn').forEach(function (btn) {
+          btn.classList.remove('active');
+        });
+
+        selectedCleanSleeve = button.getAttribute('data-clean-sleeve') || 'שרוול קצר';
+        button.classList.add('active');
+
+        updateCleanSizeButtonsRealValues();
+        updateButtonState();
+      });
+    });
+
+    section.querySelectorAll('.bmp-option-btn:not(.bmp-clean-size-btn):not(.bmp-sleeve-display-btn):not(.bmp-hidden-size-option)').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var position = button.getAttribute('data-option-position');
+
+        if (!position) {
+          return;
+        }
+
+        var groupButtons = section.querySelectorAll('.bmp-option-btn[data-option-position="' + position + '"]:not(.bmp-hidden-size-option):not(.bmp-clean-size-btn)');
+
+        groupButtons.forEach(function (btn) {
+          btn.classList.remove('active');
+        });
+
+        button.classList.add('active');
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('error');
+        }
+
+        updateButtonState();
+      });
+    });
+
+    colorChecks.forEach(function (checkbox) {
+      checkbox.addEventListener('change', updateColorsInput);
+    });
+
+    if (productForm) {
+      productForm.addEventListener('submit', function (event) {
+        updateColorsInput();
+        updateButtonState();
+
+        if (!productHasOnlyDefaultVariant && !allOptionsSelected()) {
+          event.preventDefault();
+
+          if (requiredMessage) {
+            requiredMessage.classList.add('error');
+            requiredMessage.textContent = 'לפני הוספה לעגלה חובה לבחור למי הבוקס מיועד, מידה, סוג שרוול ופאץ׳ / ללא פאץ׳.';
+            requiredMessage.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
+
+          return false;
+        }
+
+        if (!productHasOnlyDefaultVariant && (!variantInput || variantInput.value === '')) {
+          event.preventDefault();
+
+          if (requiredMessage) {
+            requiredMessage.classList.add('error');
+            requiredMessage.textContent = 'השילוב שבחרת לא זמין. בחר אפשרויות אחרות.';
+            requiredMessage.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
+
+          return false;
+        }
+      });
+    }
+
+    section.querySelectorAll('.bmp-thumb img').forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        if (mainImage) {
+          mainImage.src = thumb.getAttribute('data-large');
+        }
+      });
+    });
+
+    section.querySelectorAll('[data-modal]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var type = button.getAttribute('data-modal');
+
+        if (type === 'kids') {
+          document.getElementById('BmpKidsModal').classList.add('open');
+        }
+
+        if (type === 'adult') {
+          document.getElementById('BmpAdultModal').classList.add('open');
+        }
+      });
+    });
+
+    section.querySelectorAll('.bmp-modal-close').forEach(function (button) {
+      button.addEventListener('click', function () {
+        button.closest('.bmp-modal').classList.remove('open');
+      });
+    });
+
+    section.querySelectorAll('.bmp-modal').forEach(function (modal) {
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+          modal.classList.remove('open');
+        }
+      });
+    });
+
+    prepareCleanSizeGroupAsRealOption();
+    updateCleanSizeButtonsRealValues();
+    setDefaultNoPatch();
+    updateSizesByAudience();
+    updateButtonState();
+    updateColorsInput();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Mystery product",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Mystery product"
+    }
+  ]
+}
+{% endschema %}

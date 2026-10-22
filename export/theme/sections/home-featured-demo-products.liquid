@@ -1,0 +1,327 @@
+{% if section.settings.season_banner != blank %}
+  {% assign season_link = section.settings.season_banner_link | default: '/collections/all' %}
+  <a href="{{ season_link }}" class="ballers-season-hero">
+    {{ section.settings.season_banner | image_url: width: 2000 | image_tag: loading: 'eager', alt: section.settings.season_banner_alt, widths: '800, 1200, 1600, 2000', sizes: '100vw' }}
+  </a>
+  <style>
+    .ballers-main-header {
+      background-image: linear-gradient(180deg, #071d46 0%, #0b3a88 100%) !important;
+    }
+
+    .ballers-season-hero {
+      display: block;
+      width: 100%;
+      line-height: 0;
+      background: #0b2a55;
+    }
+
+    .ballers-season-hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1376 / 768;
+      object-fit: cover;
+    }
+
+    .ballers-season-hero:focus-visible {
+      outline: 3px solid #ffffff;
+      outline-offset: -6px;
+    }
+  </style>
+{% endif %}
+
+<section class="ballers-products-strip" dir="rtl" lang="he">
+
+  <div class="ballers-container">
+
+    <div class="ballers-title-row">
+      <span></span>
+      <h2>הנמכרים ביותר</h2>
+      <span></span>
+    </div>
+
+    {% assign home_collection = collections['retro'] %}
+    {% if home_collection == blank or home_collection.products_count == 0 %}
+      {% assign home_collection = collections['רטרו'] %}
+    {% endif %}
+    {% if home_collection == blank or home_collection.products_count == 0 %}
+      {% assign home_collection = collections.all %}
+    {% endif %}
+
+    {% assign season_collection = collections['עונת-25-26'] %}
+    {% if season_collection == blank %}
+      {% assign season_collection = collections['25-26'] %}
+    {% endif %}
+    {% if season_collection == blank %}
+      {% assign season_collection = collections['season-25-26'] %}
+    {% endif %}
+
+    {% assign product_1 = all_products['ריאל-מדריד-חוץ-2016-2017'] %}
+    {% assign product_2 = all_products['ברזיל-מודניאל-2002'] %}
+    {% assign product_3 = all_products['מנצסטר-יונייטד-2007-2008'] %}
+    {% assign product_4 = all_products['מנצסטר-יונייטד-בית-2007-2008'] %}
+    {% assign product_5 = all_products['ברזיל-מונדיאל-2010'] %}
+
+    {% assign product_6 = all_products['brtzlvnh-spyyshl'] %}
+    {% assign product_6_manual_title = 'ברצלונה ספיישל' %}
+    {% assign product_6_manual_url = '/products/brtzlvnh-spyyshl' %}
+
+    {% assign product_7_manual_title = 'ליברפול בית 2025/2026' %}
+    {% assign product_7_manual_url = '/products/ליברפול-בית-2025-2026' %}
+
+    {% assign product_7 = all_products['ליברפול-בית-2025-2026'] %}
+    {% if product_7 == blank %}
+      {% assign product_7 = all_products['ליברפול-2025-2026'] %}
+    {% endif %}
+    {% if product_7 == blank %}
+      {% assign product_7 = all_products['ליברפול-בית-25-26'] %}
+    {% endif %}
+    {% if product_7 == blank %}
+      {% assign product_7 = all_products['ליברפול-25-26'] %}
+    {% endif %}
+    {% if product_7 == blank %}
+      {% assign product_7 = all_products['liverpool-home-2025-2026'] %}
+    {% endif %}
+    {% if product_7 == blank %}
+      {% assign product_7 = all_products['liverpool-2025-2026'] %}
+    {% endif %}
+    {% if product_7 == blank %}
+      {% assign product_7 = all_products['liverpool-home-25-26'] %}
+    {% endif %}
+    {% if product_7 == blank %}
+      {% assign product_7 = all_products['liverpool-25-26'] %}
+    {% endif %}
+
+    {% if home_collection != blank and home_collection.products.size > 0 %}
+      {% for product in home_collection.products %}
+
+        {% if product_1 == blank %}
+          {% if product.title contains 'ריאל מדריד חוץ 2016/2017' %}
+            {% assign product_1 = product %}
+          {% endif %}
+        {% endif %}
+
+        {% if product_2 == blank %}
+          {% if product.title contains 'ברזיל מודניאל 2002' or product.title contains 'ברזיל מונדיאל 2002' %}
+            {% assign product_2 = product %}
+          {% endif %}
+        {% endif %}
+
+        {% if product_3 == blank %}
+          {% if product.title contains 'מנצ׳סטר יונייטד 2007/2008' or product.title contains 'מנצסטר יונייטד 2007/2008' %}
+            {% unless product.title contains 'בית' %}
+              {% assign product_3 = product %}
+            {% endunless %}
+          {% endif %}
+        {% endif %}
+
+        {% if product_4 == blank %}
+          {% if product.title contains 'מנצ׳סטר יונייטד בית 2007/2008' or product.title contains 'מנצסטר יונייטד בית 2007/2008' %}
+            {% assign product_4 = product %}
+          {% endif %}
+        {% endif %}
+
+        {% if product_5 == blank %}
+          {% if product.title contains 'ברזיל מונדיאל 2010' %}
+            {% assign product_5 = product %}
+          {% endif %}
+        {% endif %}
+
+      {% endfor %}
+    {% endif %}
+
+    {% if season_collection != blank and season_collection.products.size > 0 %}
+      {% for product in season_collection.products %}
+        {% assign product_title_down = product.title | downcase %}
+        {% if product_7 == blank %}
+          {% if product.title contains 'ליברפול בית 2025/2026' or product.title contains 'ליברפול בית 2025-2026' or product.title contains 'ליברפול 2025/2026' or product.title contains 'ליברפול 2025-2026' or product.title contains 'ליברפול בית 25/26' or product.title contains 'ליברפול 25/26' or product_title_down contains 'liverpool home 2025/2026' or product_title_down contains 'liverpool home 2025-2026' or product_title_down contains 'liverpool 2025/2026' or product_title_down contains 'liverpool 2025-2026' or product_title_down contains 'liverpool home 25/26' or product_title_down contains 'liverpool 25/26' %}
+            {% assign product_7 = product %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if product_7 == blank %}
+      {% for product in collections.all.products limit: 250 %}
+        {% assign product_title_down = product.title | downcase %}
+        {% if product.title contains 'ליברפול בית 2025/2026' or product.title contains 'ליברפול בית 2025-2026' or product.title contains 'ליברפול 2025/2026' or product.title contains 'ליברפול 2025-2026' or product.title contains 'ליברפול בית 25/26' or product.title contains 'ליברפול 25/26' or product_title_down contains 'liverpool home 2025/2026' or product_title_down contains 'liverpool home 2025-2026' or product_title_down contains 'liverpool 2025/2026' or product_title_down contains 'liverpool 2025-2026' or product_title_down contains 'liverpool home 25/26' or product_title_down contains 'liverpool 25/26' %}
+          {% assign product_7 = product %}
+          {% break %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    <div class="ballers-strip-wrap">
+
+      <button class="ballers-arrow ballers-arrow-right" type="button" aria-label="ימינה"><span aria-hidden="true">‹</span></button>
+
+      <div class="ballers-products-row" id="BallersProductsRow-{{ section.id }}">
+
+        {% render 'ballers-new-season-cards' %}
+
+        {% assign best_sellers = '1,2,3,4,5,6,7' | split: ',' %}
+
+        {% for n in best_sellers %}
+          {% case n %}
+            {% when '1' %}
+              {% assign bp = product_1 %}
+            {% when '2' %}
+              {% assign bp = product_2 %}
+            {% when '3' %}
+              {% assign bp = product_3 %}
+            {% when '4' %}
+              {% assign bp = product_4 %}
+            {% when '5' %}
+              {% assign bp = product_5 %}
+            {% when '6' %}
+              {% assign bp = product_6 %}
+            {% when '7' %}
+              {% assign bp = product_7 %}
+          {% endcase %}
+
+          {% if n == '6' and bp == blank %}
+            <article class="ballers-product-card">
+              <a href="{{ product_6_manual_url }}" class="ballers-image-box" tabindex="-1" aria-hidden="true">
+                <div class="ballers-image-placeholder">ברצלונה ספיישל</div>
+              </a>
+              <div class="ballers-card-info">
+                <h3><a href="{{ product_6_manual_url }}">{{ product_6_manual_title }}</a></h3>
+                <p>החל מ- 80.00 ₪</p>
+                <a href="{{ product_6_manual_url }}" class="ballers-buy-btn" aria-label="לצפייה במוצר: {{ product_6_manual_title }}">לצפייה במוצר</a>
+              </div>
+            </article>
+
+          {% elsif n == '7' and bp == blank %}
+            <article class="ballers-product-card">
+              <a href="{{ product_7_manual_url }}" class="ballers-image-box" tabindex="-1" aria-hidden="true">
+                <div class="ballers-image-placeholder">ליברפול בית 2025/2026</div>
+              </a>
+              <div class="ballers-card-info">
+                <h3><a href="{{ product_7_manual_url }}">{{ product_7_manual_title }}</a></h3>
+                <p>לצפייה במחיר</p>
+                <a href="{{ product_7_manual_url }}" class="ballers-buy-btn" aria-label="לצפייה במוצר: {{ product_7_manual_title }}">לצפייה במוצר</a>
+              </div>
+            </article>
+
+          {% elsif bp != blank %}
+            <article class="ballers-product-card">
+              <a href="{{ bp.url }}" class="ballers-image-box" tabindex="-1" aria-hidden="true">
+                {% if bp.featured_image %}
+                  <img src="{{ bp.featured_image | image_url: width: 800 }}" alt="" loading="lazy">
+                {% else %}
+                  <div class="ballers-image-placeholder">אין תמונה</div>
+                {% endif %}
+              </a>
+
+              <div class="ballers-card-info">
+                <h3><a href="{{ bp.url }}">{{ bp.title }}</a></h3>
+
+                <p>
+                  {% if bp.price_varies %}
+                    החל מ- {{ bp.price_min | money_without_currency }} ₪
+                  {% else %}
+                    {{ bp.price | money_without_currency }} ₪
+                  {% endif %}
+                </p>
+
+                <a href="{{ bp.url }}" class="ballers-buy-btn" aria-label="לצפייה במוצר: {{ bp.title | escape }}">לצפייה במוצר</a>
+              </div>
+            </article>
+          {% endif %}
+        {% endfor %}
+
+      </div>
+
+      <button class="ballers-arrow ballers-arrow-left" type="button" aria-label="שמאלה"><span aria-hidden="true">›</span></button>
+
+    </div>
+
+    {% render 'ballers-home-categories' %}
+
+    {% render 'ballers-home-faq', section_id: section.id %}
+
+  </div>
+</section>
+
+{% render 'ballers-home-css-products' %}
+{% render 'ballers-home-css-categories' %}
+{% render 'ballers-home-css-gallery' %}
+{% render 'ballers-home-css-responsive' %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var strip = document.querySelector('.ballers-products-strip');
+
+    if (!strip) {
+      return;
+    }
+
+    strip.querySelectorAll('.ballers-strip-wrap').forEach(function (wrap) {
+      var row = wrap.querySelector('.ballers-products-row');
+
+      if (!row) {
+        return;
+      }
+
+      var rightButton = wrap.querySelector('.ballers-arrow-right');
+      var leftButton = wrap.querySelector('.ballers-arrow-left');
+
+      function amount() {
+        var card = row.querySelector('.ballers-product-card');
+        return card ? card.offsetWidth + 20 : 260;
+      }
+
+      if (leftButton) {
+        leftButton.addEventListener('click', function () {
+          row.scrollBy({ left: -amount(), behavior: 'smooth' });
+        });
+      }
+
+      if (rightButton) {
+        rightButton.addEventListener('click', function () {
+          row.scrollBy({ left: amount(), behavior: 'smooth' });
+        });
+      }
+    });
+
+    var gallery = strip.querySelector('.ballers-customers-gallery');
+    var pauseButton = strip.querySelector('.bcg-pause');
+
+    if (gallery && pauseButton) {
+      pauseButton.addEventListener('click', function () {
+        var paused = gallery.classList.toggle('is-paused');
+        pauseButton.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        pauseButton.textContent = paused ? 'המשך גלילה' : 'השהיית הגלילה';
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Home products",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "season_banner",
+      "label": "באנר עונת 2026/2027 (מוצג מתחת לתפריט העליון)"
+    },
+    {
+      "type": "text",
+      "id": "season_banner_alt",
+      "label": "תיאור הבאנר לקוראי מסך",
+      "default": "עונת 2026/2027 יצאה לדרך, בואו להתחדש. שחקני כדורגל חוגגים באצטדיון."
+    },
+    {
+      "type": "url",
+      "id": "season_banner_link",
+      "label": "קישור הבאנר (ברירת מחדל: כל המוצרים)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home products"
+    }
+  ]
+}
+{% endschema %}

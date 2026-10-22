@@ -1,0 +1,264 @@
+<style>
+  .ballers-home-banners {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .ballers-home-banner-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-decoration: none !important;
+    color: #000 !important;
+  }
+
+  .ballers-season-card {
+    grid-column: 1 / -1;
+  }
+
+  .ballers-season-banner {
+    display: block;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #0b2a55;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ballers-season-banner img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1376 / 768;
+    object-fit: cover;
+  }
+
+  .ballers-season-card:hover .ballers-season-banner {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(0,0,0,0.2);
+  }
+
+  .ballers-home-banner {
+    position: relative;
+    width: 100%;
+    height: 255px;
+    overflow: hidden;
+    background: transparent !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
+  }
+
+  .ballers-home-banner-card:hover .ballers-home-banner {
+    transform: translateY(-5px) scale(1.01);
+    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.18));
+  }
+
+  .ballers-image-banner,
+  .ballers-image-banner:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .ballers-home-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    background: transparent !important;
+  }
+
+  .ballers-home-banner-title {
+    display: inline-block;
+    margin-top: 11px;
+    color: #000;
+    font-size: 21px;
+    font-weight: 900;
+    line-height: 1.1;
+    text-align: center;
+    letter-spacing: -0.2px;
+    padding-bottom: 2px;
+    transition: transform 0.25s ease;
+  }
+
+  .ballers-home-banner-title::after {
+    content: "";
+    display: block;
+    width: 30px;
+    height: 2px;
+    margin: 6px auto 0;
+    border-radius: 999px;
+    background: #000;
+    opacity: 0.22;
+    transition: width 0.25s ease, opacity 0.25s ease;
+  }
+
+  .ballers-home-banner-card:hover .ballers-home-banner-title {
+    transform: translateY(-2px);
+  }
+
+  .ballers-home-banner-card:hover .ballers-home-banner-title::after {
+    width: 48px;
+    opacity: 0.5;
+  }
+
+  .ballers-worldcup-title {
+    font-size: 24px !important;
+    font-weight: 1000 !important;
+    letter-spacing: -0.6px !important;
+    color: transparent !important;
+    background: linear-gradient(
+      90deg,
+      #009b4e 0%,
+      #009b4e 28%,
+      #e60023 38%,
+      #e60023 62%,
+      #0077ff 72%,
+      #0077ff 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    animation: none !important;
+    padding: 0 !important;
+  }
+
+  .ballers-worldcup-title::before {
+    display: none !important;
+  }
+
+  .ballers-worldcup-title::after {
+    content: "";
+    display: block;
+    width: 34px;
+    height: 2px;
+    margin: 6px auto 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #009b4e, #e60023, #0077ff);
+    opacity: 0.8;
+  }
+
+  .ballers-home-faq-contact {
+    width: 100%;
+    max-width: 1120px;
+    margin: 56px auto 0;
+    padding: 0 4px;
+  }
+
+  .ballers-faq-title {
+    text-align: center;
+    margin-bottom: 26px;
+  }
+
+  .ballers-faq-title h2 {
+    margin: 0 0 8px !important;
+    font-size: clamp(36px, 4.4vw, 64px) !important;
+    font-weight: 1000 !important;
+    line-height: 1 !important;
+    letter-spacing: -1.5px !important;
+  }
+
+  .faq-title-gradient {
+    color: transparent !important;
+    background: linear-gradient(
+      90deg,
+      #000000 0%,
+      #000000 20%,
+      #003b9f 40%,
+      #006dff 62%,
+      #00a2ff 82%,
+      #005eff 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-shadow: 0 12px 30px rgba(0,119,255,0.20);
+  }
+
+  .ballers-faq-title p {
+    margin: 0 !important;
+    color: rgba(0,0,0,0.70);
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ballers-faq-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .ballers-faq-item {
+    background: #ffffff;
+    border: 2px solid rgba(0,0,0,0.10);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.055);
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+  }
+
+  .ballers-faq-item:hover {
+    border-color: rgba(0,119,255,0.28);
+    box-shadow: 0 18px 38px rgba(0,0,0,0.09);
+    transform: translateY(-2px);
+  }
+
+  .ballers-faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    min-height: 76px;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    color: #000000;
+    font-size: clamp(20px, 2vw, 30px);
+    font-weight: 1000;
+    line-height: 1.2;
+  }
+
+  .ballers-faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-arrow {
+    flex: 0 0 auto;
+    color: #000000;
+    font-size: 28px;
+    font-weight: 1000;
+    transition: transform 0.22s ease, color 0.22s ease;
+  }
+
+  .ballers-faq-item[open] .faq-arrow {
+    transform: rotate(180deg);
+    color: #0057d9;
+  }
+
+  .ballers-faq-answer {
+    padding: 0 28px 24px;
+    color: rgba(0,0,0,0.78);
+    font-size: clamp(17px, 1.55vw, 23px);
+    font-weight: 700;
+    line-height: 1.65;
+  }
+
+  .ballers-faq-answer p {
+    margin: 0 0 12px !important;
+  }
+
+  .ballers-faq-answer p:last-child {
+    margin-bottom: 0 !important;
+  }
+</style>

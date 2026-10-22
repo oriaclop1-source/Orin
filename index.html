@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>primejersey.il</title>
+  <meta name="description" content="חולצות כדורגל, רטרו, נבחרות, חליפות אימון וחליפות ילדים. משלוח חינם לכל הארץ.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="assets/ballers.css">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <section class="ballers-header-wrapper" dir="rtl">
+    <div class="ballers-announcement-bar">
+      <div class="ballers-announcement-track" id="Announcements"></div>
+    </div>
+
+    <header class="ballers-main-header">
+      <div class="ballers-header-icons ballers-header-icons-left">
+        <button type="button" class="ballers-header-icon ballers-cart-icon" id="BallersOpenCartDrawer" aria-label="פתיחת עגלה">
+          <span class="ballers-cart-count" id="CartCount">0</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2ZM7.2 14.5h8.9c.8 0 1.5-.5 1.8-1.2L21 6H6.2L5.7 3.8C5.5 2.7 4.6 2 3.5 2H2v2h1.5c.2 0 .4.1.4.3l2.2 10.1c.2.9 1 1.6 2 1.6H19v-2H7.2Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <a href="#/" class="ballers-logo-link" aria-label="עמוד הבית">
+        <div class="ballers-logo-circle">
+          <img src="" data-theme-asset="logo.png" alt="primejersey.il" class="ballers-logo-img" loading="eager">
+        </div>
+      </a>
+
+      <div class="ballers-header-icons ballers-header-icons-right">
+        <button type="button" class="ballers-header-icon ballers-search-toggle" aria-label="חיפוש" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.8 3C6.1 3 3 6.1 3 9.8s3.1 6.8 6.8 6.8c1.5 0 2.9-.5 4-1.3l4.4 4.4 1.5-1.5-4.4-4.4c.8-1.1 1.3-2.5 1.3-4C16.6 6.1 13.5 3 9.8 3Zm0 2.1c2.6 0 4.7 2.1 4.7 4.7s-2.1 4.7-4.7 4.7-4.7-2.1-4.7-4.7 2.1-4.7 4.7-4.7Z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="ballers-search-panel" id="BallersSearchPanel">
+        <form role="search" class="ballers-search-form" id="SearchForm">
+          <input type="search" name="q" class="ballers-search-input" placeholder="חפש חולצה..." aria-label="חיפוש מוצרים" autocomplete="off">
+          <button type="submit" class="ballers-search-submit" aria-label="חיפוש">חפש</button>
+        </form>
+      </div>
+
+      <nav class="ballers-nav" aria-label="ניווט ראשי">
+        <div class="ballers-nav-scroll">
+          <a href="#/" class="ballers-nav-link" data-nav="home">עמוד הבית</a>
+          <a href="#/collections/season-26-27" class="ballers-nav-link" data-nav="season-26-27">עונת 26/27</a>
+          <a href="#/collections/עונת-25-26" class="ballers-nav-link" data-nav="עונת-25-26">עונת 25/26</a>
+          <a href="#/collections/חליפות-אימון" class="ballers-nav-link" data-nav="חליפות-אימון">חליפות אימון</a>
+          <a href="#/collections/מיסטרי-בוקס" class="ballers-nav-link" data-nav="מיסטרי-בוקס">מיסטרי בוקס</a>
+          <a href="#/collections/רטרו" class="ballers-nav-link" data-nav="רטרו">רטרו</a>
+          <a href="#/collections/חליפות-ילדים" class="ballers-nav-link" data-nav="חליפות-ילדים">חליפות ילדים</a>
+          <a href="#/collections/special" class="ballers-nav-link" data-nav="special">ספיישל</a>
+          <a href="#/collections/נבחרות" class="ballers-nav-link" data-nav="נבחרות">נבחרות</a>
+          <a href="#/collections/nba" class="ballers-nav-link" data-nav="nba">NBA</a>
+        </div>
+      </nav>
+
+      <nav class="ballers-nav ballers-nav-secondary" aria-label="ניווט מוצרים נוסף">
+        <div class="ballers-nav-scroll ballers-nav-scroll-secondary">
+          <a href="#/collections/מוצרים-נוספים" class="ballers-nav-link" data-nav="מוצרים-נוספים">מוצרים נוספים</a>
+          <a href="#/collections/nike-mind" class="ballers-nav-link" data-nav="nike-mind">NIKE MIND</a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="ballers-cart-drawer-overlay" id="BallersCartDrawerOverlay"></div>
+    <aside class="ballers-cart-drawer" id="BallersCartDrawer" aria-label="עגלה צדדית"></aside>
+  </section>
+
+  <main id="App" tabindex="-1"></main>
+
+  <footer class="site-footer" dir="rtl">
+    <p>© <span id="Year"></span> primejersey.il · משלוח חינם לכל הארץ</p>
+  </footer>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

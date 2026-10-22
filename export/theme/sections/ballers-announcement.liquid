@@ -1,0 +1,154 @@
+<div class="ban-wrap" dir="rtl" id="ban-wrap">
+  <div class="ban-inner">
+
+    <!-- running ticker -->
+    <div class="ban-runner" id="ban-runner">
+      <div class="ban-track">
+        <span class="ban-item">⚡ משלוח מהיר לכל הארץ</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🔒 תשלום מאובטח 100%</span><span class="ban-sep">✦</span>
+        <span class="ban-item">✂️ פאצ׳ים על כל חולצה</span><span class="ban-sep">✦</span>
+        <span class="ban-item">👕 מידות לילדים ומבוגרים</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🏆 חנות הכדורגל מספר 1</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🎁 מיסטרי בוקס — הפתעה מובטחת</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🌍 חולצות מכל הליגות המובילות</span><span class="ban-sep">✦</span>
+        <!-- duplicate for seamless loop -->
+        <span class="ban-item">⚡ משלוח מהיר לכל הארץ</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🔒 תשלום מאובטח 100%</span><span class="ban-sep">✦</span>
+        <span class="ban-item">✂️ פאצ׳ים על כל חולצה</span><span class="ban-sep">✦</span>
+        <span class="ban-item">👕 מידות לילדים ומבוגרים</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🏆 חנות הכדורגל מספר 1</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🎁 מיסטרי בוקס — הפתעה מובטחת</span><span class="ban-sep">✦</span>
+        <span class="ban-item">🌍 חולצות מכל הליגות המובילות</span><span class="ban-sep">✦</span>
+      </div>
+    </div>
+
+    <!-- close button -->
+    <button class="ban-close" id="ban-close" aria-label="סגור הודעה">✕</button>
+  </div>
+
+  <!-- bottom accent line (animated gradient) -->
+  <div class="ban-line" aria-hidden="true"></div>
+</div>
+
+<style>
+/* ══════════════════════════════════════
+   BALLERS ANNOUNCEMENT BAR
+══════════════════════════════════════ */
+.ban-wrap{
+  position:relative;
+  width:100%;
+  background:linear-gradient(90deg,#020810 0%,#050e20 40%,#020810 100%);
+  overflow:hidden;
+  direction:rtl;
+  z-index:200;
+  transition:height .4s cubic-bezier(.22,1,.36,1),opacity .4s;
+}
+.ban-wrap.closed{
+  height:0!important;opacity:0;pointer-events:none;
+}
+
+.ban-inner{
+  display:flex;align-items:center;
+  height:36px;
+  position:relative;
+}
+
+/* ── RUNNER ── */
+.ban-runner{
+  flex:1;min-width:0;
+  overflow:hidden;
+  mask-image:linear-gradient(90deg,transparent 0%,#000 5%,#000 95%,transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 5%,#000 95%,transparent 100%);
+}
+
+.ban-track{
+  display:inline-flex;
+  align-items:center;
+  white-space:nowrap;
+  animation:ban-scroll 28s linear infinite;
+  gap:0;
+}
+.ban-runner:hover .ban-track{animation-play-state:paused;}
+
+.ban-item{
+  display:inline-block;
+  color:rgba(200,228,255,.72);
+  font-family:"Barlow Condensed","Rubik","Heebo",Arial,sans-serif;
+  font-size:13px;font-weight:400;font-style:normal;
+  text-transform:uppercase;letter-spacing:1.2px;
+  padding:0 24px;
+  white-space:nowrap;
+}
+.ban-sep{
+  color:#38b6ff;
+  font-size:10px;
+  flex-shrink:0;
+  opacity:.65;
+}
+
+@keyframes ban-scroll{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
+}
+
+/* ── CLOSE BUTTON ── */
+.ban-close{
+  flex-shrink:0;
+  width:36px;height:36px;
+  background:none;border:none;
+  color:rgba(255,255,255,.35);
+  font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:color .2s,background .2s;
+  border-left:1px solid rgba(255,255,255,.06);
+  padding:0;
+}
+.ban-close:hover{color:#fff;background:rgba(255,255,255,.05);}
+
+/* ── BOTTOM ACCENT LINE ── */
+.ban-line{
+  position:absolute;bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    #1a6fff 15%,
+    #38b6ff 35%,
+    #ffffff44 50%,
+    #38b6ff 65%,
+    #1a6fff 85%,
+    transparent 100%
+  );
+  background-size:200% 100%;
+  animation:ban-line-move 4s linear infinite;
+}
+@keyframes ban-line-move{
+  from{background-position:100% 0;}
+  to{background-position:-100% 0;}
+}
+</style>
+
+<script>
+(function(){
+  var wrap  = document.getElementById('ban-wrap');
+  var close = document.getElementById('ban-close');
+  if(!close||!wrap) return;
+
+  /* remember preference */
+  var stored = sessionStorage.getItem('ballers-ban-closed');
+  if(stored === '1'){ wrap.style.display='none'; return; }
+
+  close.addEventListener('click',function(){
+    wrap.classList.add('closed');
+    setTimeout(function(){ wrap.style.display='none'; },420);
+    sessionStorage.setItem('ballers-ban-closed','1');
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Ballers Announcement",
+  "settings": [],
+  "presets": [{ "name": "Ballers Announcement" }]
+}
+{% endschema %}

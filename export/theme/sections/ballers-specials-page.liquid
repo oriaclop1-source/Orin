@@ -1,0 +1,637 @@
+<section class="ballers-specials-page" dir="rtl">
+
+  {% assign specials_collection = collections['ספיישל'] %}
+
+  <div class="ballers-specials-container">
+
+    <header class="ballers-specials-hero">
+      <div class="ballers-specials-eyebrow">SPECIAL COLLECTION</div>
+
+      <h1>
+        קולקציית ספיישלים
+      </h1>
+
+      <p>
+        חולצות מיוחדות, עיצובים נדירים ודגמים שלא רואים בכל מקום.
+      </p>
+    </header>
+
+    {% if specials_collection != blank and specials_collection.products_count > 0 %}
+
+      <div class="ballers-specials-topbar">
+        <div class="ballers-specials-count">
+          {{ specials_collection.products_count }} מוצרים בקולקציה
+        </div>
+
+        <a href="/collections/all" class="ballers-specials-all-link">
+          לכל המוצרים
+        </a>
+      </div>
+
+      {% paginate specials_collection.products by 48 %}
+
+        <div class="ballers-specials-grid" id="BallersSpecialsGrid-{{ section.id }}">
+
+          {% for product in specials_collection.products %}
+
+            <article class="ballers-special-card{% if product.images[1] != blank %} has-hover-image{% endif %}">
+
+              <a href="{{ product.url }}" class="ballers-special-image-wrap" aria-label="{{ product.title | escape }}">
+
+                {% if product.featured_image %}
+
+                  {% assign second_image = product.images[1] %}
+
+                  <img
+                    src="{{ product.featured_image | image_url: width: 900 }}"
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    class="ballers-special-img-main"
+                  >
+
+                  {% if second_image != blank %}
+                    <img
+                      src="{{ second_image | image_url: width: 900 }}"
+                      alt="{{ product.title | escape }}"
+                      loading="lazy"
+                      class="ballers-special-img-hover"
+                    >
+                  {% endif %}
+
+                {% else %}
+                  <div class="ballers-special-no-image">
+                    אין תמונה
+                  </div>
+                {% endif %}
+
+              </a>
+
+              <div class="ballers-special-info">
+
+                <h2>
+                  <a href="{{ product.url }}">
+                    {{ product.title }}
+                  </a>
+                </h2>
+
+                <div class="ballers-special-price">
+                  {% if product.price_varies %}
+                    החל מ־{{ product.price_min | money_without_currency }} ₪
+                  {% else %}
+                    {{ product.price | money_without_currency }} ₪
+                  {% endif %}
+                </div>
+
+                <a href="{{ product.url }}" class="ballers-special-button">
+                  לצפייה במוצר
+                </a>
+
+              </div>
+
+            </article>
+
+          {% endfor %}
+
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="ballers-pagination" role="navigation" aria-label="עמודים">
+
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="ballers-page-link">
+                הקודם
+              </a>
+            {% endif %}
+
+            <span class="ballers-page-current">
+              עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}
+            </span>
+
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="ballers-page-link">
+                הבא
+              </a>
+            {% endif %}
+
+          </nav>
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <div class="ballers-specials-empty">
+        <h2>עדיין אין מוצרים בקולקציית הספיישלים</h2>
+        <p>בדוק שה־handle של הקולקציה הוא בדיוק: ספיישל</p>
+
+        <a href="/collections/all">
+          חזרה לכל המוצרים
+        </a>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .ballers-specials-page,
+  .ballers-specials-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-specials-page {
+    width: 100%;
+    direction: rtl;
+    background:
+      radial-gradient(circle at top right, rgba(47,127,111,0.10), transparent 32%),
+      linear-gradient(180deg, #f5f6f7 0%, #ffffff 100%);
+    padding: 42px 18px 70px;
+  }
+
+  .ballers-specials-container {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+  }
+
+  .ballers-specials-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 245px;
+    background: #101112;
+    border-radius: 22px;
+    padding: 42px 24px;
+    text-align: center;
+    color: #ffffff;
+    box-shadow: 0 18px 42px rgba(0,0,0,0.14);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .ballers-specials-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px;
+    left: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ballers-specials-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+  }
+
+  .ballers-specials-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.3px;
+  }
+
+  .ballers-specials-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 12px !important;
+    color: #ffffff !important;
+    font-size: clamp(36px, 5vw, 68px) !important;
+    font-weight: 900 !important;
+    line-height: 1.03 !important;
+    letter-spacing: -1.4px !important;
+  }
+
+  .ballers-specials-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(16px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-specials-topbar {
+    margin: 26px 0 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-specials-count {
+    color: #111111;
+    font-size: 16px;
+    font-weight: 900;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 999px;
+    padding: 10px 16px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+  }
+
+  .ballers-specials-all-link {
+    color: #111111 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 999px;
+    padding: 10px 18px;
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      color 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .ballers-specials-all-link:hover {
+    transform: translateY(-2px);
+    background: #111111;
+    color: #ffffff !important;
+    border-color: #111111;
+  }
+
+  .ballers-specials-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .ballers-special-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    transition:
+      transform 0.26s ease,
+      box-shadow 0.26s ease,
+      border-color 0.26s ease;
+  }
+
+  .ballers-special-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 22px 48px rgba(0,0,0,0.15);
+    border-color: rgba(0,0,0,0.18);
+  }
+
+  .ballers-special-image-wrap {
+    position: relative;
+    height: 315px;
+    background: #f2f4f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    overflow: hidden;
+    text-decoration: none !important;
+  }
+
+  .ballers-special-img-main,
+  .ballers-special-img-hover {
+    position: absolute;
+    inset: 18px;
+    width: calc(100% - 36px);
+    height: calc(100% - 36px);
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.32s ease;
+  }
+
+  .ballers-special-img-main { opacity: 1; }
+  .ballers-special-img-hover { opacity: 0; pointer-events: none; }
+
+  @media screen and (max-width: 768px) {
+    .ballers-special-img-hover { display: none; }
+  }
+
+  .ballers-special-no-image {
+    color: rgba(0,0,0,0.45);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-special-info {
+    padding: 17px 15px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .ballers-special-info h2 {
+    margin: 0 0 11px !important;
+    min-height: 48px;
+    color: #111111 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ballers-special-info h2 a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .ballers-special-price {
+    color: #111111;
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 15px;
+  }
+
+  .ballers-special-button {
+    margin-top: auto;
+    width: 100%;
+    min-height: 44px;
+    border-radius: 13px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-special-button:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 22px rgba(0,0,0,0.18);
+  }
+
+  .ballers-pagination {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-page-link,
+  .ballers-page-current {
+    min-height: 42px;
+    border-radius: 999px;
+    padding: 0 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .ballers-page-link {
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+  }
+
+  .ballers-page-current {
+    background: #ffffff;
+    color: #111111;
+    border: 1px solid rgba(0,0,0,0.10);
+  }
+
+  .ballers-specials-empty {
+    margin-top: 28px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    padding: 44px 22px;
+    text-align: center;
+  }
+
+  .ballers-specials-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 30px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-specials-empty p {
+    margin: 0 0 20px !important;
+    color: rgba(0,0,0,0.62);
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  .ballers-specials-empty a {
+    min-height: 44px;
+    border-radius: 999px;
+    background: #111111;
+    color: #ffffff !important;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  body.ballers-site-dark .ballers-specials-page {
+    background: #070707 !important;
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-special-card,
+  body.ballers-site-dark .ballers-specials-count,
+  body.ballers-site-dark .ballers-specials-all-link,
+  body.ballers-site-dark .ballers-specials-empty {
+    background: #151515 !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+
+  body.ballers-site-dark .ballers-special-image-wrap {
+    background: #1f1f1f !important;
+  }
+
+  body.ballers-site-dark .ballers-special-info h2,
+  body.ballers-site-dark .ballers-special-info h2 a,
+  body.ballers-site-dark .ballers-special-price,
+  body.ballers-site-dark .ballers-specials-count,
+  body.ballers-site-dark .ballers-specials-empty h2,
+  body.ballers-site-dark .ballers-specials-empty p {
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-special-button,
+  body.ballers-site-dark .ballers-specials-empty a {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  body.ballers-site-dark .ballers-specials-all-link:hover {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  @media screen and (max-width: 1180px) {
+    .ballers-specials-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ballers-special-image-wrap {
+      height: 290px;
+    }
+  }
+
+  @media screen and (max-width: 820px) {
+    .ballers-specials-page {
+      padding: 26px 12px 56px;
+    }
+
+    .ballers-specials-hero {
+      border-radius: 18px;
+      padding: 34px 16px;
+      min-height: 220px;
+    }
+
+    .ballers-specials-hero h1 {
+      font-size: 38px !important;
+    }
+
+    .ballers-specials-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .ballers-special-image-wrap {
+      height: 245px;
+      padding: 13px;
+    }
+
+    .ballers-special-info {
+      padding: 14px 11px 13px;
+    }
+
+    .ballers-special-info h2 {
+      font-size: 15px !important;
+      min-height: 44px;
+    }
+
+    .ballers-special-price {
+      font-size: 16px;
+    }
+
+    .ballers-special-button {
+      min-height: 41px;
+      font-size: 14px;
+    }
+  }
+
+  @media screen and (max-width: 460px) {
+    .ballers-specials-page {
+      padding-left: 9px;
+      padding-right: 9px;
+    }
+
+    .ballers-specials-hero h1 {
+      font-size: 34px !important;
+    }
+
+    .ballers-specials-hero p {
+      font-size: 15px;
+    }
+
+    .ballers-specials-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .ballers-special-card {
+      border-radius: 15px;
+    }
+
+    .ballers-special-image-wrap {
+      height: 275px;
+      padding: 12px;
+    }
+
+    .ballers-special-info h2 {
+      font-size: 17px !important;
+      min-height: auto;
+    }
+
+    .ballers-special-price {
+      font-size: 18px;
+    }
+
+    .ballers-specials-topbar {
+      justify-content: center;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var grid = document.getElementById('BallersSpecialsGrid-{{ section.id }}');
+    if (!grid) return;
+
+    var multiCards = Array.from(grid.querySelectorAll('.ballers-special-card.has-hover-image'));
+    if (multiCards.length === 0) return;
+
+    var showingHover = multiCards.map(function () { return false; });
+
+    setInterval(function () {
+      multiCards.forEach(function (card, i) {
+        var main  = card.querySelector('.ballers-special-img-main');
+        var hover = card.querySelector('.ballers-special-img-hover');
+        if (!main || !hover) return;
+
+        showingHover[i] = !showingHover[i];
+        main.style.opacity  = showingHover[i] ? '0' : '1';
+        hover.style.opacity = showingHover[i] ? '1' : '0';
+      });
+    }, 2500);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Ballers specials page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers specials page"
+    }
+  ]
+}
+{% endschema %}

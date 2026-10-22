@@ -1,0 +1,381 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@700;800;900&family=Rubik:wght@700;800;900&display=swap');
+
+  .ballers-header-wrapper,
+  .ballers-header-wrapper * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-header-wrapper {
+    width: 100%;
+    direction: rtl;
+    position: relative;
+    z-index: 1000;
+  }
+
+  .ballers-announcement-bar {
+    width: 100%;
+    min-height: 50px;
+    background:
+      linear-gradient(90deg, #071d46 0%, #0b3a88 35%, #0969d8 50%, #0b3a88 65%, #071d46 100%);
+    color: #ffffff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid rgba(255,255,255,0.10);
+    box-shadow: inset 0 -10px 22px rgba(0,0,0,0.18);
+  }
+
+  .ballers-announcement-track {
+    position: relative;
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ballers-announcement-track::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.045) 0px,
+        rgba(255,255,255,0.045) 8px,
+        transparent 8px,
+        transparent 16px
+      );
+    pointer-events: none;
+  }
+
+  .ballers-announcement-track span {
+    position: absolute;
+    opacity: 0;
+    transform: translateY(14px);
+    color: #ffffff;
+    font-size: clamp(20px, 2.5vw, 34px);
+    font-weight: 900;
+    white-space: nowrap;
+    letter-spacing: -0.4px;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.35);
+    animation: ballersAnnouncement 12s infinite;
+  }
+
+  .ballers-announcement-track span:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .ballers-announcement-track span:nth-child(2) {
+    animation-delay: 3s;
+  }
+
+  .ballers-announcement-track span:nth-child(3) {
+    animation-delay: 6s;
+  }
+
+  .ballers-announcement-track span:nth-child(4) {
+    animation-delay: 9s;
+  }
+
+  @keyframes ballersAnnouncement {
+    0% { opacity: 0; transform: translateY(14px); }
+    8% { opacity: 1; transform: translateY(0); }
+    25% { opacity: 1; transform: translateY(0); }
+    33% { opacity: 0; transform: translateY(-14px); }
+    100% { opacity: 0; transform: translateY(-14px); }
+  }
+
+  .ballers-main-header {
+    width: 100%;
+    color: #ffffff;
+    padding: 28px 28px 22px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "cart logo search"
+      "searchPanel searchPanel searchPanel"
+      "nav nav nav"
+      "secondaryNav secondaryNav secondaryNav";
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    background-image:
+      linear-gradient(rgba(3, 8, 18, 0.34), rgba(3, 8, 18, 0.38)),
+      url('{{ "world.png" | asset_url }}');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+
+  .ballers-main-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(7,29,70,0.22), rgba(7,29,70,0.04), rgba(7,29,70,0.22));
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .ballers-main-header > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ballers-logo-link {
+    grid-area: logo;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    justify-self: center;
+  }
+
+  .ballers-logo-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at center, #ffffff 0%, #ffffff 64%, #071d46 65%, #071d46 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px;
+    overflow: hidden;
+    box-shadow:
+      0 14px 34px rgba(0,0,0,0.42),
+      0 0 0 4px rgba(9,105,216,0.22);
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .ballers-logo-circle:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow:
+      0 20px 44px rgba(0,0,0,0.50),
+      0 0 0 4px rgba(9,105,216,0.34);
+  }
+
+  .ballers-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 5px;
+  }
+
+  .ballers-header-icons {
+    display: flex;
+    align-items: center;
+  }
+
+  .ballers-header-icons-left {
+    grid-area: cart;
+    justify-self: start;
+  }
+
+  .ballers-header-icons-right {
+    grid-area: search;
+    justify-self: end;
+  }
+
+  .ballers-header-icon {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      transform 0.22s ease,
+      color 0.22s ease;
+  }
+
+  .ballers-header-icon:hover {
+    transform: translateY(-3px);
+    color: #4aa3ff !important;
+  }
+
+  .ballers-header-icon svg {
+    width: 44px;
+    height: 44px;
+    fill: currentColor;
+    display: block;
+  }
+
+  .ballers-search-toggle,
+  .ballers-cart-icon {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .ballers-cart-count {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    min-width: 23px;
+    height: 23px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #0969d8;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 2;
+  }
+
+  .ballers-search-panel {
+    grid-area: searchPanel;
+    width: 100%;
+    max-width: 620px;
+    justify-self: center;
+    display: none;
+    animation: ballersSearchOpen 0.22s ease both;
+  }
+
+  .ballers-search-panel.open {
+    display: block;
+  }
+
+  .ballers-search-form {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+    border: 2px solid rgba(74,163,255,0.52);
+  }
+
+  .ballers-search-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #111111;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 0 18px;
+    direction: rtl;
+  }
+
+  .ballers-search-input::placeholder {
+    color: rgba(0,0,0,0.48);
+  }
+
+  .ballers-search-submit {
+    width: 78px;
+    height: 48px;
+    border: none;
+    background: #071d46;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.22s ease;
+  }
+
+  .ballers-search-submit:hover {
+    background: #0969d8;
+  }
+
+  @keyframes ballersSearchOpen {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ballers-nav {
+    grid-area: nav;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ballers-nav-secondary {
+    grid-area: secondaryNav;
+    margin-top: -10px;
+  }
+
+  .ballers-nav-scroll {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(22px, 3.3vw, 54px);
+    width: 100%;
+    max-width: 1400px;
+  }
+
+  .ballers-nav-scroll-secondary {
+    justify-content: center;
+    gap: clamp(34px, 5vw, 74px);
+    max-width: 500px;
+  }
+
+  .ballers-nav-link {
+    position: relative;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-size: clamp(17px, 1.55vw, 25px);
+    font-weight: 900;
+    white-space: nowrap;
+    padding: 10px 0 13px;
+    text-shadow:
+      0 2px 5px rgba(0,0,0,0.85),
+      0 0 12px rgba(0,0,0,0.65);
+    transition:
+      color 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-nav-link::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    height: 5px;
+    border-radius: 999px;
+    background: #4aa3ff;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.22s ease;
+    box-shadow: 0 0 14px rgba(74,163,255,0.58);
+  }
+
+  .ballers-nav-link:hover {
+    color: #4aa3ff !important;
+    transform: translateY(-2px);
+  }
+
+  .ballers-nav-link:hover::after,
+  .ballers-nav-link.active::after {
+    transform: scaleX(1);
+  }
+
+  .ballers-nav-link.active {
+    color: #ffffff !important;
+  }
+</style>

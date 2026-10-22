@@ -1,0 +1,129 @@
+<div class="ballers-cart-drawer-overlay" id="BallersCartDrawerOverlay"></div>
+
+<aside class="ballers-cart-drawer" id="BallersCartDrawer" aria-label="עגלה צדדית">
+
+  <div class="ballers-cart-drawer-header">
+    <div>
+      <h2>העגלה שלך</h2>
+      <p>
+        {% if cart.item_count > 0 %}
+          {{ cart.item_count }} פריטים בעגלה
+        {% else %}
+          העגלה ריקה
+        {% endif %}
+      </p>
+    </div>
+
+    <button type="button" class="ballers-cart-drawer-close" id="BallersCloseCartDrawer" aria-label="סגירת עגלה">
+      ×
+    </button>
+  </div>
+
+  {% if cart.item_count > 0 %}
+
+    <div class="ballers-cart-drawer-items">
+
+      {% for item in cart.items %}
+        <article class="ballers-cart-drawer-item">
+
+          <a href="{{ item.url }}" class="ballers-cart-drawer-image">
+            {% if item.image %}
+              <img
+                src="{{ item.image | image_url: width: 260 }}"
+                alt="{{ item.product.title | escape }}"
+                loading="lazy"
+              >
+            {% else %}
+              <span>אין תמונה</span>
+            {% endif %}
+          </a>
+
+          <div class="ballers-cart-drawer-info">
+
+            <h3>
+              <a href="{{ item.url }}">
+                {{ item.product.title }}
+              </a>
+            </h3>
+
+            {% unless item.product.has_only_default_variant %}
+              <div class="ballers-cart-drawer-variant">
+                {{ item.variant.title }}
+              </div>
+            {% endunless %}
+
+            {% if item.properties.size > 0 %}
+              <div class="ballers-cart-drawer-properties">
+                {% for property in item.properties %}
+                  {% assign first_character = property.first | slice: 0 %}
+                  {% unless property.last == blank or first_character == '_' %}
+                    <div>
+                      <strong>{{ property.first }}:</strong>
+                      <span>{{ property.last }}</span>
+                    </div>
+                  {% endunless %}
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="ballers-cart-drawer-bottom">
+              <span>כמות: {{ item.quantity }}</span>
+              <strong>{{ item.final_line_price | money_without_currency }} ₪</strong>
+            </div>
+
+            <div class="ballers-cart-drawer-actions">
+              <a href="{{ item.url }}" class="ballers-cart-drawer-edit">
+                ערוך בחירה
+              </a>
+
+              <a href="{{ item.url_to_remove }}" class="ballers-cart-drawer-remove">
+                הסר מוצר
+              </a>
+            </div>
+
+          </div>
+
+        </article>
+      {% endfor %}
+
+    </div>
+
+    <div class="ballers-cart-drawer-footer">
+
+      <div class="ballers-cart-drawer-total">
+        <span>סכום ביניים</span>
+        <strong>{{ cart.total_price | money_without_currency }} ₪</strong>
+      </div>
+
+      <p class="ballers-cart-drawer-note">
+        משלוח חינם. התשלום המאובטח מתבצע בשלב הבא.
+      </p>
+
+      <a href="/checkout" class="ballers-cart-drawer-checkout">
+        מעבר לתשלום
+      </a>
+
+      <a href="/cart" class="ballers-cart-drawer-cart-page">
+        צפייה בעגלה
+      </a>
+
+      <button type="button" class="ballers-cart-drawer-continue" id="BallersContinueShopping">
+        המשך קנייה
+      </button>
+
+    </div>
+
+  {% else %}
+
+    <div class="ballers-cart-drawer-empty">
+      <h3>העגלה שלך ריקה</h3>
+      <p>אפשר להתחיל לבחור חולצות, חליפות ומוצרים מהחנות.</p>
+
+      <a href="/" class="ballers-cart-drawer-empty-btn">
+        חזרה לחנות
+      </a>
+    </div>
+
+  {% endif %}
+
+</aside>

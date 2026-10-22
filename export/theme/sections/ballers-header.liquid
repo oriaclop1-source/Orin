@@ -1,0 +1,1262 @@
+<section class="ballers-header-wrapper" dir="rtl">
+
+  {% assign kids_collection_url = '/collections/חליפות-ילדים' %}
+
+  {% if collections['חליפות-ילדים'] != blank %}
+    {% assign kids_collection_url = collections['חליפות-ילדים'].url %}
+  {% endif %}
+
+  {% assign training_collection_url = '/collections/training-suits' %}
+
+  <div class="ballers-announcement-bar">
+    <div class="ballers-announcement-track">
+      <span>משלוח חינם לכל הארץ</span>
+      <span>איכות מעולה</span>
+      <span>על כל האתר 3+1</span>
+      <span>שירות לקוחות זמין</span>
+    </div>
+  </div>
+
+  <header class="ballers-main-header">
+
+    <div class="ballers-header-icons ballers-header-icons-left">
+      <button type="button" class="ballers-header-icon ballers-cart-icon" id="BallersOpenCartDrawer" aria-label="פתיחת עגלה">
+        <span class="ballers-cart-count">{{ cart.item_count }}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2ZM7.2 14.5h8.9c.8 0 1.5-.5 1.8-1.2L21 6H6.2L5.7 3.8C5.5 2.7 4.6 2 3.5 2H2v2h1.5c.2 0 .4.1.4.3l2.2 10.1c.2.9 1 1.6 2 1.6H19v-2H7.2Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <a href="/" class="ballers-logo-link" aria-label="עמוד הבית">
+      <div class="ballers-logo-circle">
+        <img
+          src="{{ 'logo.png' | asset_url }}"
+          alt="{{ shop.name | escape }}"
+          class="ballers-logo-img"
+          loading="eager"
+        >
+      </div>
+    </a>
+
+    <div class="ballers-header-icons ballers-header-icons-right">
+      <button type="button" class="ballers-header-icon ballers-search-toggle" aria-label="חיפוש">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9.8 3C6.1 3 3 6.1 3 9.8s3.1 6.8 6.8 6.8c1.5 0 2.9-.5 4-1.3l4.4 4.4 1.5-1.5-4.4-4.4c.8-1.1 1.3-2.5 1.3-4C16.6 6.1 13.5 3 9.8 3Zm0 2.1c2.6 0 4.7 2.1 4.7 4.7s-2.1 4.7-4.7 4.7-4.7-2.1-4.7-4.7 2.1-4.7 4.7-4.7Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="ballers-search-panel" id="BallersSearchPanel">
+      <form action="/search" method="get" role="search" class="ballers-search-form">
+        <input
+          type="search"
+          name="q"
+          class="ballers-search-input"
+          placeholder="חפש חולצה..."
+          autocomplete="off"
+          value="{{ search.terms | escape }}"
+        >
+
+        <input type="hidden" name="type" value="product">
+
+        <button type="submit" class="ballers-search-submit" aria-label="חיפוש">
+          חפש
+        </button>
+      </form>
+    </div>
+
+    <nav class="ballers-nav" aria-label="ניווט ראשי">
+      <div class="ballers-nav-scroll">
+
+        <a href="/" class="ballers-nav-link {% if request.page_type == 'index' %}active{% endif %}">
+          עמוד הבית
+        </a>
+
+        <a href="/collections/25-26" class="ballers-nav-link {% if collection.handle contains '25' or collection.title contains '25/26' %}active{% endif %}">
+          עונת 25/26
+        </a>
+
+        <a href="/collections/mystery-box" class="ballers-nav-link {% if collection.title contains 'מיסטרי' or collection.handle contains 'mystery' %}active{% endif %}">
+          מיסטרי בוקס
+        </a>
+
+        <a href="/collections/רטרו" class="ballers-nav-link {% if collection.title == 'רטרו' or collection.handle == 'רטרו' %}active{% endif %}">
+          רטרו
+        </a>
+
+        <a href="{{ kids_collection_url }}" class="ballers-nav-link {% if collection.title contains 'חליפות ילדים' or collection.handle contains 'חליפות-ילדים' or collection.handle contains 'kids' %}active{% endif %}">
+          חליפות ילדים
+        </a>
+
+        <a href="{{ training_collection_url }}" class="ballers-nav-link {% if collection.title contains 'חליפות אימון' or collection.handle contains 'חליפות-אימון' or collection.handle contains 'training' %}active{% endif %}">
+          חליפות אימון
+        </a>
+
+        <a href="/collections/ספיישל" class="ballers-nav-link {% if collection.title contains 'ספיישל' or collection.handle == 'ספיישל' %}active{% endif %}">
+          ספיישל
+        </a>
+
+        <a href="/collections/national-teams" class="ballers-nav-link {% if collection.title contains 'נבחרות' or collection.handle contains 'national' %}active{% endif %}">
+          נבחרות
+        </a>
+
+        <a href="/collections/nba" class="ballers-nav-link {% if collection.title contains 'NBA' or collection.handle contains 'nba' %}active{% endif %}">
+          NBA
+        </a>
+
+      </div>
+
+      <div class="ballers-nav-scroll ballers-nav-row2">
+
+        <a href="/collections/מוצרים-נוספים" class="ballers-nav-link {% if collection.handle contains 'מוצרים-נוספים' %}active{% endif %}">
+          מוצרים נוספים
+        </a>
+
+        <a href="/collections/nike-mind" class="ballers-nav-link {% if collection.handle contains 'nike-mind' %}active{% endif %}">
+          NIKE MIND
+        </a>
+
+      </div>
+    </nav>
+
+  </header>
+
+  <div class="ballers-cart-drawer-overlay" id="BallersCartDrawerOverlay"></div>
+
+  <aside class="ballers-cart-drawer" id="BallersCartDrawer" aria-label="עגלה צדדית">
+
+    <div class="ballers-cart-drawer-header">
+      <div>
+        <h2>העגלה שלך</h2>
+        <p>
+          {% if cart.item_count > 0 %}
+            {{ cart.item_count }} פריטים בעגלה
+          {% else %}
+            העגלה ריקה
+          {% endif %}
+        </p>
+      </div>
+
+      <button type="button" class="ballers-cart-drawer-close" id="BallersCloseCartDrawer" aria-label="סגירת עגלה">
+        ×
+      </button>
+    </div>
+
+    {% if cart.item_count > 0 %}
+
+      <div class="ballers-cart-drawer-items">
+
+        {% for item in cart.items %}
+          <article class="ballers-cart-drawer-item">
+
+            <a href="{{ item.url }}" class="ballers-cart-drawer-image">
+              {% if item.image %}
+                <img
+                  src="{{ item.image | image_url: width: 260 }}"
+                  alt="{{ item.product.title | escape }}"
+                  loading="lazy"
+                >
+              {% else %}
+                <span>אין תמונה</span>
+              {% endif %}
+            </a>
+
+            <div class="ballers-cart-drawer-info">
+
+              <h3>
+                <a href="{{ item.url }}">
+                  {{ item.product.title }}
+                </a>
+              </h3>
+
+              {% unless item.product.has_only_default_variant %}
+                <div class="ballers-cart-drawer-variant">
+                  {{ item.variant.title }}
+                </div>
+              {% endunless %}
+
+              {% if item.properties.size > 0 %}
+                <div class="ballers-cart-drawer-properties">
+                  {% for property in item.properties %}
+                    {% assign first_character = property.first | slice: 0 %}
+                    {% unless property.last == blank or first_character == '_' %}
+                      <div>
+                        <strong>{{ property.first }}:</strong>
+                        <span>{{ property.last }}</span>
+                      </div>
+                    {% endunless %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <div class="ballers-cart-drawer-bottom">
+                <span>כמות: {{ item.quantity }}</span>
+                <strong>{{ item.final_line_price | money_without_currency }} ₪</strong>
+              </div>
+
+              <div class="ballers-cart-drawer-actions">
+                <a href="{{ item.url }}" class="ballers-cart-drawer-edit">
+                  ערוך בחירה
+                </a>
+
+                <a href="{{ item.url_to_remove }}" class="ballers-cart-drawer-remove">
+                  הסר מוצר
+                </a>
+              </div>
+
+            </div>
+
+          </article>
+        {% endfor %}
+
+      </div>
+
+      <div class="ballers-cart-drawer-footer">
+
+        <div class="ballers-cart-drawer-total">
+          <span>סכום ביניים</span>
+          <strong>{{ cart.total_price | money_without_currency }} ₪</strong>
+        </div>
+
+        <p class="ballers-cart-drawer-note">
+          משלוח חינם. התשלום המאובטח מתבצע בשלב הבא.
+        </p>
+
+        <a href="/checkout" class="ballers-cart-drawer-checkout">
+          מעבר לתשלום
+        </a>
+
+        <a href="/cart" class="ballers-cart-drawer-cart-page">
+          צפייה בעגלה
+        </a>
+
+        <button type="button" class="ballers-cart-drawer-continue" id="BallersContinueShopping">
+          המשך קנייה
+        </button>
+
+      </div>
+
+    {% else %}
+
+      <div class="ballers-cart-drawer-empty">
+        <h3>העגלה שלך ריקה</h3>
+        <p>אפשר להתחיל לבחור חולצות, חליפות ומוצרים מהחנות.</p>
+
+        <a href="/" class="ballers-cart-drawer-empty-btn">
+          חזרה לחנות
+        </a>
+      </div>
+
+    {% endif %}
+
+  </aside>
+
+</section>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@700;800;900&family=Rubik:wght@700;800;900&display=swap');
+
+  .ballers-header-wrapper,
+  .ballers-header-wrapper * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-header-wrapper {
+    width: 100%;
+    direction: rtl;
+    position: relative;
+    z-index: 1000;
+  }
+
+  .ballers-announcement-bar {
+    width: 100%;
+    min-height: 50px;
+    background:
+      linear-gradient(90deg, #0f2f23 0%, #155c3b 35%, #0f7a44 50%, #155c3b 65%, #0f2f23 100%);
+    color: #ffffff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    box-shadow: inset 0 -10px 22px rgba(0,0,0,0.16);
+  }
+
+  .ballers-announcement-track {
+    position: relative;
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ballers-announcement-track::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.035) 0px,
+        rgba(255,255,255,0.035) 8px,
+        transparent 8px,
+        transparent 16px
+      );
+    pointer-events: none;
+  }
+
+  .ballers-announcement-track span {
+    position: absolute;
+    opacity: 0;
+    transform: translateY(14px);
+    color: #ffffff;
+    font-size: clamp(20px, 2.5vw, 34px);
+    font-weight: 900;
+    white-space: nowrap;
+    letter-spacing: -0.4px;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.35);
+    animation: ballersAnnouncement 12s infinite;
+  }
+
+  .ballers-announcement-track span:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .ballers-announcement-track span:nth-child(2) {
+    animation-delay: 3s;
+  }
+
+  .ballers-announcement-track span:nth-child(3) {
+    animation-delay: 6s;
+  }
+
+  .ballers-announcement-track span:nth-child(4) {
+    animation-delay: 9s;
+  }
+
+  @keyframes ballersAnnouncement {
+    0% { opacity: 0; transform: translateY(14px); }
+    8% { opacity: 1; transform: translateY(0); }
+    25% { opacity: 1; transform: translateY(0); }
+    33% { opacity: 0; transform: translateY(-14px); }
+    100% { opacity: 0; transform: translateY(-14px); }
+  }
+
+  .ballers-main-header {
+    width: 100%;
+    background: #101112;
+    color: #ffffff;
+    padding: 28px 28px 26px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas:
+      "cart logo search"
+      "searchPanel searchPanel searchPanel"
+      "nav nav nav";
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ballers-logo-link {
+    grid-area: logo;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    justify-self: center;
+  }
+
+  .ballers-logo-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at center, #ffffff 0%, #ffffff 64%, #151515 65%, #151515 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px;
+    overflow: hidden;
+    box-shadow:
+      0 14px 34px rgba(0,0,0,0.36),
+      0 0 0 4px rgba(255,255,255,0.10);
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .ballers-logo-circle:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow:
+      0 20px 44px rgba(0,0,0,0.44),
+      0 0 0 4px rgba(255,255,255,0.16);
+  }
+
+  .ballers-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 5px;
+  }
+
+  .ballers-header-icons {
+    display: flex;
+    align-items: center;
+  }
+
+  .ballers-header-icons-left {
+    grid-area: cart;
+    justify-self: start;
+  }
+
+  .ballers-header-icons-right {
+    grid-area: search;
+    justify-self: end;
+  }
+
+  .ballers-header-icon {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      transform 0.22s ease,
+      color 0.22s ease;
+  }
+
+  .ballers-header-icon:hover {
+    transform: translateY(-3px);
+    color: #35d67f !important;
+  }
+
+  .ballers-header-icon svg {
+    width: 44px;
+    height: 44px;
+    fill: currentColor;
+    display: block;
+  }
+
+  .ballers-search-toggle,
+  .ballers-cart-icon {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .ballers-cart-count {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    min-width: 23px;
+    height: 23px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #d62828;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 2;
+  }
+
+  .ballers-search-panel {
+    grid-area: searchPanel;
+    width: 100%;
+    max-width: 620px;
+    justify-self: center;
+    display: none;
+    animation: ballersSearchOpen 0.22s ease both;
+  }
+
+  .ballers-search-panel.open {
+    display: block;
+  }
+
+  .ballers-search-form {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+    border: 2px solid rgba(53,214,127,0.32);
+  }
+
+  .ballers-search-input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #111111;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 0 18px;
+    direction: rtl;
+  }
+
+  .ballers-search-input::placeholder {
+    color: rgba(0,0,0,0.48);
+  }
+
+  .ballers-search-submit {
+    width: 78px;
+    height: 48px;
+    border: none;
+    background: #111111;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.22s ease;
+  }
+
+  .ballers-search-submit:hover {
+    background: #2f7f6f;
+  }
+
+  @keyframes ballersSearchOpen {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ballers-nav {
+    grid-area: nav;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ballers-nav-scroll {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(22px, 3.3vw, 54px);
+    width: 100%;
+    max-width: 1400px;
+  }
+
+  .ballers-nav-row2 {
+    border-top: 1px solid rgba(255,255,255,0.10);
+    padding-top: 10px;
+    gap: clamp(28px, 4vw, 64px);
+  }
+
+  .ballers-nav-link {
+    position: relative;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-size: clamp(17px, 1.55vw, 25px);
+    font-weight: 900;
+    white-space: nowrap;
+    padding: 10px 0 13px;
+    transition:
+      color 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-nav-link::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    height: 5px;
+    border-radius: 999px;
+    background: #35d67f;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.22s ease;
+  }
+
+  .ballers-nav-link:hover {
+    color: #35d67f !important;
+    transform: translateY(-2px);
+  }
+
+  .ballers-nav-link:hover::after,
+  .ballers-nav-link.active::after {
+    transform: scaleX(1);
+  }
+
+  .ballers-nav-link.active {
+    color: #ffffff !important;
+  }
+
+  .ballers-cart-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999998;
+    background: rgba(0,0,0,0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease;
+  }
+
+  .ballers-cart-drawer-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .ballers-cart-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 999999;
+    width: min(440px, 92vw);
+    height: 100vh;
+    background: #ffffff;
+    box-shadow: -18px 0 50px rgba(0,0,0,0.24);
+    transform: translateX(105%);
+    transition: transform 0.28s ease;
+    display: flex;
+    flex-direction: column;
+    direction: rtl;
+  }
+
+  .ballers-cart-drawer.open {
+    transform: translateX(0);
+  }
+
+  .ballers-cart-drawer-header {
+    min-height: 92px;
+    padding: 22px 22px 18px;
+    background: #101112;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .ballers-cart-drawer-header h2 {
+    margin: 0 0 5px !important;
+    color: #ffffff !important;
+    font-size: 27px !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+  }
+
+  .ballers-cart-drawer-header p {
+    margin: 0 !important;
+    color: rgba(255,255,255,0.68);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-cart-drawer-close {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.10);
+    color: #ffffff;
+    font-size: 31px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .ballers-cart-drawer-close:hover {
+    background: rgba(255,255,255,0.20);
+    transform: scale(1.05);
+  }
+
+  .ballers-cart-drawer-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    display: grid;
+    gap: 14px;
+    background: #f5f5f5;
+  }
+
+  .ballers-cart-drawer-item {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 13px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+
+  .ballers-cart-drawer-image {
+    width: 92px;
+    height: 92px;
+    background: #f1f2f3;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-cart-drawer-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .ballers-cart-drawer-image span {
+    color: rgba(0,0,0,0.45);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-drawer-info h3 {
+    margin: 0 0 6px !important;
+    color: #111111 !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+  }
+
+  .ballers-cart-drawer-info h3 a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .ballers-cart-drawer-variant {
+    color: rgba(0,0,0,0.58);
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 7px;
+  }
+
+  .ballers-cart-drawer-properties {
+    display: grid;
+    gap: 3px;
+    margin-bottom: 8px;
+    color: rgba(0,0,0,0.62);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .ballers-cart-drawer-properties strong {
+    color: #111111;
+    font-weight: 900;
+  }
+
+  .ballers-cart-drawer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+  }
+
+  .ballers-cart-drawer-bottom span {
+    color: rgba(0,0,0,0.58);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .ballers-cart-drawer-bottom strong {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-drawer-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-cart-drawer-edit {
+    color: #111111 !important;
+    text-decoration: underline !important;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-drawer-edit:hover {
+    color: #555555 !important;
+  }
+
+  .ballers-cart-drawer-remove {
+    color: rgba(0,0,0,0.58) !important;
+    text-decoration: underline !important;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-drawer-remove:hover {
+    color: #111111 !important;
+  }
+
+  .ballers-cart-drawer-footer {
+    padding: 18px;
+    background: #ffffff;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 -10px 24px rgba(0,0,0,0.06);
+  }
+
+  .ballers-cart-drawer-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .ballers-cart-drawer-total span {
+    color: rgba(0,0,0,0.68);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .ballers-cart-drawer-total strong {
+    color: #111111;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-drawer-note {
+    margin: 0 0 14px !important;
+    background: #f4f4f4;
+    border-radius: 12px;
+    padding: 11px 12px;
+    color: rgba(0,0,0,0.66);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .ballers-cart-drawer-checkout,
+  .ballers-cart-drawer-cart-page,
+  .ballers-cart-drawer-continue,
+  .ballers-cart-drawer-empty-btn {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      border-color 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-cart-drawer-checkout {
+    background: #111111;
+    color: #ffffff !important;
+    border: none;
+    margin-bottom: 10px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+  }
+
+  .ballers-cart-drawer-checkout:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.24);
+  }
+
+  .ballers-cart-drawer-cart-page {
+    background: #ffffff;
+    color: #111111 !important;
+    border: 1px solid rgba(0,0,0,0.16);
+    margin-bottom: 10px;
+  }
+
+  .ballers-cart-drawer-cart-page:hover {
+    border-color: #111111;
+    transform: translateY(-2px);
+  }
+
+  .ballers-cart-drawer-continue {
+    background: transparent;
+    color: rgba(0,0,0,0.68);
+    border: none;
+  }
+
+  .ballers-cart-drawer-continue:hover {
+    color: #111111;
+    transform: translateY(-2px);
+  }
+
+  .ballers-cart-drawer-empty {
+    flex: 1;
+    padding: 34px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    text-align: center;
+  }
+
+  .ballers-cart-drawer-empty h3 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-cart-drawer-empty p {
+    margin: 0 0 20px !important;
+    color: rgba(0,0,0,0.62);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .ballers-cart-drawer-empty-btn {
+    max-width: 220px;
+    background: #111111;
+    color: #ffffff !important;
+    border: none;
+  }
+
+  .ballers-cart-drawer-empty-btn:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+  }
+
+  @media screen and (max-width: 950px) {
+    .ballers-main-header {
+      padding: 22px 16px 20px;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    .ballers-logo-circle {
+      width: 118px;
+      height: 118px;
+      padding: 11px;
+    }
+
+    .ballers-header-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .ballers-header-icon svg {
+      width: 37px;
+      height: 37px;
+    }
+
+    .ballers-nav {
+      width: 100%;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0 0 10px;
+      margin-top: 2px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+    }
+
+    .ballers-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ballers-nav-scroll {
+      width: max-content;
+      max-width: none;
+      min-width: max-content;
+      justify-content: flex-start;
+      gap: 28px;
+      padding: 0 18px;
+      flex-wrap: nowrap;
+    }
+
+    .ballers-nav-row2 {
+      border-top: 1px solid rgba(255,255,255,0.10);
+      padding-top: 8px;
+      margin-top: 2px;
+      gap: 32px;
+    }
+
+    .ballers-nav-link {
+      font-size: 21px;
+      scroll-snap-align: start;
+      flex: 0 0 auto;
+    }
+  }
+
+  @media screen and (max-width: 620px) {
+    .ballers-announcement-bar {
+      min-height: 44px;
+    }
+
+    .ballers-announcement-track {
+      min-height: 44px;
+    }
+
+    .ballers-announcement-track span {
+      font-size: 21px;
+    }
+
+    .ballers-main-header {
+      padding: 18px 0 14px;
+      grid-template-columns: 54px 1fr 54px;
+      grid-template-areas:
+        "cart logo search"
+        "searchPanel searchPanel searchPanel"
+        "nav nav nav";
+      gap: 13px 8px;
+    }
+
+    .ballers-logo-circle {
+      width: 108px;
+      height: 108px;
+      padding: 10px;
+    }
+
+    .ballers-logo-img {
+      padding: 4px;
+    }
+
+    .ballers-header-icons-left {
+      justify-self: start;
+      padding-right: 12px;
+    }
+
+    .ballers-header-icons-right {
+      justify-self: end;
+      padding-left: 12px;
+    }
+
+    .ballers-header-icon {
+      width: 44px;
+      height: 44px;
+    }
+
+    .ballers-header-icon svg {
+      width: 34px;
+      height: 34px;
+    }
+
+    .ballers-cart-count {
+      min-width: 20px;
+      height: 20px;
+      font-size: 11px;
+    }
+
+    .ballers-search-panel {
+      width: calc(100% - 24px);
+      max-width: 520px;
+    }
+
+    .ballers-search-form {
+      border-radius: 13px;
+    }
+
+    .ballers-search-input {
+      height: 46px;
+      font-size: 15px;
+      padding: 0 14px;
+    }
+
+    .ballers-search-submit {
+      height: 46px;
+      width: 68px;
+    }
+
+    .ballers-nav {
+      padding: 0 0 10px;
+      margin-top: 2px;
+    }
+
+    .ballers-nav-scroll {
+      gap: 25px;
+      padding: 0 18px;
+    }
+
+    .ballers-nav-link {
+      font-size: 20px;
+      padding: 8px 0 12px;
+    }
+
+    .ballers-nav-link::after {
+      height: 4px;
+    }
+
+    .ballers-cart-drawer {
+      width: 92vw;
+    }
+
+    .ballers-cart-drawer-header {
+      min-height: 82px;
+      padding: 18px;
+    }
+
+    .ballers-cart-drawer-header h2 {
+      font-size: 24px !important;
+    }
+
+    .ballers-cart-drawer-items {
+      padding: 14px;
+    }
+
+    .ballers-cart-drawer-item {
+      grid-template-columns: 82px minmax(0, 1fr);
+      gap: 11px;
+      padding: 10px;
+    }
+
+    .ballers-cart-drawer-image {
+      width: 82px;
+      height: 82px;
+    }
+
+    .ballers-cart-drawer-info h3 {
+      font-size: 14px !important;
+    }
+
+    .ballers-cart-drawer-footer {
+      padding: 15px;
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+    .ballers-logo-circle {
+      width: 98px;
+      height: 98px;
+      padding: 9px;
+    }
+
+    .ballers-announcement-track span {
+      font-size: 18px;
+    }
+
+    .ballers-nav-scroll {
+      gap: 22px;
+      padding: 0 16px;
+    }
+
+    .ballers-nav-link {
+      font-size: 18px;
+    }
+
+    .ballers-search-input {
+      font-size: 14px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var searchToggle = document.querySelector('.ballers-search-toggle');
+    var searchPanel = document.getElementById('BallersSearchPanel');
+    var searchInput = document.querySelector('.ballers-search-input');
+
+    if (searchToggle && searchPanel) {
+      searchToggle.addEventListener('click', function () {
+        searchPanel.classList.toggle('open');
+
+        if (searchPanel.classList.contains('open') && searchInput) {
+          setTimeout(function () {
+            searchInput.focus();
+          }, 120);
+        }
+      });
+    }
+
+    var openCartButton = document.getElementById('BallersOpenCartDrawer');
+    var closeCartButton = document.getElementById('BallersCloseCartDrawer');
+    var continueShoppingButton = document.getElementById('BallersContinueShopping');
+    var cartDrawer = document.getElementById('BallersCartDrawer');
+    var cartOverlay = document.getElementById('BallersCartDrawerOverlay');
+
+    function openCartDrawer() {
+      if (!cartDrawer || !cartOverlay) {
+        return;
+      }
+
+      cartDrawer.classList.add('open');
+      cartOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCartDrawer() {
+      if (!cartDrawer || !cartOverlay) {
+        return;
+      }
+
+      cartDrawer.classList.remove('open');
+      cartOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    if (openCartButton) {
+      openCartButton.addEventListener('click', openCartDrawer);
+    }
+
+    if (closeCartButton) {
+      closeCartButton.addEventListener('click', closeCartDrawer);
+    }
+
+    if (continueShoppingButton) {
+      continueShoppingButton.addEventListener('click', closeCartDrawer);
+    }
+
+    if (cartOverlay) {
+      cartOverlay.addEventListener('click', closeCartDrawer);
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        if (searchPanel) {
+          searchPanel.classList.remove('open');
+        }
+
+        closeCartDrawer();
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Ballers header",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers header"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,621 @@
+<section class="ballers-kids-page" dir="rtl">
+
+  {% assign kids_collection = collection %}
+
+  {% if kids_collection == blank or kids_collection.products_count == 0 %}
+    {% assign kids_collection = collections['חליפות-ילדים'] %}
+  {% endif %}
+
+  {% if kids_collection == blank or kids_collection.products_count == 0 %}
+    {% assign kids_collection = collections['kids-suits'] %}
+  {% endif %}
+
+  {% if kids_collection == blank or kids_collection.products_count == 0 %}
+    {% assign kids_collection = collections['חליפות ילדים'] %}
+  {% endif %}
+
+  <div class="ballers-kids-container">
+
+    <header class="ballers-kids-hero">
+      <div class="ballers-kids-eyebrow">KIDS FOOTBALL SETS</div>
+
+      <h1>חליפות ילדים</h1>
+
+      <p>
+        חליפות כדורגל לילדים — נוחות, צבעוניות ומושלמות לאוהדים צעירים שאוהבים לשחק,
+        להתאמן ולהרגיש כמו הכוכבים הגדולים.
+      </p>
+    </header>
+
+    {% if kids_collection != blank and kids_collection.products_count > 0 %}
+
+      <div class="ballers-kids-toolbar">
+        <div class="ballers-kids-count">
+          {{ kids_collection.products_count }} מוצרים בקולקציית חליפות ילדים
+        </div>
+
+        <a class="ballers-kids-back-home" href="/">
+          חזרה לעמוד הבית
+        </a>
+      </div>
+
+      {% paginate kids_collection.products by 48 %}
+
+        <div class="ballers-kids-grid">
+
+          {% for product in kids_collection.products %}
+            <article class="ballers-kids-card">
+
+              <a href="{{ product.url }}" class="ballers-kids-image-box" aria-label="{{ product.title | escape }}">
+
+                {% if product.featured_image != blank %}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 900 }}"
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    width="{{ product.featured_image.width }}"
+                    height="{{ product.featured_image.height }}"
+                  >
+                {% else %}
+                  <div class="ballers-kids-no-image">
+                    אין תמונה
+                  </div>
+                {% endif %}
+
+              </a>
+
+              <div class="ballers-kids-content">
+
+                <h2 class="ballers-kids-title">
+                  <a href="{{ product.url }}">
+                    {{ product.title }}
+                  </a>
+                </h2>
+
+                <div class="ballers-kids-price">
+                  {% if product.price_varies %}
+                    <span>החל מ־{{ product.price_min | money_without_currency }} ₪</span>
+                  {% else %}
+                    <span>{{ product.price | money_without_currency }} ₪</span>
+                  {% endif %}
+
+                  {% if product.compare_at_price_max > product.price %}
+                    <del>{{ product.compare_at_price_max | money_without_currency }} ₪</del>
+                  {% endif %}
+                </div>
+
+                <a href="{{ product.url }}" class="ballers-kids-button">
+                  לצפייה במוצר
+                </a>
+
+              </div>
+
+            </article>
+          {% endfor %}
+
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="ballers-kids-pagination" aria-label="עמודי קולקציה">
+
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="ballers-kids-page-link">
+                הקודם
+              </a>
+            {% endif %}
+
+            <span class="ballers-kids-page-status">
+              עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}
+            </span>
+
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="ballers-kids-page-link">
+                הבא
+              </a>
+            {% endif %}
+
+          </nav>
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <div class="ballers-kids-empty">
+        <h2>לא נמצאו חליפות ילדים</h2>
+        <p>
+          ודא שהמוצרים משויכים לקולקציית חליפות ילדים ושהקולקציה זמינה ב־Online Store.
+        </p>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .ballers-kids-page,
+  .ballers-kids-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-kids-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(47, 127, 111, 0.10), transparent 34%),
+      linear-gradient(180deg, #f4f7f6 0%, #ffffff 100%);
+    padding: 34px 18px 64px;
+    overflow: hidden;
+  }
+
+  .ballers-kids-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .ballers-kids-hero {
+    position: relative;
+    overflow: hidden;
+    background: #101112;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 34px 22px;
+    text-align: center;
+    margin-bottom: 26px;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.16);
+    animation: ballersKidsFadeUp 0.5s ease both;
+  }
+
+  .ballers-kids-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px;
+    left: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    background: rgba(53, 214, 127, 0.16);
+  }
+
+  .ballers-kids-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ballers-kids-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+
+  .ballers-kids-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(34px, 4.5vw, 58px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-kids-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 880px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-kids-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+    animation: ballersKidsFadeUp 0.5s ease both;
+    animation-delay: 0.06s;
+  }
+
+  .ballers-kids-count {
+    color: #111111;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ballers-kids-back-home {
+    color: #111111 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #35d67f;
+    transition:
+      transform 0.22s ease,
+      color 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .ballers-kids-back-home:hover {
+    color: #2f7f6f !important;
+    border-color: #2f7f6f;
+    transform: translateY(-2px);
+  }
+
+  .ballers-kids-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .ballers-kids-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    animation: ballersKidsCardIn 0.48s ease both;
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease;
+  }
+
+  .ballers-kids-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.14);
+    border-color: rgba(47,127,111,0.35);
+  }
+
+  .ballers-kids-image-box {
+    position: relative;
+    width: 100%;
+    height: 285px;
+    padding: 16px;
+    background: linear-gradient(135deg, #eef1f4 0%, #ffffff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-kids-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition:
+      transform 0.28s ease,
+      filter 0.28s ease;
+  }
+
+  .ballers-kids-card:hover .ballers-kids-image-box img {
+    transform: scale(1.055);
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.16));
+  }
+
+  .ballers-kids-no-image {
+    color: rgba(0,0,0,0.55);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-kids-content {
+    padding: 17px 15px 19px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+  }
+
+  .ballers-kids-title {
+    margin: 0 0 12px !important;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .ballers-kids-title a {
+    color: #000000 !important;
+    text-decoration: none !important;
+    font: inherit !important;
+    transition: color 0.2s ease;
+  }
+
+  .ballers-kids-card:hover .ballers-kids-title a {
+    color: #2f7f6f !important;
+  }
+
+  .ballers-kids-price {
+    margin-bottom: 17px;
+    min-height: 27px;
+    color: #111111;
+    font-size: 19px;
+    font-weight: 900;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-kids-price del {
+    color: rgba(0,0,0,0.36);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-kids-button {
+    margin-top: auto;
+    width: 100%;
+    min-height: 45px;
+    border-radius: 12px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-kids-button:hover {
+    background: #2f7f6f;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.22);
+  }
+
+  .ballers-kids-pagination {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-kids-page-link {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    transition:
+      background 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-kids-page-link:hover {
+    background: #2f7f6f;
+    transform: translateY(-2px);
+  }
+
+  .ballers-kids-page-status {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-kids-empty {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 46px 20px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+  }
+
+  .ballers-kids-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-kids-empty p {
+    margin: 0 auto !important;
+    max-width: 760px;
+    color: rgba(0,0,0,0.64);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  @keyframes ballersKidsFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ballersKidsCardIn {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media screen and (max-width: 1250px) {
+    .ballers-kids-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ballers-kids-image-box {
+      height: 270px;
+    }
+  }
+
+  @media screen and (max-width: 860px) {
+    .ballers-kids-page {
+      padding: 26px 14px 52px;
+    }
+
+    .ballers-kids-hero {
+      padding: 30px 16px;
+      border-radius: 17px;
+      margin-bottom: 24px;
+    }
+
+    .ballers-kids-hero h1 {
+      font-size: 38px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-kids-hero p {
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .ballers-kids-toolbar {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ballers-kids-count {
+      font-size: 15px;
+    }
+
+    .ballers-kids-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .ballers-kids-card {
+      border-radius: 16px;
+      min-height: 380px;
+    }
+
+    .ballers-kids-image-box {
+      height: 220px;
+      padding: 13px;
+    }
+
+    .ballers-kids-content {
+      padding: 14px 11px 15px;
+    }
+
+    .ballers-kids-title {
+      font-size: 15.5px !important;
+      min-height: 48px;
+    }
+
+    .ballers-kids-price {
+      font-size: 16px;
+      margin-bottom: 13px;
+    }
+
+    .ballers-kids-button {
+      min-height: 41px;
+      font-size: 14px;
+      border-radius: 10px;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .ballers-kids-page {
+      padding: 20px 10px 42px;
+    }
+
+    .ballers-kids-hero {
+      padding: 28px 13px;
+      border-radius: 16px;
+    }
+
+    .ballers-kids-hero h1 {
+      font-size: 34px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-kids-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .ballers-kids-card {
+      min-height: auto;
+    }
+
+    .ballers-kids-image-box {
+      height: 300px;
+    }
+
+    .ballers-kids-title {
+      font-size: 18px !important;
+      min-height: auto;
+    }
+
+    .ballers-kids-price {
+      font-size: 19px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Ballers kids suits page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers kids suits page"
+    }
+  ]
+}
+{% endschema %}
