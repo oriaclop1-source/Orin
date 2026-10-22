@@ -6,11 +6,11 @@ window.SITE_CONFIG = {
   shopName: 'primejersey.il',
 
   // WhatsApp number that receives orders (international format, no + or leading 0).
-  // 0528825211 -> 972528825211
-  whatsappNumber: '972528825211',
+  // 0502174441 -> 972502174441
+  whatsappNumber: '972502174441',
 
   // Phone numbers shown in the "דברו איתנו" box on the home page.
-  phones: ['052-8825211', '050-2174441'],
+  phones: ['050-2174441', '052-8825211'],
 
   // Rotating texts in the blue bar at the top.
   announcements: ['משלוח חינם לכל הארץ', 'איכות מעולה', 'על כל האתר 3+1', 'שירות לקוחות זמין'],
