@@ -1,0 +1,479 @@
+<section class="ballers-national-page" dir="rtl">
+
+  {% assign national_collection = collection %}
+
+  {% if national_collection == blank or national_collection.products_count == 0 %}
+    {% assign national_collection = collections['national-teams'] %}
+  {% endif %}
+
+  {% if national_collection == blank or national_collection.products_count == 0 %}
+    {% assign national_collection = collections['נבחרות'] %}
+  {% endif %}
+
+  <div class="ballers-national-container">
+
+    <header class="ballers-national-hero">
+      <div class="ballers-national-eyebrow">NATIONAL TEAMS</div>
+      <h1>קולקציית נבחרות</h1>
+      <p>
+        חולצות נבחרות לאומיות מכל העולם — קלאסיות, עונתיות ומהמונדיאל. לכל אוהד שמגאה בצבעי ארצו.
+      </p>
+    </header>
+
+    {% if national_collection != blank and national_collection.products_count > 0 %}
+
+      <div class="ballers-national-toolbar">
+        <div class="ballers-national-count">
+          {{ national_collection.products_count }} מוצרים בקולקציה
+        </div>
+        <a class="ballers-national-back" href="/">חזרה לעמוד הבית</a>
+      </div>
+
+      {% paginate national_collection.products by 96 %}
+
+        <div class="ballers-national-grid" id="BallersNationalPageGrid-{{ section.id }}">
+
+          {% for product in national_collection.products %}
+            <article class="ballers-national-card{% if product.images[1] != blank %} has-hover-image{% endif %}">
+
+              <a href="{{ product.url }}" class="ballers-national-image-box" aria-label="{{ product.title | escape }}">
+                {% if product.featured_image != blank %}
+                  {% assign second_image = product.images[1] %}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 900 }}"
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    class="ballers-national-img-main"
+                  >
+                  {% if second_image != blank %}
+                    <img
+                      src="{{ second_image | image_url: width: 900 }}"
+                      alt="{{ product.title | escape }}"
+                      loading="lazy"
+                      class="ballers-national-img-hover"
+                    >
+                  {% endif %}
+                {% else %}
+                  <div class="ballers-national-no-image">אין תמונה</div>
+                {% endif %}
+              </a>
+
+              <div class="ballers-national-content">
+                <h2 class="ballers-national-title">
+                  <a href="{{ product.url }}">{{ product.title }}</a>
+                </h2>
+                <div class="ballers-national-price">
+                  {% if product.price_varies %}
+                    <span>החל מ־{{ product.price_min | money_without_currency }} ₪</span>
+                  {% else %}
+                    <span>{{ product.price | money_without_currency }} ₪</span>
+                  {% endif %}
+                  {% if product.compare_at_price_max > product.price %}
+                    <del>{{ product.compare_at_price_max | money_without_currency }} ₪</del>
+                  {% endif %}
+                </div>
+                <a href="{{ product.url }}" class="ballers-national-button">לצפייה במוצר</a>
+              </div>
+
+            </article>
+          {% endfor %}
+
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="ballers-national-pagination" aria-label="עמודי קולקציה">
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="ballers-national-page-link">הקודם</a>
+            {% endif %}
+            <span class="ballers-national-page-status">עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}</span>
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="ballers-national-page-link">הבא</a>
+            {% endif %}
+          </nav>
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <div class="ballers-national-empty">
+        <h2>לא נמצאו מוצרים בקולקציית נבחרות</h2>
+        <p>ודא שהקולקציה בשם national-teams קיימת ומכילה מוצרים.</p>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .ballers-national-page,
+  .ballers-national-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-national-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(0,0,0,0.045), transparent 34%),
+      linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+    padding: 34px 18px 64px;
+    overflow: hidden;
+  }
+
+  .ballers-national-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .ballers-national-hero {
+    position: relative;
+    overflow: hidden;
+    background: #101112;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 34px 22px;
+    text-align: center;
+    margin-bottom: 26px;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.16);
+  }
+
+  .ballers-national-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px; left: -90px;
+    width: 230px; height: 230px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ballers-national-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px; bottom: -130px;
+    width: 280px; height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+  }
+
+  .ballers-national-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+
+  .ballers-national-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(34px, 4.5vw, 58px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-national-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-national-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .ballers-national-count {
+    color: #111;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ballers-national-back {
+    color: #111 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #111;
+    transition: color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+  }
+
+  .ballers-national-back:hover {
+    color: #555 !important;
+    border-color: #555;
+    transform: translateY(-2px);
+  }
+
+  .ballers-national-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .ballers-national-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+  }
+
+  .ballers-national-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.14);
+    border-color: rgba(0,0,0,0.18);
+  }
+
+  .ballers-national-image-box {
+    position: relative;
+    width: 100%;
+    height: 285px;
+    padding: 16px;
+    background: linear-gradient(135deg, #eeeeee 0%, #ffffff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-national-img-main,
+  .ballers-national-img-hover {
+    position: absolute;
+    inset: 16px;
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.32s ease;
+  }
+
+  .ballers-national-img-main { opacity: 1; }
+  .ballers-national-img-hover { opacity: 0; pointer-events: none; }
+
+  .ballers-national-no-image {
+    color: rgba(0,0,0,0.55);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-national-content {
+    padding: 17px 15px 19px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+  }
+
+  .ballers-national-title {
+    margin: 0 0 12px !important;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .ballers-national-title a {
+    color: #000 !important;
+    text-decoration: none !important;
+    font: inherit !important;
+    transition: color 0.2s ease;
+  }
+
+  .ballers-national-price {
+    margin-bottom: 17px;
+    min-height: 27px;
+    color: #111;
+    font-size: 19px;
+    font-weight: 900;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-national-price del {
+    color: rgba(0,0,0,0.36);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-national-button {
+    margin-top: auto;
+    width: 100%;
+    min-height: 45px;
+    border-radius: 12px;
+    background: #111;
+    color: #fff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+    transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .ballers-national-button:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.22);
+  }
+
+  .ballers-national-pagination {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-national-page-link {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: #111;
+    color: #fff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    transition: background 0.22s ease, transform 0.22s ease;
+  }
+
+  .ballers-national-page-link:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+  }
+
+  .ballers-national-page-status {
+    color: #111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-national-empty {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 46px 20px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+  }
+
+  .ballers-national-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111 !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-national-empty p {
+    margin: 0 auto !important;
+    max-width: 760px;
+    color: rgba(0,0,0,0.64);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 768px) {
+    .ballers-national-img-hover { display: none; }
+  }
+
+  @media screen and (max-width: 1250px) {
+    .ballers-national-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ballers-national-image-box { height: 270px; }
+  }
+
+  @media screen and (max-width: 860px) {
+    .ballers-national-page { padding: 26px 14px 52px; }
+    .ballers-national-toolbar { flex-direction: column; text-align: center; justify-content: center; gap: 10px; }
+    .ballers-national-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .ballers-national-card { border-radius: 16px; min-height: 380px; }
+    .ballers-national-image-box { height: 220px; padding: 13px; }
+    .ballers-national-title { font-size: 15.5px !important; min-height: 48px; }
+  }
+
+  @media screen and (max-width: 520px) {
+    .ballers-national-page { padding: 20px 10px 42px; }
+    .ballers-national-grid { grid-template-columns: 1fr; gap: 15px; }
+    .ballers-national-image-box { height: 300px; }
+    .ballers-national-title { font-size: 18px !important; min-height: auto; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var grid = document.getElementById('BallersNationalPageGrid-{{ section.id }}');
+    if (!grid) return;
+
+    var multiCards = Array.from(grid.querySelectorAll('.ballers-national-card.has-hover-image'));
+    if (multiCards.length === 0) return;
+
+    var showingHover = multiCards.map(function () { return false; });
+
+    setInterval(function () {
+      multiCards.forEach(function (card, i) {
+        var main  = card.querySelector('.ballers-national-img-main');
+        var hover = card.querySelector('.ballers-national-img-hover');
+        if (!main || !hover) return;
+
+        showingHover[i] = !showingHover[i];
+        main.style.opacity  = showingHover[i] ? '0' : '1';
+        hover.style.opacity = showingHover[i] ? '1' : '0';
+      });
+    }, 2500);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "National Teams Page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "National Teams Page"
+    }
+  ]
+}
+{% endschema %}

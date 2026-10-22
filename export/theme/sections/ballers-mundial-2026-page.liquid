@@ -1,0 +1,531 @@
+<section class="ballers-mundial-page" dir="rtl">
+
+  {% assign mundial_collection = collection %}
+
+  {% if mundial_collection == blank or mundial_collection.products_count == 0 %}
+    {% assign mundial_collection = collections['mundial-2026'] %}
+  {% endif %}
+
+  {% if mundial_collection == blank or mundial_collection.products_count == 0 %}
+    {% assign mundial_collection = collections['מונדיאל-2026'] %}
+  {% endif %}
+
+
+  <div class="ballers-mundial-container">
+
+    <header class="ballers-mundial-hero">
+      <div class="ballers-mundial-eyebrow">USA · CANADA · MEXICO — 2026</div>
+      <h1>מונדיאל <em>2026</em></h1>
+      <p>חולצות רשמיות של נבחרות העולם — היו מוכנים לגביע העולם 2026</p>
+      <div class="ballers-mundial-divider"></div>
+    </header>
+
+    {% if mundial_collection != blank and mundial_collection.products_count > 0 %}
+
+      <div class="ballers-mundial-toolbar">
+        <div class="ballers-mundial-count">
+          {{ mundial_collection.products_count }} חולצות נבחרות
+        </div>
+        <a class="ballers-mundial-back" href="/">חזרה לעמוד הבית</a>
+      </div>
+
+      {% paginate mundial_collection.products by 96 %}
+
+        <div class="ballers-mundial-grid" id="BallersMundialGrid-{{ section.id }}">
+
+          {% for product in mundial_collection.products %}
+            <article class="ballers-mundial-card{% if product.images[1] != blank %} has-hover-image{% endif %}">
+
+              <a href="{{ product.url }}" class="ballers-mundial-image-box" aria-label="{{ product.title | escape }}">
+                {% if product.featured_image != blank %}
+                  {% assign second_image = product.images[1] %}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 900 }}"
+                    alt="{{ product.title | escape }}"
+                    loading="lazy"
+                    class="ballers-mundial-img-main"
+                  >
+                  {% if second_image != blank %}
+                    <img
+                      src="{{ second_image | image_url: width: 900 }}"
+                      alt="{{ product.title | escape }}"
+                      loading="lazy"
+                      class="ballers-mundial-img-hover"
+                    >
+                  {% endif %}
+                {% else %}
+                  <div class="ballers-mundial-no-image">אין תמונה</div>
+                {% endif %}
+              </a>
+
+              <div class="ballers-mundial-content">
+                <h2 class="ballers-mundial-title">
+                  <a href="{{ product.url }}">{{ product.title }}</a>
+                </h2>
+                <div class="ballers-mundial-price">
+                  {% if product.price_varies %}
+                    <span>החל מ־{{ product.price_min | money_without_currency }} ₪</span>
+                  {% else %}
+                    <span>{{ product.price | money_without_currency }} ₪</span>
+                  {% endif %}
+                  {% if product.compare_at_price_max > product.price %}
+                    <del>{{ product.compare_at_price_max | money_without_currency }} ₪</del>
+                  {% endif %}
+                </div>
+                <a href="{{ product.url }}" class="ballers-mundial-button">לצפייה במוצר</a>
+              </div>
+
+            </article>
+          {% endfor %}
+
+        </div>
+
+        {% if paginate.pages > 1 %}
+          <nav class="ballers-mundial-pagination" aria-label="עמודי קולקציה">
+            {% if paginate.previous %}
+              <a href="{{ paginate.previous.url }}" class="ballers-mundial-page-link">הקודם</a>
+            {% endif %}
+            <span class="ballers-mundial-page-status">עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}</span>
+            {% if paginate.next %}
+              <a href="{{ paginate.next.url }}" class="ballers-mundial-page-link">הבא</a>
+            {% endif %}
+          </nav>
+        {% endif %}
+
+      {% endpaginate %}
+
+    {% else %}
+
+      <div class="ballers-mundial-empty">
+        <h2>הקולקציה תיפתח בקרוב ⚽</h2>
+        <p>קולקציית מונדיאל 2026 תתווסף בקרוב. בינתיים בדוק את שאר הקולקציות שלנו.</p>
+        <a href="/collections/national-teams" class="ballers-mundial-button">לקולקציית נבחרות</a>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .ballers-mundial-page,
+  .ballers-mundial-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-mundial-page {
+    width: 100%;
+    background: #f4f7f4;
+    padding: 34px 18px 64px;
+    overflow: hidden;
+  }
+
+  .ballers-mundial-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  /* ── Hero ── */
+  .ballers-mundial-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    padding: 40px 24px 36px;
+    text-align: center;
+    margin-bottom: 28px;
+    background:
+      linear-gradient(160deg,
+        #0a3d1f 0%,
+        #145a32 28%,
+        #1a7a44 50%,
+        #1565c0 78%,
+        #0d47a1 100%
+      );
+    box-shadow:
+      0 20px 50px rgba(0,0,0,0.28),
+      inset 0 1px 0 rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .ballers-mundial-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 6px,
+        transparent 6px,
+        transparent 12px
+      );
+    pointer-events: none;
+  }
+
+  .ballers-mundial-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.28);
+    color: rgba(255,255,255,0.85);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.6px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ballers-mundial-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 12px !important;
+    color: #ffffff !important;
+    font-size: clamp(44px, 6vw, 88px) !important;
+    font-weight: 900 !important;
+    line-height: 0.95 !important;
+    letter-spacing: -2px !important;
+    text-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+
+  .ballers-mundial-hero h1 em {
+    font-style: normal;
+    color: #ff3333;
+    text-shadow:
+      0 0 40px rgba(255,51,51,0.55),
+      0 4px 18px rgba(0,0,0,0.35);
+  }
+
+  .ballers-mundial-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    margin: 0 auto 18px !important;
+    color: rgba(255,255,255,0.88);
+    font-size: clamp(15px, 1.8vw, 22px);
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .ballers-mundial-divider {
+    position: relative;
+    z-index: 2;
+    width: 80px;
+    height: 4px;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ff3333, #ffffff, #1565c0);
+  }
+
+  /* ── Toolbar ── */
+  .ballers-mundial-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .ballers-mundial-count {
+    color: #111;
+    font-size: 17px;
+    font-weight: 900;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 999px;
+    padding: 9px 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  }
+
+  .ballers-mundial-back {
+    color: #145a32 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #145a32;
+    transition: color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+  }
+
+  .ballers-mundial-back:hover {
+    color: #1a7a44 !important;
+    border-color: #1a7a44;
+    transform: translateY(-2px);
+  }
+
+  /* ── Grid ── */
+  .ballers-mundial-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  /* ── Card ── */
+  .ballers-mundial-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+  }
+
+  .ballers-mundial-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.14);
+    border-color: rgba(21,101,192,0.28);
+  }
+
+  /* ── Image box ── */
+  .ballers-mundial-image-box {
+    position: relative;
+    width: 100%;
+    height: 285px;
+    padding: 16px;
+    background: linear-gradient(135deg, #e8f4ec 0%, #ffffff 50%, #e8f0fb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-mundial-img-main,
+  .ballers-mundial-img-hover {
+    position: absolute;
+    inset: 16px;
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    object-fit: contain;
+    display: block;
+    transition: opacity 0.32s ease;
+  }
+
+  .ballers-mundial-img-main { opacity: 1; }
+  .ballers-mundial-img-hover { opacity: 0; pointer-events: none; }
+
+  .ballers-mundial-no-image {
+    color: rgba(0,0,0,0.55);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  /* ── Card content ── */
+  .ballers-mundial-content {
+    padding: 17px 15px 19px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+  }
+
+  .ballers-mundial-title {
+    margin: 0 0 12px !important;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .ballers-mundial-title a {
+    color: #000 !important;
+    text-decoration: none !important;
+    font: inherit !important;
+    transition: color 0.2s ease;
+  }
+
+  .ballers-mundial-price {
+    margin-bottom: 17px;
+    min-height: 27px;
+    color: #111;
+    font-size: 19px;
+    font-weight: 900;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-mundial-price del {
+    color: rgba(0,0,0,0.36);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-mundial-button {
+    margin-top: auto;
+    width: 100%;
+    min-height: 45px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #145a32 0%, #1565c0 100%);
+    color: #fff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(20,90,50,0.22);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+  }
+
+  .ballers-mundial-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(20,90,50,0.32);
+    filter: brightness(1.12);
+  }
+
+  /* ── Pagination ── */
+  .ballers-mundial-pagination {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-mundial-page-link {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #145a32 0%, #1565c0 100%);
+    color: #fff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    transition: transform 0.22s ease, filter 0.22s ease;
+  }
+
+  .ballers-mundial-page-link:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.12);
+  }
+
+  .ballers-mundial-page-status {
+    color: #111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  /* ── Empty ── */
+  .ballers-mundial-empty {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 54px 24px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .ballers-mundial-empty h2 {
+    margin: 0 !important;
+    color: #111 !important;
+    font-size: 28px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-mundial-empty p {
+    margin: 0 !important;
+    max-width: 500px;
+    color: rgba(0,0,0,0.62);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .ballers-mundial-empty .ballers-mundial-button {
+    width: auto;
+    min-width: 220px;
+    margin-top: 0;
+  }
+
+  /* ── Mobile ── */
+  @media screen and (max-width: 768px) {
+    .ballers-mundial-img-hover { display: none; }
+  }
+
+  @media screen and (max-width: 1250px) {
+    .ballers-mundial-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .ballers-mundial-image-box { height: 270px; }
+  }
+
+  @media screen and (max-width: 860px) {
+    .ballers-mundial-page { padding: 26px 14px 52px; }
+    .ballers-mundial-toolbar { flex-direction: column; text-align: center; gap: 10px; }
+    .ballers-mundial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .ballers-mundial-card { border-radius: 16px; min-height: 380px; }
+    .ballers-mundial-image-box { height: 220px; padding: 13px; }
+    .ballers-mundial-hero { padding: 32px 16px 28px; border-radius: 18px; }
+    .ballers-mundial-hero h1 { font-size: 48px !important; }
+    .ballers-mundial-title { font-size: 15.5px !important; min-height: 48px; }
+  }
+
+  @media screen and (max-width: 520px) {
+    .ballers-mundial-page { padding: 20px 10px 42px; }
+    .ballers-mundial-grid { grid-template-columns: 1fr; gap: 15px; }
+    .ballers-mundial-image-box { height: 300px; }
+    .ballers-mundial-title { font-size: 18px !important; min-height: auto; }
+    .ballers-mundial-flags { font-size: 20px; letter-spacing: 2px; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var grid = document.getElementById('BallersMundialGrid-{{ section.id }}');
+    if (!grid) return;
+
+    var multiCards = Array.from(grid.querySelectorAll('.ballers-mundial-card.has-hover-image'));
+    if (multiCards.length === 0) return;
+
+    var showingHover = multiCards.map(function () { return false; });
+
+    setInterval(function () {
+      multiCards.forEach(function (card, i) {
+        var main  = card.querySelector('.ballers-mundial-img-main');
+        var hover = card.querySelector('.ballers-mundial-img-hover');
+        if (!main || !hover) return;
+
+        showingHover[i] = !showingHover[i];
+        main.style.opacity  = showingHover[i] ? '0' : '1';
+        hover.style.opacity = showingHover[i] ? '1' : '0';
+      });
+    }, 2500);
+  });
+</script>
+
+{% schema %}
+{
+  "name": "מונדיאל 2026",
+  "settings": [],
+  "presets": [
+    {
+      "name": "מונדיאל 2026"
+    }
+  ]
+}
+{% endschema %}

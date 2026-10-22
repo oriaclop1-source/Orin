@@ -1,0 +1,810 @@
+<section class="ballers-search-results-page" dir="rtl">
+
+  <div class="ballers-search-container">
+
+    <header class="ballers-search-hero">
+      <div class="ballers-search-eyebrow">SEARCH RESULTS</div>
+
+      {% if search.performed %}
+        <h1>תוצאות חיפוש</h1>
+        <p>
+          תוצאות עבור:
+          <strong>{{ search.terms }}</strong>
+        </p>
+      {% else %}
+        <h1>חיפוש מוצרים</h1>
+        <p>חפש חולצות, חליפות, קבוצות או נבחרות.</p>
+      {% endif %}
+    </header>
+
+    <div class="ballers-search-box-wrap">
+      <form action="/search" method="get" role="search" class="ballers-search-page-form">
+        <input
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="חפש מוצר..."
+          class="ballers-search-page-input"
+          autocomplete="off"
+        >
+
+        <input type="hidden" name="type" value="product">
+
+        <button type="submit" class="ballers-search-page-button">
+          חפש
+        </button>
+      </form>
+    </div>
+
+    {% if search.performed %}
+
+      {% assign product_results_count = 0 %}
+
+      {% for item in search.results %}
+        {% if item.object_type == 'product' %}
+          {% assign product_results_count = product_results_count | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+
+      {% if product_results_count > 0 %}
+
+        <div class="ballers-search-toolbar">
+          <div class="ballers-search-count">
+            נמצאו {{ product_results_count }} מוצרים
+          </div>
+
+          <a href="/" class="ballers-search-home-link">
+            חזרה לעמוד הבית
+          </a>
+        </div>
+
+        {% paginate search.results by 48 %}
+
+          <div class="ballers-search-grid">
+
+            {% for item in search.results %}
+
+              {% if item.object_type == 'product' %}
+                {% assign product = item %}
+
+                <article class="ballers-search-card">
+
+                  <a href="{{ product.url }}" class="ballers-search-image-box" aria-label="{{ product.title | escape }}">
+
+                    {% if product.featured_image != blank %}
+                      <img
+                        src="{{ product.featured_image | image_url: width: 900 }}"
+                        alt="{{ product.title | escape }}"
+                        loading="lazy"
+                        width="{{ product.featured_image.width }}"
+                        height="{{ product.featured_image.height }}"
+                      >
+                    {% else %}
+                      <div class="ballers-search-no-image">
+                        אין תמונה
+                      </div>
+                    {% endif %}
+
+                    {% if product.compare_at_price_max > product.price %}
+                      <span class="ballers-search-sale-badge">
+                        מבצע
+                      </span>
+                    {% endif %}
+
+                  </a>
+
+                  <div class="ballers-search-content">
+
+                    <h2 class="ballers-search-title">
+                      <a href="{{ product.url }}">
+                        {{ product.title }}
+                      </a>
+                    </h2>
+
+                    <div class="ballers-search-price">
+                      {% if product.price_varies %}
+                        <span>החל מ־{{ product.price_min | money_without_currency }} ₪</span>
+                      {% else %}
+                        <span>{{ product.price | money_without_currency }} ₪</span>
+                      {% endif %}
+
+                      {% if product.compare_at_price_max > product.price %}
+                        <del>{{ product.compare_at_price_max | money_without_currency }} ₪</del>
+                      {% endif %}
+                    </div>
+
+                    <a href="{{ product.url }}" class="ballers-search-button-product">
+                      לצפייה במוצר
+                    </a>
+
+                  </div>
+
+                </article>
+              {% endif %}
+
+            {% endfor %}
+
+          </div>
+
+          {% if paginate.pages > 1 %}
+            <nav class="ballers-search-pagination" aria-label="עמודי חיפוש">
+
+              {% if paginate.previous %}
+                <a href="{{ paginate.previous.url }}" class="ballers-search-page-link">
+                  הקודם
+                </a>
+              {% endif %}
+
+              <span class="ballers-search-page-status">
+                עמוד {{ paginate.current_page }} מתוך {{ paginate.pages }}
+              </span>
+
+              {% if paginate.next %}
+                <a href="{{ paginate.next.url }}" class="ballers-search-page-link">
+                  הבא
+                </a>
+              {% endif %}
+
+            </nav>
+          {% endif %}
+
+        {% endpaginate %}
+
+      {% else %}
+
+        <div class="ballers-search-empty">
+          <h2>לא נמצאו מוצרים</h2>
+          <p>
+            נסה לחפש שם קבוצה, נבחרת, עונה או מילת מפתח אחרת.
+          </p>
+
+          <div class="ballers-search-suggestions">
+            <a href="/search?q=ריאל&type=product">ריאל מדריד</a>
+            <a href="/search?q=ברזיל&type=product">ברזיל</a>
+            <a href="/search?q=חליפות ילדים&type=product">חליפות ילדים</a>
+            <a href="/search?q=רטרו&type=product">רטרו</a>
+          </div>
+        </div>
+
+      {% endif %}
+
+    {% else %}
+
+      <div class="ballers-search-empty">
+        <h2>מה בא לך למצוא?</h2>
+        <p>
+          אפשר לחפש לפי קבוצה, נבחרת, עונה או סוג מוצר.
+        </p>
+
+        <div class="ballers-search-suggestions">
+          <a href="/search?q=ריאל&type=product">ריאל מדריד</a>
+          <a href="/search?q=ברזיל&type=product">ברזיל</a>
+          <a href="/search?q=חליפות ילדים&type=product">חליפות ילדים</a>
+          <a href="/search?q=רטרו&type=product">רטרו</a>
+        </div>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .ballers-search-results-page,
+  .ballers-search-results-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-search-results-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(0, 0, 0, 0.045), transparent 34%),
+      linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+    padding: 34px 18px 64px;
+    overflow: hidden;
+  }
+
+  .ballers-search-container {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .ballers-search-hero {
+    position: relative;
+    overflow: hidden;
+    background: #101112;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 34px 22px;
+    text-align: center;
+    margin-bottom: 24px;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.16);
+    animation: ballersSearchFadeUp 0.5s ease both;
+  }
+
+  .ballers-search-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px;
+    left: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ballers-search-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+  }
+
+  .ballers-search-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+
+  .ballers-search-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(34px, 4.5vw, 58px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-search-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 880px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-search-hero strong {
+    color: #ffffff;
+    font-weight: 900;
+    border-bottom: 2px solid rgba(255,255,255,0.45);
+    padding-bottom: 2px;
+  }
+
+  .ballers-search-box-wrap {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto 28px;
+    animation: ballersSearchFadeUp 0.5s ease both;
+    animation-delay: 0.05s;
+  }
+
+  .ballers-search-page-form {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+    border: 2px solid rgba(0,0,0,0.10);
+    transition:
+      border-color 0.22s ease,
+      box-shadow 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-search-page-form:focus-within {
+    border-color: rgba(0,0,0,0.65);
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.06), 0 16px 34px rgba(0,0,0,0.14);
+    transform: translateY(-2px);
+  }
+
+  .ballers-search-page-input {
+    flex: 1;
+    min-width: 0;
+    height: 54px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #111111;
+    font-size: 17px;
+    font-weight: 800;
+    padding: 0 20px;
+    direction: rtl;
+  }
+
+  .ballers-search-page-input::placeholder {
+    color: rgba(0,0,0,0.45);
+  }
+
+  .ballers-search-page-button {
+    width: 96px;
+    height: 54px;
+    border: none;
+    background: #111111;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition:
+      background 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-search-page-button:hover {
+    background: #2b2b2b;
+  }
+
+  .ballers-search-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 22px;
+    animation: ballersSearchFadeUp 0.5s ease both;
+    animation-delay: 0.08s;
+  }
+
+  .ballers-search-count {
+    color: #111111;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .ballers-search-home-link {
+    color: #111111 !important;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #111111;
+    transition:
+      transform 0.22s ease,
+      color 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .ballers-search-home-link:hover {
+    color: #555555 !important;
+    border-color: #555555;
+    transform: translateY(-2px);
+  }
+
+  .ballers-search-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .ballers-search-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    animation: ballersSearchCardIn 0.48s ease both;
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease;
+  }
+
+  .ballers-search-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 22px 46px rgba(0,0,0,0.14);
+    border-color: rgba(0,0,0,0.18);
+  }
+
+  .ballers-search-image-box {
+    position: relative;
+    width: 100%;
+    height: 285px;
+    padding: 16px;
+    background: linear-gradient(135deg, #eeeeee 0%, #ffffff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-search-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    transition:
+      transform 0.28s ease,
+      filter 0.28s ease;
+  }
+
+  .ballers-search-card:hover .ballers-search-image-box img {
+    transform: scale(1.055);
+    filter: drop-shadow(0 15px 15px rgba(0,0,0,0.16));
+  }
+
+  .ballers-search-no-image {
+    color: rgba(0,0,0,0.55);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-search-sale-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: #111111;
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+  }
+
+  .ballers-search-content {
+    padding: 17px 15px 19px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+  }
+
+  .ballers-search-title {
+    margin: 0 0 12px !important;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000 !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.45px !important;
+  }
+
+  .ballers-search-title a {
+    color: #000000 !important;
+    text-decoration: none !important;
+    font: inherit !important;
+    transition: color 0.2s ease;
+  }
+
+  .ballers-search-card:hover .ballers-search-title a {
+    color: #333333 !important;
+  }
+
+  .ballers-search-price {
+    margin-bottom: 17px;
+    min-height: 27px;
+    color: #111111;
+    font-size: 19px;
+    font-weight: 900;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-search-price del {
+    color: rgba(0,0,0,0.36);
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .ballers-search-button-product {
+    margin-top: auto;
+    width: 100%;
+    min-height: 45px;
+    border-radius: 12px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-search-button-product:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.22);
+  }
+
+  .ballers-search-pagination {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-search-page-link {
+    min-width: 96px;
+    min-height: 42px;
+    padding: 0 18px;
+    border-radius: 10px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 900;
+    transition:
+      background 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-search-page-link:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+  }
+
+  .ballers-search-page-status {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-search-empty {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 46px 20px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    animation: ballersSearchFadeUp 0.5s ease both;
+  }
+
+  .ballers-search-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 28px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-search-empty p {
+    margin: 0 auto 22px !important;
+    max-width: 760px;
+    color: rgba(0,0,0,0.64);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .ballers-search-suggestions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-search-suggestions a {
+    min-height: 40px;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: #111111;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+    transition:
+      background 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .ballers-search-suggestions a:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+  }
+
+  @keyframes ballersSearchFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ballersSearchCardIn {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @media screen and (max-width: 1250px) {
+    .ballers-search-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .ballers-search-image-box {
+      height: 270px;
+    }
+  }
+
+  @media screen and (max-width: 860px) {
+    .ballers-search-results-page {
+      padding: 26px 14px 52px;
+    }
+
+    .ballers-search-hero {
+      padding: 30px 16px;
+      border-radius: 17px;
+      margin-bottom: 24px;
+    }
+
+    .ballers-search-hero h1 {
+      font-size: 38px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-search-hero p {
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .ballers-search-toolbar {
+      flex-direction: column;
+      text-align: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ballers-search-count {
+      font-size: 15px;
+    }
+
+    .ballers-search-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .ballers-search-card {
+      border-radius: 16px;
+      min-height: 380px;
+    }
+
+    .ballers-search-image-box {
+      height: 220px;
+      padding: 13px;
+    }
+
+    .ballers-search-content {
+      padding: 14px 11px 15px;
+    }
+
+    .ballers-search-title {
+      font-size: 15.5px !important;
+      min-height: 48px;
+    }
+
+    .ballers-search-price {
+      font-size: 16px;
+      margin-bottom: 13px;
+    }
+
+    .ballers-search-button-product {
+      min-height: 41px;
+      font-size: 14px;
+      border-radius: 10px;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .ballers-search-results-page {
+      padding: 20px 10px 42px;
+    }
+
+    .ballers-search-hero {
+      padding: 28px 13px;
+      border-radius: 16px;
+    }
+
+    .ballers-search-hero h1 {
+      font-size: 34px !important;
+      letter-spacing: -0.5px !important;
+    }
+
+    .ballers-search-page-form {
+      border-radius: 13px;
+    }
+
+    .ballers-search-page-input {
+      height: 48px;
+      font-size: 15px;
+      padding: 0 14px;
+    }
+
+    .ballers-search-page-button {
+      width: 76px;
+      height: 48px;
+      font-size: 14px;
+    }
+
+    .ballers-search-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+
+    .ballers-search-card {
+      min-height: auto;
+    }
+
+    .ballers-search-image-box {
+      height: 300px;
+    }
+
+    .ballers-search-title {
+      font-size: 18px !important;
+      min-height: auto;
+    }
+
+    .ballers-search-price {
+      font-size: 19px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Ballers search results",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers search results"
+    }
+  ]
+}
+{% endschema %}

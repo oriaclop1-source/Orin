@@ -1,0 +1,229 @@
+/* Additions for the static site (things Shopify used to provide). */
+
+html {
+  background: #ffffff;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #111111;
+  font-family: "Rubik", "Heebo", Arial, sans-serif;
+}
+
+#App:focus {
+  outline: none;
+}
+
+.ballers-cart-drawer-remove {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-control button {
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111111;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qty-control button:hover {
+  background: #071d46;
+  border-color: #071d46;
+  color: #ffffff;
+}
+
+.promo-line strong {
+  color: #0a8a3a;
+}
+
+.season-badge {
+  min-height: 140px;
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #071d46 0%, #0b3a88 55%, #0969d8 100%) !important;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: clamp(34px, 5vw, 56px);
+  letter-spacing: 1px;
+}
+
+/* Checkout (cart page) */
+
+.checkout-page {
+  padding: 34px 16px 64px;
+  font-family: "Rubik", "Heebo", Arial, sans-serif;
+}
+
+.checkout-container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.checkout-items {
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.checkout-form {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 16px;
+}
+
+.checkout-form h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.checkout-form .ballers-field {
+  margin-bottom: 12px;
+}
+
+.checkout-form .ballers-field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.checkout-form input[type="text"],
+.checkout-form input[type="tel"],
+.checkout-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 14px;
+  font: inherit;
+  font-size: 16px;
+  background: #ffffff;
+}
+
+.checkout-form input:focus,
+.checkout-form textarea:focus {
+  outline: 3px solid rgba(9, 105, 216, 0.35);
+  border-color: #0969d8;
+}
+
+.checkout-pay {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 0 0 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.checkout-pay legend {
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.checkout-pay label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.checkout-totals {
+  margin: 6px 0 12px;
+}
+
+.checkout-error {
+  min-height: 1em;
+  margin: 0 0 8px;
+  color: #c4001a;
+  font-weight: 900;
+}
+
+.whatsapp-btn {
+  width: 100%;
+  background: #1ebe57 !important;
+  border-color: #1ebe57 !important;
+  color: #ffffff !important;
+}
+
+.whatsapp-btn:hover {
+  background: #169c46 !important;
+}
+
+.checkout-hint {
+  margin: 10px 0 0;
+  color: rgba(0, 0, 0, 0.62);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.checkout-clear {
+  width: 100%;
+  margin-top: 12px;
+  min-height: 44px;
+  border: 2px solid #111111;
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.load-error {
+  padding: 60px 16px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.site-footer {
+  padding: 26px 16px;
+  background: #071d46;
+  color: #ffffff;
+  text-align: center;
+  font-family: "Rubik", "Heebo", Arial, sans-serif;
+  font-weight: 800;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+@media (max-width: 860px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-form {
+    position: static;
+  }
+}

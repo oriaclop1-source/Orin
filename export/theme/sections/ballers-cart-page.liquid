@@ -1,0 +1,648 @@
+<section class="ballers-cart-page" dir="rtl">
+
+  <div class="ballers-cart-container">
+
+    <header class="ballers-cart-hero">
+      <div class="ballers-cart-eyebrow">YOUR CART</div>
+      <h1>העגלה שלך</h1>
+
+      {% if cart.item_count > 0 %}
+        <p>כאן אפשר לבדוק את המוצרים שבחרת לפני מעבר לתשלום.</p>
+      {% else %}
+        <p>העגלה שלך עדיין ריקה. אפשר לחזור לחנות ולהוסיף מוצרים.</p>
+      {% endif %}
+    </header>
+
+    {% if cart.item_count > 0 %}
+
+      <form action="/cart" method="post" novalidate class="ballers-cart-form">
+
+        <div class="ballers-cart-layout">
+
+          <div class="ballers-cart-items">
+
+            {% for item in cart.items %}
+              <article class="ballers-cart-item">
+
+                <a href="{{ item.url }}" class="ballers-cart-image">
+                  {% if item.image %}
+                    <img
+                      src="{{ item.image | image_url: width: 500 }}"
+                      alt="{{ item.product.title | escape }}"
+                      loading="lazy"
+                    >
+                  {% else %}
+                    <div class="ballers-cart-no-image">אין תמונה</div>
+                  {% endif %}
+                </a>
+
+                <div class="ballers-cart-item-info">
+
+                  <h2>
+                    <a href="{{ item.url }}">
+                      {{ item.product.title }}
+                    </a>
+                  </h2>
+
+                  {% unless item.product.has_only_default_variant %}
+                    <div class="ballers-cart-variant">
+                      {{ item.variant.title }}
+                    </div>
+                  {% endunless %}
+
+                  {% if item.properties.size > 0 %}
+                    <div class="ballers-cart-properties">
+                      {% for property in item.properties %}
+                        {% assign first_character = property.first | slice: 0 %}
+                        {% unless property.last == blank or first_character == '_' %}
+                          <div>
+                            <strong>{{ property.first }}:</strong>
+                            <span>{{ property.last }}</span>
+                          </div>
+                        {% endunless %}
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+
+                  <div class="ballers-cart-mobile-price">
+                    {{ item.final_line_price | money_without_currency }} ₪
+                  </div>
+
+                  <div class="ballers-cart-actions">
+
+                    <label for="Quantity-{{ item.index | plus: 1 }}">
+                      כמות
+                    </label>
+
+                    <input
+                      id="Quantity-{{ item.index | plus: 1 }}"
+                      class="ballers-cart-qty"
+                      type="number"
+                      name="updates[]"
+                      value="{{ item.quantity }}"
+                      min="0"
+                    >
+
+                    <a
+                      href="{{ item.url_to_remove }}"
+                      class="ballers-cart-remove"
+                      aria-label="הסרת מוצר"
+                    >
+                      הסר
+                    </a>
+
+                  </div>
+
+                </div>
+
+                <div class="ballers-cart-price">
+                  <div class="ballers-cart-unit">
+                    {{ item.final_price | money_without_currency }} ₪ ליח׳
+                  </div>
+
+                  <div class="ballers-cart-line">
+                    {{ item.final_line_price | money_without_currency }} ₪
+                  </div>
+                </div>
+
+              </article>
+            {% endfor %}
+
+          </div>
+
+          <aside class="ballers-cart-summary">
+
+            <h2>סיכום הזמנה</h2>
+
+            <div class="ballers-summary-row">
+              <span>מספר פריטים</span>
+              <strong>{{ cart.item_count }}</strong>
+            </div>
+
+            <div class="ballers-summary-row">
+              <span>סכום ביניים</span>
+              <strong>{{ cart.total_price | money_without_currency }} ₪</strong>
+            </div>
+
+            <div class="ballers-summary-note">
+              משלוחים ומסים יחושבו בשלב התשלום לפי פרטי ההזמנה.
+            </div>
+
+            <button type="submit" name="update" class="ballers-cart-update">
+              עדכן עגלה
+            </button>
+
+            <button type="submit" name="checkout" class="ballers-cart-checkout">
+              מעבר לתשלום
+            </button>
+
+            <a href="/collections/all" class="ballers-cart-continue">
+              המשך קנייה
+            </a>
+
+          </aside>
+
+        </div>
+
+      </form>
+
+    {% else %}
+
+      <div class="ballers-cart-empty">
+        <h2>העגלה ריקה</h2>
+        <p>אפשר להתחיל לבחור חולצות, חליפות ומוצרים מהחנות.</p>
+
+        <a href="/" class="ballers-cart-empty-button">
+          חזרה לחנות
+        </a>
+      </div>
+
+    {% endif %}
+
+  </div>
+
+</section>
+
+<style>
+
+  .ballers-cart-page,
+  .ballers-cart-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-cart-page {
+    width: 100%;
+    direction: rtl;
+    background:
+      radial-gradient(circle at top right, rgba(0,0,0,0.045), transparent 34%),
+      linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%);
+    padding: 34px 18px 70px;
+  }
+
+  .ballers-cart-container {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+  }
+
+  .ballers-cart-hero {
+    position: relative;
+    overflow: hidden;
+    background: #101112;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 34px 22px;
+    text-align: center;
+    margin-bottom: 28px;
+    box-shadow: 0 16px 42px rgba(0,0,0,0.16);
+  }
+
+  .ballers-cart-hero::before {
+    content: "";
+    position: absolute;
+    top: -95px;
+    left: -90px;
+    width: 230px;
+    height: 230px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ballers-cart-hero::after {
+    content: "";
+    position: absolute;
+    right: -110px;
+    bottom: -130px;
+    width: 280px;
+    height: 280px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.045);
+  }
+
+  .ballers-cart-eyebrow {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.22);
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+  }
+
+  .ballers-cart-hero h1 {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 10px !important;
+    color: #ffffff !important;
+    font-size: clamp(34px, 4.5vw, 58px) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-cart-hero p {
+    position: relative;
+    z-index: 2;
+    max-width: 780px;
+    margin: 0 auto !important;
+    color: rgba(255,255,255,0.82);
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 800;
+    line-height: 1.55;
+  }
+
+  .ballers-cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 26px;
+    align-items: start;
+  }
+
+  .ballers-cart-items {
+    display: grid;
+    gap: 18px;
+  }
+
+  .ballers-cart-item {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr) 150px;
+    gap: 18px;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    padding: 16px;
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .ballers-cart-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+    border-color: rgba(0,0,0,0.16);
+  }
+
+  .ballers-cart-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 15px;
+    background: #f1f3f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .ballers-cart-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .ballers-cart-no-image {
+    color: rgba(0,0,0,0.48);
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-item-info h2 {
+    margin: 0 0 8px !important;
+    color: #111111 !important;
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+  }
+
+  .ballers-cart-item-info h2 a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .ballers-cart-variant {
+    color: rgba(0,0,0,0.62);
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .ballers-cart-properties {
+    display: grid;
+    gap: 4px;
+    color: rgba(0,0,0,0.7);
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .ballers-cart-properties strong {
+    color: #111111;
+    font-weight: 900;
+  }
+
+  .ballers-cart-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ballers-cart-actions label {
+    color: #111111;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-qty {
+    width: 74px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.14);
+    padding: 0 10px;
+    text-align: center;
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+    outline: none;
+  }
+
+  .ballers-cart-qty:focus {
+    border-color: #111111;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.06);
+  }
+
+  .ballers-cart-remove {
+    color: rgba(0,0,0,0.62) !important;
+    text-decoration: underline !important;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-remove:hover {
+    color: #111111 !important;
+  }
+
+  .ballers-cart-price {
+    text-align: left;
+    display: grid;
+    gap: 6px;
+  }
+
+  .ballers-cart-unit {
+    color: rgba(0,0,0,0.54);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .ballers-cart-line {
+    color: #111111;
+    font-size: 21px;
+    font-weight: 900;
+  }
+
+  .ballers-cart-mobile-price {
+    display: none;
+    color: #111111;
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+
+  .ballers-cart-summary {
+    position: sticky;
+    top: 18px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+    padding: 22px;
+  }
+
+  .ballers-cart-summary h2 {
+    margin: 0 0 18px !important;
+    color: #111111 !important;
+    font-size: 26px !important;
+    font-weight: 900 !important;
+    line-height: 1.1 !important;
+  }
+
+  .ballers-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 13px 0;
+    color: rgba(0,0,0,0.72);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .ballers-summary-row strong {
+    color: #111111;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .ballers-summary-note {
+    margin: 16px 0;
+    padding: 13px 14px;
+    border-radius: 12px;
+    background: #f4f4f4;
+    color: rgba(0,0,0,0.68);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .ballers-cart-update,
+  .ballers-cart-checkout,
+  .ballers-cart-continue,
+  .ballers-cart-empty-button {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none !important;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease,
+      border-color 0.22s ease;
+  }
+
+  .ballers-cart-update {
+    border: 1px solid rgba(0,0,0,0.18);
+    background: #ffffff;
+    color: #111111;
+    margin-bottom: 10px;
+  }
+
+  .ballers-cart-update:hover {
+    transform: translateY(-2px);
+    border-color: #111111;
+  }
+
+  .ballers-cart-checkout {
+    border: none;
+    background: #111111;
+    color: #ffffff;
+    margin-bottom: 12px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+  }
+
+  .ballers-cart-checkout:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0,0,0,0.24);
+  }
+
+  .ballers-cart-continue {
+    background: transparent;
+    color: #111111 !important;
+    border: 1px solid rgba(0,0,0,0.12);
+  }
+
+  .ballers-cart-continue:hover {
+    border-color: #111111;
+    transform: translateY(-2px);
+  }
+
+  .ballers-cart-empty {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 18px;
+    padding: 46px 20px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+  }
+
+  .ballers-cart-empty h2 {
+    margin: 0 0 10px !important;
+    color: #111111 !important;
+    font-size: 30px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-cart-empty p {
+    margin: 0 auto 22px !important;
+    max-width: 680px;
+    color: rgba(0,0,0,0.64);
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .ballers-cart-empty-button {
+    max-width: 240px;
+    margin: 0 auto;
+    background: #111111;
+    color: #ffffff !important;
+    border: none;
+  }
+
+  .ballers-cart-empty-button:hover {
+    background: #2b2b2b;
+    transform: translateY(-2px);
+  }
+
+  @media screen and (max-width: 1050px) {
+    .ballers-cart-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .ballers-cart-summary {
+      position: relative;
+      top: auto;
+    }
+  }
+
+  @media screen and (max-width: 720px) {
+    .ballers-cart-page {
+      padding: 24px 10px 50px;
+    }
+
+    .ballers-cart-hero {
+      padding: 28px 14px;
+      border-radius: 16px;
+    }
+
+    .ballers-cart-hero h1 {
+      font-size: 34px !important;
+    }
+
+    .ballers-cart-item {
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 13px;
+      padding: 13px;
+      border-radius: 16px;
+    }
+
+    .ballers-cart-image {
+      width: 110px;
+      height: 110px;
+      border-radius: 13px;
+    }
+
+    .ballers-cart-price {
+      display: none;
+    }
+
+    .ballers-cart-mobile-price {
+      display: block;
+    }
+
+    .ballers-cart-item-info h2 {
+      font-size: 16px !important;
+    }
+
+    .ballers-cart-properties {
+      font-size: 13px;
+    }
+
+    .ballers-cart-summary {
+      padding: 18px;
+      border-radius: 16px;
+    }
+  }
+
+  @media screen and (max-width: 420px) {
+    .ballers-cart-item {
+      grid-template-columns: 1fr;
+    }
+
+    .ballers-cart-image {
+      width: 100%;
+      height: 240px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Ballers cart page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers cart page"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,34 @@
+{% comment %}
+  New season 2026/2027 cards shown first in the best sellers row.
+  To swap a shirt, replace its handle in the list below (handles are separated by commas).
+{% endcomment %}
+{% assign new_season_handles = 'ריאל-מדריד-בית-26-27,ברצלונה-חולצת-בית-26-27,ברצלונה-חוץ-26-27,mntzstr-syty-byt-26-27' | split: ',' %}
+
+{% for ns_handle in new_season_handles %}
+  {% assign ns = all_products[ns_handle] %}
+  {% if ns != blank %}
+    <article class="ballers-product-card">
+      <a href="{{ ns.url }}" class="ballers-image-box" tabindex="-1" aria-hidden="true">
+        {% if ns.featured_image %}
+          <img src="{{ ns.featured_image | image_url: width: 800 }}" alt="" loading="lazy">
+        {% else %}
+          <div class="ballers-image-placeholder">אין תמונה</div>
+        {% endif %}
+      </a>
+
+      <div class="ballers-card-info">
+        <h3><a href="{{ ns.url }}">{{ ns.title }}</a></h3>
+
+        <p>
+          {% if ns.price_varies %}
+            החל מ- {{ ns.price_min | money_without_currency }} ₪
+          {% else %}
+            {{ ns.price | money_without_currency }} ₪
+          {% endif %}
+        </p>
+
+        <a href="{{ ns.url }}" class="ballers-buy-btn" aria-label="לצפייה במוצר: {{ ns.title | escape }}">לצפייה במוצר</a>
+      </div>
+    </article>
+  {% endif %}
+{% endfor %}

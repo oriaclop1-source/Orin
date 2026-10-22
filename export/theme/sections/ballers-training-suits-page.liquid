@@ -1,0 +1,1125 @@
+<section class="ballers-training-product-page" dir="rtl">
+
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  <div class="ballers-training-product-container">
+
+    <div class="ballers-training-product-grid">
+
+      <div class="ballers-training-product-gallery">
+
+        <button type="button" class="ballers-training-main-image-box" id="BallersTrainingOpenImageModal" aria-label="הגדלת תמונת מוצר">
+          {% if product.featured_image %}
+            <img
+              src="{{ product.featured_image | image_url: width: 1200 }}"
+              data-full-image="{{ product.featured_image | image_url: width: 1800 }}"
+              alt="{{ product.title | escape }}"
+              class="ballers-training-main-product-image"
+              loading="eager"
+            >
+            <span class="ballers-training-zoom-hint">לחץ להגדלה</span>
+          {% else %}
+            <div class="ballers-training-no-image">אין תמונה</div>
+          {% endif %}
+        </button>
+
+        {% if product.images.size > 1 %}
+          <div class="ballers-training-thumbs">
+            {% for image in product.images limit: 8 %}
+              <button class="ballers-training-thumb-btn" type="button">
+                <img
+                  src="{{ image | image_url: width: 180 }}"
+                  data-main-src="{{ image | image_url: width: 1200 }}"
+                  data-full-src="{{ image | image_url: width: 1800 }}"
+                  alt="{{ product.title | escape }}"
+                  loading="lazy"
+                >
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      </div>
+
+      <div class="ballers-training-product-info">
+
+        <div class="ballers-training-product-badge">
+          חליפת אימון
+        </div>
+
+        <h1 class="ballers-training-product-title">
+          {{ product.title }}
+        </h1>
+
+        <div class="ballers-training-product-price">
+          <span id="BallersTrainingProductPrice">
+            {{ current_variant.price | money_without_currency }} ₪
+          </span>
+
+          {% if current_variant.compare_at_price > current_variant.price %}
+            <del>
+              {{ current_variant.compare_at_price | money_without_currency }} ₪
+            </del>
+          {% endif %}
+        </div>
+
+        {% if product.description != blank %}
+          <div class="ballers-training-product-description">
+            {{ product.description }}
+          </div>
+        {% endif %}
+
+        <div class="ballers-training-size-box">
+          <div class="ballers-training-size-head">
+            <h3>טבלת מידות</h3>
+            <p>מומלץ לבדוק מידה לפני הזמנה</p>
+          </div>
+
+          <div class="ballers-training-size-buttons">
+            <button type="button" class="ballers-training-size-btn" data-size-modal="mature">
+              טבלת מידות מבוגרים
+            </button>
+          </div>
+        </div>
+
+        {% form 'product', product, class: 'ballers-training-product-form', id: 'BallersTrainingProductForm' %}
+
+          {% if product.has_only_default_variant %}
+            <input type="hidden" name="id" id="BallersTrainingVariantId" value="{{ current_variant.id }}">
+          {% else %}
+            <input type="hidden" name="id" id="BallersTrainingVariantId" value="">
+          {% endif %}
+
+          {% unless product.has_only_default_variant %}
+
+            <div class="ballers-training-options">
+
+              {% assign size_order = 'S,M,L,XL,XXL,2XL,3XL' | split: ',' %}
+              {% assign size_order_check = '|S|M|L|XL|XXL|2XL|3XL|' %}
+
+              {% for option in product.options_with_values %}
+
+                {% assign option_name_down = option.name | downcase %}
+                {% assign is_size_option = false %}
+
+                {% if option.name contains 'מיד' or option_name_down contains 'size' %}
+                  {% assign is_size_option = true %}
+                {% endif %}
+
+                <div class="ballers-training-option-group" data-required-option="true" data-option-position="{{ option.position }}">
+                  <label class="ballers-training-option-label">
+                    {% if is_size_option %}
+                      בחר מידה
+                    {% else %}
+                      בחר {{ option.name }}
+                    {% endif %}
+                  </label>
+
+                  <div class="ballers-training-option-values" data-option-position="{{ option.position }}">
+
+                    {% if is_size_option %}
+
+                      {% for size_value in size_order %}
+                        {% if option.values contains size_value %}
+                          <button
+                            type="button"
+                            class="ballers-training-option-btn"
+                            data-option-value="{{ size_value | escape }}"
+                            data-option-position="{{ option.position }}"
+                          >
+                            {{ size_value }}
+                          </button>
+                        {% endif %}
+                      {% endfor %}
+
+                      {% for value in option.values %}
+                        {% assign value_check = '|' | append: value | append: '|' %}
+                        {% unless size_order_check contains value_check %}
+                          <button
+                            type="button"
+                            class="ballers-training-option-btn"
+                            data-option-value="{{ value | escape }}"
+                            data-option-position="{{ option.position }}"
+                          >
+                            {{ value }}
+                          </button>
+                        {% endunless %}
+                      {% endfor %}
+
+                    {% else %}
+
+                      {% for value in option.values %}
+                        <button
+                          type="button"
+                          class="ballers-training-option-btn"
+                          data-option-value="{{ value | escape }}"
+                          data-option-position="{{ option.position }}"
+                        >
+                          {{ value }}
+                        </button>
+                      {% endfor %}
+
+                    {% endif %}
+
+                  </div>
+                </div>
+
+              {% endfor %}
+
+            </div>
+
+            <div class="ballers-training-required-message" id="BallersTrainingRequiredMessage">
+              יש לבחור מידה לפני הוספה לעגלה.
+            </div>
+
+          {% endunless %}
+
+          <button
+            type="submit"
+            name="add"
+            class="ballers-training-add-to-cart"
+            {% unless product.has_only_default_variant %}disabled{% endunless %}
+            {% if product.has_only_default_variant %}
+              {% unless current_variant.available %}disabled{% endunless %}
+            {% endif %}
+          >
+            {% if product.has_only_default_variant %}
+              {% if current_variant.available %}
+                הוסף לעגלה
+              {% else %}
+                אזל מהמלאי
+              {% endif %}
+            {% else %}
+              בחר מידה
+            {% endif %}
+          </button>
+
+        {% endform %}
+
+        <div class="ballers-training-service-box">
+          <h3>משלוחים ושירות</h3>
+          <p>אנו שולחים הזמנות בין 7–15 ימי עסקים.</p>
+          <p>ייתכנו עיכובים בעקבות המצב הביטחוני.</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="ballers-training-image-modal" id="BallersTrainingImageModal">
+    <button type="button" class="ballers-training-image-modal-close" aria-label="סגירה">×</button>
+
+    <div class="ballers-training-image-modal-inner">
+      <img id="BallersTrainingModalImage" src="" alt="{{ product.title | escape }}">
+    </div>
+  </div>
+
+  <div class="ballers-training-size-modal" id="BallersTrainingSizeModalMature">
+    <div class="ballers-training-size-modal-content">
+      <button type="button" class="ballers-training-size-close">×</button>
+      <h3>טבלת מידות מבוגרים</h3>
+      <img src="{{ 'mature.png' | asset_url }}" alt="טבלת מידות מבוגרים">
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .ballers-training-product-page,
+  .ballers-training-product-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-training-product-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(9,105,216,0.10), transparent 32%),
+      linear-gradient(180deg, #f5f6f7 0%, #ffffff 100%);
+    padding: 42px 18px 70px;
+    direction: rtl;
+  }
+
+  .ballers-training-product-container {
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+  }
+
+  .ballers-training-product-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+    gap: 34px;
+    align-items: start;
+  }
+
+  .ballers-training-main-image-box {
+    width: 100%;
+    min-height: 620px;
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    overflow: hidden;
+    position: relative;
+    cursor: zoom-in;
+  }
+
+  .ballers-training-main-product-image {
+    width: 100%;
+    height: 100%;
+    max-height: 600px;
+    object-fit: contain;
+    display: block;
+    transition: transform 0.35s ease, filter 0.35s ease, opacity 0.22s ease;
+  }
+
+  .ballers-training-main-image-box:hover .ballers-training-main-product-image {
+    transform: scale(1.035);
+    filter: drop-shadow(0 18px 18px rgba(0,0,0,0.14));
+  }
+
+  .ballers-training-zoom-hint {
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+    background: rgba(17,17,17,0.88);
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-size: 13px;
+    font-weight: 900;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+
+  .ballers-training-main-image-box:hover .ballers-training-zoom-hint {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .ballers-training-no-image {
+    color: rgba(0,0,0,0.5);
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .ballers-training-thumbs {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .ballers-training-thumb-btn {
+    width: 88px;
+    height: 88px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 7px;
+    cursor: pointer;
+    flex: 0 0 auto;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ballers-training-thumb-btn:hover,
+  .ballers-training-thumb-btn.active {
+    transform: translateY(-3px);
+    border-color: #0969d8;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+  }
+
+  .ballers-training-thumb-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .ballers-training-product-info {
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 18px 42px rgba(0,0,0,0.08);
+    padding: 28px;
+    position: sticky;
+    top: 18px;
+  }
+
+  .ballers-training-product-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #071d46;
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 900;
+    margin-bottom: 14px;
+  }
+
+  .ballers-training-product-title {
+    margin: 0 0 14px !important;
+    color: #111111 !important;
+    font-size: clamp(30px, 3.3vw, 48px) !important;
+    font-weight: 900 !important;
+    line-height: 1.08 !important;
+    letter-spacing: -1px !important;
+  }
+
+  .ballers-training-product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    color: #111111;
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 18px;
+  }
+
+  .ballers-training-product-price del {
+    color: rgba(0,0,0,0.35);
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .ballers-training-product-description {
+    color: rgba(0,0,0,0.72);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.65;
+    margin-bottom: 18px;
+  }
+
+  .ballers-training-size-box {
+    background: #f4f7fb;
+    border: 1px solid rgba(9,105,216,0.20);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 18px 0;
+  }
+
+  .ballers-training-size-head {
+    margin-bottom: 12px;
+  }
+
+  .ballers-training-size-head h3 {
+    margin: 0 0 4px !important;
+    color: #111111 !important;
+    font-size: 19px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-training-size-head p {
+    margin: 0 !important;
+    color: rgba(0,0,0,0.58);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .ballers-training-size-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .ballers-training-size-btn {
+    min-height: 42px;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #111111;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .ballers-training-size-btn:hover {
+    transform: translateY(-2px);
+    border-color: #0969d8;
+    background: #eef5ff;
+  }
+
+  .ballers-training-product-form {
+    margin-top: 18px;
+  }
+
+  .ballers-training-options {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .ballers-training-option-group {
+    display: grid;
+    gap: 9px;
+  }
+
+  .ballers-training-option-label {
+    color: #111111;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .ballers-training-option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+
+  .ballers-training-option-btn {
+    min-width: 52px;
+    min-height: 41px;
+    border: 1px solid rgba(0,0,0,0.14);
+    border-radius: 11px;
+    background: #ffffff;
+    color: #111111;
+    padding: 0 13px;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .ballers-training-option-btn:hover,
+  .ballers-training-option-btn.active {
+    background: #071d46;
+    color: #ffffff;
+    border-color: #071d46;
+    transform: translateY(-2px);
+  }
+
+  .ballers-training-option-btn.unavailable,
+  .ballers-training-option-btn:disabled {
+    display: none;
+  }
+
+  .ballers-training-required-message {
+    display: block;
+    margin: 0 0 16px;
+    padding: 11px 13px;
+    border-radius: 12px;
+    background: #fff4e5;
+    color: #8a4b00;
+    border: 1px solid rgba(138,75,0,0.18);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.45;
+  }
+
+  .ballers-training-required-message.error {
+    background: #ffecec;
+    color: #a40000;
+    border-color: rgba(164,0,0,0.22);
+  }
+
+  .ballers-training-required-message.ready {
+    background: #eef8f2;
+    color: #1d6b3a;
+    border-color: rgba(29,107,58,0.20);
+  }
+
+  .ballers-training-add-to-cart {
+    width: 100%;
+    min-height: 54px;
+    border: none;
+    border-radius: 14px;
+    background: #071d46;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.18);
+    transition: transform 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, opacity 0.22s ease;
+  }
+
+  .ballers-training-add-to-cart:hover {
+    background: #0969d8;
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px rgba(0,0,0,0.22);
+  }
+
+  .ballers-training-add-to-cart:disabled {
+    opacity: 0.48;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    background: #777777;
+  }
+
+  .ballers-training-service-box {
+    margin-top: 18px;
+    padding: 17px 18px;
+    border-radius: 15px;
+    background: #f7f8f8;
+    border: 1px solid rgba(0,0,0,0.08);
+    color: #111111;
+  }
+
+  .ballers-training-service-box h3 {
+    margin: 0 0 9px !important;
+    color: #111111 !important;
+    font-size: 19px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-training-service-box p {
+    margin: 0 0 7px !important;
+    color: rgba(0,0,0,0.72);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .ballers-training-image-modal,
+  .ballers-training-size-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: rgba(0,0,0,0.86);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+  }
+
+  .ballers-training-image-modal.open,
+  .ballers-training-size-modal.open {
+    display: flex;
+  }
+
+  .ballers-training-image-modal-inner {
+    width: min(1050px, 96vw);
+    height: min(88vh, 900px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ballers-training-image-modal-inner img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+  }
+
+  .ballers-training-image-modal-close,
+  .ballers-training-size-close {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #111111;
+    font-size: 30px;
+    font-weight: 900;
+    cursor: pointer;
+    line-height: 1;
+    z-index: 1000000;
+  }
+
+  .ballers-training-size-modal {
+    background: rgba(0,0,0,0.72);
+  }
+
+  .ballers-training-size-modal-content {
+    position: relative;
+    width: min(900px, 96vw);
+    max-height: 90vh;
+    overflow: auto;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.32);
+    text-align: center;
+  }
+
+  .ballers-training-size-modal-content h3 {
+    margin: 0 0 16px !important;
+    color: #111111 !important;
+    font-size: 24px !important;
+    font-weight: 900 !important;
+  }
+
+  .ballers-training-size-modal-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+  }
+
+  body.ballers-site-dark .ballers-training-product-page {
+    background: #070707 !important;
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-training-main-image-box,
+  body.ballers-site-dark .ballers-training-product-info,
+  body.ballers-site-dark .ballers-training-service-box {
+    background: #151515 !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.12) !important;
+  }
+
+  body.ballers-site-dark .ballers-training-product-title,
+  body.ballers-site-dark .ballers-training-product-price,
+  body.ballers-site-dark .ballers-training-option-label,
+  body.ballers-site-dark .ballers-training-size-head h3,
+  body.ballers-site-dark .ballers-training-service-box h3 {
+    color: #ffffff !important;
+  }
+
+  body.ballers-site-dark .ballers-training-product-description,
+  body.ballers-site-dark .ballers-training-size-head p,
+  body.ballers-site-dark .ballers-training-service-box p {
+    color: rgba(255,255,255,0.72) !important;
+  }
+
+  body.ballers-site-dark .ballers-training-option-btn,
+  body.ballers-site-dark .ballers-training-size-btn {
+    background: #1f1f1f !important;
+    color: #ffffff !important;
+    border-color: rgba(255,255,255,0.16) !important;
+  }
+
+  body.ballers-site-dark .ballers-training-option-btn:hover,
+  body.ballers-site-dark .ballers-training-option-btn.active {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #ffffff !important;
+  }
+
+  @media screen and (max-width: 1050px) {
+    .ballers-training-product-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ballers-training-product-info {
+      position: relative;
+      top: auto;
+    }
+
+    .ballers-training-main-image-box {
+      min-height: 480px;
+    }
+  }
+
+  @media screen and (max-width: 620px) {
+    .ballers-training-product-page {
+      padding: 24px 10px 50px;
+    }
+
+    .ballers-training-main-image-box {
+      min-height: 360px;
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .ballers-training-zoom-hint {
+      opacity: 1;
+      transform: translateY(0);
+      left: 12px;
+      bottom: 12px;
+      font-size: 12px;
+      padding: 7px 11px;
+    }
+
+    .ballers-training-product-info {
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .ballers-training-product-title {
+      font-size: 28px !important;
+    }
+
+    .ballers-training-product-price {
+      font-size: 24px;
+    }
+
+    .ballers-training-image-modal-inner img {
+      padding: 10px;
+      border-radius: 14px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var section = document.querySelector('.ballers-training-product-page');
+
+    if (!section) {
+      return;
+    }
+
+    var variants = {{ product.variants | json }};
+    var productHasOnlyDefaultVariant = {{ product.has_only_default_variant | json }};
+    var optionButtons = section.querySelectorAll('.ballers-training-option-btn');
+    var optionGroups = section.querySelectorAll('.ballers-training-option-values');
+    var variantInput = section.querySelector('#BallersTrainingVariantId');
+    var priceBox = section.querySelector('#BallersTrainingProductPrice');
+    var addButton = section.querySelector('.ballers-training-add-to-cart');
+    var requiredMessage = section.querySelector('#BallersTrainingRequiredMessage');
+    var productForm = section.querySelector('#BallersTrainingProductForm');
+
+    function getSelectedOptions() {
+      var selected = [];
+
+      optionGroups.forEach(function (group) {
+        var active = group.querySelector('.ballers-training-option-btn.active');
+        selected.push(active ? active.getAttribute('data-option-value') : null);
+      });
+
+      return selected;
+    }
+
+    function allOptionsSelected() {
+      if (productHasOnlyDefaultVariant) {
+        return true;
+      }
+
+      var selectedOptions = getSelectedOptions();
+
+      return selectedOptions.length > 0 && selectedOptions.every(function (value) {
+        return value !== null && value !== '';
+      });
+    }
+
+    function formatPrice(cents) {
+      return (cents / 100).toFixed(2).replace('.00', '') + ' ₪';
+    }
+
+    function findMatchedVariant() {
+      var selectedOptions = getSelectedOptions();
+
+      if (!allOptionsSelected()) {
+        return null;
+      }
+
+      return variants.find(function (variant) {
+        return variant.options.every(function (optionValue, index) {
+          return optionValue === selectedOptions[index];
+        });
+      });
+    }
+
+    function updateOptionAvailability() {
+      if (productHasOnlyDefaultVariant) {
+        return;
+      }
+
+      var selectedOptions = getSelectedOptions();
+
+      optionButtons.forEach(function (button) {
+        var optionIndex = Number(button.getAttribute('data-option-position')) - 1;
+        var candidateValue = button.getAttribute('data-option-value');
+
+        var hasVariant = variants.some(function (variant) {
+          return variant.options.every(function (optionValue, index) {
+            if (index === optionIndex) {
+              return optionValue === candidateValue;
+            }
+
+            var selectedValue = selectedOptions[index];
+
+            if (selectedValue === null || selectedValue === '') {
+              return true;
+            }
+
+            return optionValue === selectedValue;
+          });
+        });
+
+        button.disabled = !hasVariant;
+        button.classList.toggle('unavailable', !hasVariant);
+
+        if (!hasVariant && button.classList.contains('active')) {
+          button.classList.remove('active');
+        }
+      });
+    }
+
+    function updateButtonState() {
+      if (productHasOnlyDefaultVariant) {
+        return;
+      }
+
+      var matchedVariant = findMatchedVariant();
+
+      if (!allOptionsSelected()) {
+        if (variantInput) {
+          variantInput.value = '';
+        }
+
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'בחר מידה';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('ready');
+          requiredMessage.classList.remove('error');
+          requiredMessage.textContent = 'יש לבחור מידה לפני הוספה לעגלה.';
+        }
+
+        return;
+      }
+
+      if (!matchedVariant) {
+        if (variantInput) {
+          variantInput.value = '';
+        }
+
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'השילוב שבחרת לא זמין';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('ready');
+          requiredMessage.classList.add('error');
+          requiredMessage.textContent = 'השילוב שבחרת לא זמין. נסה לבחור אפשרות אחרת.';
+        }
+
+        return;
+      }
+
+      if (variantInput) {
+        variantInput.value = matchedVariant.id;
+      }
+
+      if (priceBox) {
+        priceBox.textContent = formatPrice(matchedVariant.price);
+      }
+
+      if (matchedVariant.available) {
+        if (addButton) {
+          addButton.disabled = false;
+          addButton.textContent = 'הוסף לעגלה';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('error');
+          requiredMessage.classList.add('ready');
+          requiredMessage.textContent = 'מעולה, אפשר להוסיף לעגלה.';
+        }
+      } else {
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'אזל מהמלאי';
+        }
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('ready');
+          requiredMessage.classList.add('error');
+          requiredMessage.textContent = 'האפשרות שבחרת אזלה מהמלאי.';
+        }
+      }
+    }
+
+    optionButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var position = button.getAttribute('data-option-position');
+        var groupButtons = section.querySelectorAll('.ballers-training-option-btn[data-option-position="' + position + '"]');
+
+        groupButtons.forEach(function (btn) {
+          btn.classList.remove('active');
+        });
+
+        button.classList.add('active');
+
+        if (requiredMessage) {
+          requiredMessage.classList.remove('error');
+        }
+
+        updateOptionAvailability();
+        updateButtonState();
+      });
+    });
+
+    updateOptionAvailability();
+    updateButtonState();
+
+    if (productForm) {
+      productForm.addEventListener('submit', function (event) {
+        if (!productHasOnlyDefaultVariant && !allOptionsSelected()) {
+          event.preventDefault();
+
+          if (requiredMessage) {
+            requiredMessage.classList.add('error');
+            requiredMessage.textContent = 'לפני הוספה לעגלה חובה לבחור מידה.';
+            requiredMessage.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
+
+          return false;
+        }
+
+        if (!productHasOnlyDefaultVariant && (!variantInput || variantInput.value === '')) {
+          event.preventDefault();
+
+          if (requiredMessage) {
+            requiredMessage.classList.add('error');
+            requiredMessage.textContent = 'השילוב שבחרת לא זמין. בחר אפשרויות אחרות.';
+            requiredMessage.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
+
+          return false;
+        }
+      });
+    }
+
+    var thumbButtons = section.querySelectorAll('.ballers-training-thumb-btn');
+    var thumbImages = section.querySelectorAll('.ballers-training-thumb-btn img');
+    var mainImage = section.querySelector('.ballers-training-main-product-image');
+
+    if (thumbButtons.length > 0) {
+      thumbButtons[0].classList.add('active');
+    }
+
+    thumbImages.forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        if (!mainImage) {
+          return;
+        }
+
+        var newSrc = thumb.getAttribute('data-main-src');
+        var newFull = thumb.getAttribute('data-full-src');
+
+        thumbButtons.forEach(function (btn) {
+          btn.classList.remove('active');
+        });
+
+        thumb.closest('.ballers-training-thumb-btn').classList.add('active');
+
+        mainImage.style.opacity = '0';
+
+        setTimeout(function () {
+          mainImage.src = newSrc;
+          mainImage.setAttribute('data-full-image', newFull);
+          mainImage.style.opacity = '1';
+        }, 200);
+      });
+    });
+
+    var imageModal = document.getElementById('BallersTrainingImageModal');
+    var modalImage = document.getElementById('BallersTrainingModalImage');
+    var openImageButton = document.getElementById('BallersTrainingOpenImageModal');
+    var imageModalClose = section.querySelector('.ballers-training-image-modal-close');
+
+    if (openImageButton && imageModal && modalImage) {
+      openImageButton.addEventListener('click', function () {
+        var currentMainImage = section.querySelector('.ballers-training-main-product-image');
+
+        if (!currentMainImage) {
+          return;
+        }
+
+        modalImage.src = currentMainImage.getAttribute('data-full-image') || currentMainImage.src;
+        imageModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    if (imageModalClose && imageModal) {
+      imageModalClose.addEventListener('click', function () {
+        imageModal.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    }
+
+    if (imageModal) {
+      imageModal.addEventListener('click', function (event) {
+        if (event.target === imageModal) {
+          imageModal.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      });
+    }
+
+    var modalMature = document.getElementById('BallersTrainingSizeModalMature');
+    var sizeButtons = section.querySelectorAll('[data-size-modal]');
+    var closeButtons = document.querySelectorAll('.ballers-training-size-close');
+
+    sizeButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var type = button.getAttribute('data-size-modal');
+
+        if (type === 'mature' && modalMature) {
+          modalMature.classList.add('open');
+        }
+      });
+    });
+
+    closeButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var modal = button.closest('.ballers-training-size-modal');
+
+        if (modal) {
+          modal.classList.remove('open');
+        }
+      });
+    });
+
+    if (modalMature) {
+      modalMature.addEventListener('click', function (event) {
+        if (event.target === modalMature) {
+          modalMature.classList.remove('open');
+        }
+      });
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        if (imageModal) {
+          imageModal.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+
+        if (modalMature) {
+          modalMature.classList.remove('open');
+        }
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Ballers training  page",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers training product page"
+    }
+  ]
+}
+{% endschema %}

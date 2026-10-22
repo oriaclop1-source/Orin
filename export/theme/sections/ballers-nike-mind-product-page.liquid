@@ -1,0 +1,753 @@
+<section class="ballers-nike-product-page" dir="rtl">
+
+  {% assign current_variant = product.selected_or_first_available_variant %}
+
+  <div class="ballers-nike-product-container">
+
+    <div class="ballers-nike-product-gallery">
+
+      <div class="ballers-nike-main-image-wrap">
+        {% if product.featured_image %}
+          <img
+            id="BallersNikeMainImage"
+            src="{{ product.featured_image | image_url: width: 1200 }}"
+            alt="{{ product.title | escape }}"
+            class="ballers-nike-main-image"
+          >
+        {% else %}
+          <div class="ballers-nike-no-image">אין תמונה</div>
+        {% endif %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        <div class="ballers-nike-thumbs">
+          {% for image in product.images %}
+            <button
+              type="button"
+              class="ballers-nike-thumb{% if forloop.first %} active{% endif %}"
+              data-image="{{ image | image_url: width: 1200 }}"
+              aria-label="תמונה {{ forloop.index }}"
+            >
+              <img
+                src="{{ image | image_url: width: 240 }}"
+                alt="{{ product.title | escape }}"
+                loading="lazy"
+              >
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    </div>
+
+    <div class="ballers-nike-product-info">
+
+      <div class="ballers-nike-eyebrow">
+        NIKE MIND
+      </div>
+
+      <h1 class="ballers-nike-title">
+        {{ product.title }}
+      </h1>
+
+      <div class="ballers-nike-price-row">
+        <span class="ballers-nike-sale-price">
+          {{ current_variant.price | money_without_currency }} ₪
+        </span>
+
+        {% if current_variant.compare_at_price > current_variant.price %}
+          <del class="ballers-nike-regular-price">
+            {{ current_variant.compare_at_price | money_without_currency }} ₪
+          </del>
+        {% elsif product.compare_at_price_max > product.price %}
+          <del class="ballers-nike-regular-price">
+            {{ product.compare_at_price_max | money_without_currency }} ₪
+          </del>
+        {% endif %}
+      </div>
+
+      <div class="ballers-nike-mini-note">
+        בחר מידה לפני הוספה לעגלה.
+      </div>
+
+      {% form 'product', product, id: 'BallersNikeProductForm', class: 'ballers-nike-form' %}
+
+        <input type="hidden" name="id" id="BallersNikeVariantId" value="{{ current_variant.id }}">
+
+        {% unless product.has_only_default_variant %}
+
+          <div class="ballers-nike-options">
+
+            {% for option in product.options_with_values %}
+
+              {% assign option_name_down = option.name | downcase %}
+
+              <div class="ballers-nike-option-group" data-option-index="{{ forloop.index0 }}">
+
+                <div class="ballers-nike-option-title">
+                  {% if option_name_down contains 'shoe' or option.name contains 'מידה' or option.name contains 'size' %}
+                    מידת נעליים
+                  {% elsif option.name contains 'צבע' or option_name_down contains 'color' %}
+                    צבע
+                  {% else %}
+                    {{ option.name }}
+                  {% endif %}
+                </div>
+
+                <div class="ballers-nike-option-values">
+
+                  {% for value in option.values %}
+                    <button
+                      type="button"
+                      class="ballers-nike-option-btn{% if option.selected_value == value %} selected{% endif %}"
+                      data-option-index="{{ forloop.parentloop.index0 }}"
+                      data-option-value="{{ value | escape }}"
+                    >
+                      {{ value }}
+                    </button>
+                  {% endfor %}
+
+                </div>
+
+              </div>
+
+            {% endfor %}
+
+          </div>
+
+        {% endunless %}
+
+        <div class="ballers-nike-quantity-wrap">
+          <label for="BallersNikeQuantity">כמות</label>
+
+          <div class="ballers-nike-qty-box">
+            <button type="button" class="ballers-nike-qty-btn" data-qty-minus>-</button>
+            <input
+              id="BallersNikeQuantity"
+              type="number"
+              name="quantity"
+              value="1"
+              min="1"
+              class="ballers-nike-qty-input"
+            >
+            <button type="button" class="ballers-nike-qty-btn" data-qty-plus>+</button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="ballers-nike-add-btn"
+          id="BallersNikeAddButton"
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+          {% if current_variant.available %}
+            הוסף לעגלה
+          {% else %}
+            אזל מהמלאי
+          {% endif %}
+        </button>
+
+        <div class="ballers-nike-payments-note">
+          משלוח חינם לכל הארץ · תשלום מאובטח
+        </div>
+
+      {% endform %}
+
+    </div>
+
+  </div>
+
+</section>
+
+<style>
+  .ballers-nike-product-page,
+  .ballers-nike-product-page * {
+    box-sizing: border-box;
+    font-family: "Rubik", "Heebo", Arial, sans-serif !important;
+  }
+
+  .ballers-nike-product-page {
+    width: 100%;
+    background:
+      radial-gradient(circle at top right, rgba(0,119,255,0.08), transparent 34%),
+      linear-gradient(180deg, #f4f7fb 0%, #ffffff 100%);
+    padding: 42px 18px 70px;
+    direction: rtl;
+  }
+
+  .ballers-nike-product-container {
+    width: 100%;
+    max-width: 1420px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+    gap: 42px;
+    align-items: start;
+  }
+
+  .ballers-nike-product-gallery {
+    min-width: 0;
+  }
+
+  .ballers-nike-main-image-wrap {
+    position: relative;
+    width: 100%;
+    min-height: 620px;
+    background:
+      radial-gradient(circle at center, #ffffff 0%, #f0f4f9 100%);
+    border-radius: 28px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 18px 44px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    overflow: hidden;
+  }
+
+  .ballers-nike-main-image {
+    width: 100%;
+    height: 100%;
+    max-height: 560px;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 20px 24px rgba(0,0,0,0.16));
+    transition:
+      transform 0.28s ease,
+      opacity 0.22s ease;
+  }
+
+  .ballers-nike-main-image-wrap:hover .ballers-nike-main-image {
+    transform: scale(1.035);
+  }
+
+  .ballers-nike-no-image {
+    color: rgba(0,0,0,0.45);
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .ballers-nike-thumbs {
+    margin-top: 18px;
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 3px 2px 8px;
+    scrollbar-width: none;
+  }
+
+  .ballers-nike-thumbs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ballers-nike-thumb {
+    flex: 0 0 92px;
+    width: 92px;
+    height: 92px;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    background: #ffffff;
+    padding: 8px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    transition:
+      border-color 0.22s ease,
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-nike-thumb:hover,
+  .ballers-nike-thumb.active {
+    border-color: #0b79ff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(11,121,255,0.16);
+  }
+
+  .ballers-nike-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .ballers-nike-product-info {
+    position: sticky;
+    top: 18px;
+    background: #ffffff;
+    border-radius: 28px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 18px 44px rgba(0,0,0,0.10);
+    padding: 30px 26px 28px;
+  }
+
+  .ballers-nike-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #111111;
+    color: #ffffff;
+    border-radius: 999px;
+    padding: 7px 15px;
+    font-size: 12px;
+    font-weight: 1000;
+    letter-spacing: 1.2px;
+    margin-bottom: 14px;
+  }
+
+  .ballers-nike-title {
+    margin: 0 0 16px !important;
+    color: #111111 !important;
+    font-size: clamp(32px, 3.3vw, 52px) !important;
+    font-weight: 1000 !important;
+    line-height: 1.02 !important;
+    letter-spacing: -1.2px !important;
+  }
+
+  .ballers-nike-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 11px;
+  }
+
+  .ballers-nike-sale-price {
+    color: #111111;
+    font-size: 31px;
+    font-weight: 1000;
+    line-height: 1;
+  }
+
+  .ballers-nike-regular-price {
+    color: rgba(0,0,0,0.38);
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  .ballers-nike-mini-note {
+    margin: 0 0 22px;
+    color: rgba(0,0,0,0.62);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .ballers-nike-form {
+    width: 100%;
+  }
+
+  .ballers-nike-options {
+    display: grid;
+    gap: 19px;
+    margin-bottom: 18px;
+  }
+
+  .ballers-nike-option-title {
+    color: #111111;
+    font-size: 16px;
+    font-weight: 1000;
+    margin-bottom: 10px;
+  }
+
+  .ballers-nike-option-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .ballers-nike-option-btn {
+    min-width: 62px;
+    min-height: 48px;
+    border: 1px solid rgba(0,0,0,0.14);
+    background: #ffffff;
+    color: #111111;
+    border-radius: 12px;
+    padding: 0 16px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 900;
+    transition:
+      background 0.18s ease,
+      color 0.18s ease,
+      border-color 0.18s ease,
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .ballers-nike-option-btn:hover {
+    border-color: #0b79ff;
+    transform: translateY(-2px);
+  }
+
+  .ballers-nike-option-btn.selected {
+    background: #111111;
+    color: #ffffff;
+    border-color: #111111;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+  }
+
+  .ballers-nike-option-btn.disabled {
+    opacity: 0.28;
+    cursor: not-allowed;
+    pointer-events: none;
+    text-decoration: line-through;
+  }
+
+  .ballers-nike-quantity-wrap {
+    margin-bottom: 18px;
+  }
+
+  .ballers-nike-quantity-wrap label {
+    display: block;
+    color: #111111;
+    font-size: 15px;
+    font-weight: 1000;
+    margin-bottom: 9px;
+  }
+
+  .ballers-nike-qty-box {
+    display: inline-flex;
+    align-items: center;
+    height: 46px;
+    border: 1px solid rgba(0,0,0,0.14);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+  }
+
+  .ballers-nike-qty-btn {
+    width: 44px;
+    height: 46px;
+    border: none;
+    background: #f4f5f7;
+    color: #111111;
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.18s ease;
+  }
+
+  .ballers-nike-qty-btn:hover {
+    background: #e9edf2;
+  }
+
+  .ballers-nike-qty-input {
+    width: 58px;
+    height: 46px;
+    border: none;
+    outline: none;
+    text-align: center;
+    color: #111111;
+    font-size: 16px;
+    font-weight: 900;
+    background: #ffffff;
+  }
+
+  .ballers-nike-qty-input::-webkit-outer-spin-button,
+  .ballers-nike-qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .ballers-nike-add-btn {
+    width: 100%;
+    min-height: 56px;
+    border: none;
+    border-radius: 15px;
+    background: #111111;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 1000;
+    cursor: pointer;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .ballers-nike-add-btn:hover:not(:disabled) {
+    background: #0b4fa3;
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px rgba(11,79,163,0.24);
+  }
+
+  .ballers-nike-add-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .ballers-nike-payments-note {
+    margin-top: 14px;
+    color: rgba(0,0,0,0.58);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 980px) {
+    .ballers-nike-product-page {
+      padding: 28px 14px 54px;
+    }
+
+    .ballers-nike-product-container {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .ballers-nike-product-info {
+      position: relative;
+      top: auto;
+      padding: 24px 18px 22px;
+      border-radius: 22px;
+    }
+
+    .ballers-nike-main-image-wrap {
+      min-height: 500px;
+      border-radius: 22px;
+    }
+  }
+
+  @media screen and (max-width: 620px) {
+    .ballers-nike-product-page {
+      padding: 20px 10px 42px;
+    }
+
+    .ballers-nike-main-image-wrap {
+      min-height: 390px;
+      padding: 18px;
+      border-radius: 18px;
+    }
+
+    .ballers-nike-main-image {
+      max-height: 350px;
+    }
+
+    .ballers-nike-thumbs {
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .ballers-nike-thumb {
+      flex-basis: 72px;
+      width: 72px;
+      height: 72px;
+      border-radius: 13px;
+      padding: 6px;
+    }
+
+    .ballers-nike-title {
+      font-size: 31px !important;
+      letter-spacing: -0.7px !important;
+    }
+
+    .ballers-nike-sale-price {
+      font-size: 28px;
+    }
+
+    .ballers-nike-regular-price {
+      font-size: 18px;
+    }
+
+    .ballers-nike-option-values {
+      gap: 8px;
+    }
+
+    .ballers-nike-option-btn {
+      min-width: 55px;
+      min-height: 45px;
+      padding: 0 13px;
+      font-size: 14px;
+      border-radius: 11px;
+    }
+
+    .ballers-nike-add-btn {
+      min-height: 53px;
+      font-size: 17px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var productData = {{ product | json }};
+    var variantIdInput = document.getElementById('BallersNikeVariantId');
+    var addButton = document.getElementById('BallersNikeAddButton');
+    var priceSale = document.querySelector('.ballers-nike-sale-price');
+    var priceRegular = document.querySelector('.ballers-nike-regular-price');
+    var optionButtons = Array.from(document.querySelectorAll('.ballers-nike-option-btn'));
+    var selectedOptions = [];
+
+    if (!productData || !productData.variants || !variantIdInput) {
+      return;
+    }
+
+    productData.options.forEach(function (optionName, index) {
+      var selectedButton = document.querySelector('.ballers-nike-option-btn.selected[data-option-index="' + index + '"]');
+      selectedOptions[index] = selectedButton ? selectedButton.getAttribute('data-option-value') : null;
+    });
+
+    function formatMoney(cents) {
+      var value = Number(cents || 0) / 100;
+      return value.toFixed(2) + ' ₪';
+    }
+
+    function findVariant() {
+      return productData.variants.find(function (variant) {
+        return variant.options.every(function (optionValue, index) {
+          return String(optionValue) === String(selectedOptions[index]);
+        });
+      });
+    }
+
+    function optionCombinationExists(optionIndex, value) {
+      var testOptions = selectedOptions.slice();
+      testOptions[optionIndex] = value;
+
+      return productData.variants.some(function (variant) {
+        return variant.options.every(function (optionValue, index) {
+          return !testOptions[index] || String(optionValue) === String(testOptions[index]);
+        });
+      });
+    }
+
+    function updateDisabledOptions() {
+      optionButtons.forEach(function (button) {
+        var optionIndex = Number(button.getAttribute('data-option-index'));
+        var value = button.getAttribute('data-option-value');
+
+        if (optionCombinationExists(optionIndex, value)) {
+          button.classList.remove('disabled');
+        } else {
+          button.classList.add('disabled');
+        }
+      });
+    }
+
+    function updateVariant() {
+      var variant = findVariant();
+
+      if (!variant) {
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'לא זמין';
+        }
+
+        return;
+      }
+
+      variantIdInput.value = variant.id;
+
+      if (priceSale) {
+        priceSale.textContent = formatMoney(variant.price);
+      }
+
+      if (priceRegular) {
+        if (variant.compare_at_price && variant.compare_at_price > variant.price) {
+          priceRegular.textContent = formatMoney(variant.compare_at_price);
+          priceRegular.style.display = '';
+        } else {
+          priceRegular.style.display = 'none';
+        }
+      }
+
+      if (variant.available) {
+        if (addButton) {
+          addButton.disabled = false;
+          addButton.textContent = 'הוסף לעגלה';
+        }
+      } else {
+        if (addButton) {
+          addButton.disabled = true;
+          addButton.textContent = 'אזל מהמלאי';
+        }
+      }
+
+      updateDisabledOptions();
+    }
+
+    optionButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (button.classList.contains('disabled')) {
+          return;
+        }
+
+        var optionIndex = Number(button.getAttribute('data-option-index'));
+        var value = button.getAttribute('data-option-value');
+
+        selectedOptions[optionIndex] = value;
+
+        optionButtons
+          .filter(function (btn) {
+            return Number(btn.getAttribute('data-option-index')) === optionIndex;
+          })
+          .forEach(function (btn) {
+            btn.classList.remove('selected');
+          });
+
+        button.classList.add('selected');
+
+        updateVariant();
+      });
+    });
+
+    updateVariant();
+
+    var thumbs = Array.from(document.querySelectorAll('.ballers-nike-thumb'));
+    var mainImage = document.getElementById('BallersNikeMainImage');
+
+    thumbs.forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        var imageUrl = thumb.getAttribute('data-image');
+
+        if (!imageUrl || !mainImage) {
+          return;
+        }
+
+        thumbs.forEach(function (item) {
+          item.classList.remove('active');
+        });
+
+        thumb.classList.add('active');
+        mainImage.style.opacity = '0';
+
+        setTimeout(function () {
+          mainImage.src = imageUrl;
+          mainImage.style.opacity = '1';
+        }, 120);
+      });
+    });
+
+    var qtyInput = document.getElementById('BallersNikeQuantity');
+    var plusBtn = document.querySelector('[data-qty-plus]');
+    var minusBtn = document.querySelector('[data-qty-minus]');
+
+    if (qtyInput && plusBtn) {
+      plusBtn.addEventListener('click', function () {
+        var current = Number(qtyInput.value || 1);
+        qtyInput.value = current + 1;
+      });
+    }
+
+    if (qtyInput && minusBtn) {
+      minusBtn.addEventListener('click', function () {
+        var current = Number(qtyInput.value || 1);
+        qtyInput.value = Math.max(1, current - 1);
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Ballers NIKE MIND Product",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Ballers NIKE MIND Product"
+    }
+  ]
+}
+{% endschema %}
