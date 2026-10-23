@@ -1050,6 +1050,7 @@ async function onSession(session){
     await reload("profiles");
   }
   S.ready=true;render();subscribe();
+  if(S.isOwner&&S.matches.size)syncMatches(true); // admin: pull in new matches and odds automatically
 }
 async function seedMatches(){
   S.busy=true;renderView();
@@ -1060,8 +1061,8 @@ async function seedMatches(){
   }catch(e){toast("הטעינה נכשלה: "+(e.message||""))}
   S.busy=false;render();
 }
-async function syncMatches(){
-  S.busy=true;renderView();
+async function syncMatches(silent){
+  if(!silent){S.busy=true;renderView()}
   try{
     const rows=await (await fetch("matches.json?t="+Date.now(),{cache:"no-store"})).json();
     const up=[];let added=0,updated=0;
@@ -1074,9 +1075,9 @@ async function syncMatches(){
       if(JSON.stringify(next)!==JSON.stringify(doc)){up.push({id:r.id,doc:next});updated++}
     }
     for(let k=0;k<up.length;k+=100)fail(await sb.from("matches").upsert(up.slice(k,k+100)));
-    await reload("matches");toast(`נוספו ${added} משחקים, עודכנו ${updated}`);
-  }catch(e){toast("העדכון נכשל: "+(e.message||""))}
-  S.busy=false;render();
+    await reload("matches");if(!silent||added||updated)toast(`נוספו ${added} משחקים, עודכנו ${updated}`);
+  }catch(e){toast("עדכון המשחקים נכשל: "+(e.message||""))}
+  if(!silent){S.busy=false;render()}
 }
 async function boot(){
   if(!window.supabase){S.ready=true;render();$("#view").innerHTML=`<div class="notice warn"><h3>לא הצלחנו להתחבר</h3><p>רעננו את הדף. אם זה חוזר, בדקו את החיבור לאינטרנט.</p></div>`;return}
