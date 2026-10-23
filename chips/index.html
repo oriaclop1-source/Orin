@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ליגת הצ'יפים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Rubik:wght@500;600;700&family=Secular+One&display=swap">
+<style>
+html,body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* Layout: a fixtures ledger with tactile odds chips; the betting slip rides alongside on desktop and rises as a sheet on phones. */
+:root{
+  --bg:#EBEFEA; --surface:#FFFFFF; --sunk:#F4F6F3; --ink:#15221B; --muted:#5D6A62; --line:#D2DAD3;
+  --pitch:#1E5A3C; --pitch-ink:#F2F6F1; --accent:#E0531C; --accent-ink:#FFFFFF; --accent-soft:#FBE3D8;
+  --won:#24804F; --lost:#B9372B; --wait:#A87412; --won-soft:#DCEFE3; --lost-soft:#F6DEDB; --wait-soft:#F5EBD3;
+  --f-display:"Secular One","Assistant",system-ui,sans-serif;
+  --f-body:"Assistant",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --f-num:"Rubik","Assistant",system-ui,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1511; --surface:#16201A; --sunk:#121A15; --ink:#E6ECE7; --muted:#97A59C; --line:#27352C;
+  --pitch:#163B28; --pitch-ink:#EAF1EB; --accent:#FF7440; --accent-ink:#1A0D06; --accent-soft:#3A2116;
+  --won:#4FC17F; --lost:#F0705F; --wait:#E1A93E; --won-soft:#173323; --lost-soft:#3A1C18; --wait-soft:#33290F;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1511; --surface:#16201A; --sunk:#121A15; --ink:#E6ECE7; --muted:#97A59C; --line:#27352C;
+  --pitch:#163B28; --pitch-ink:#EAF1EB; --accent:#FF7440; --accent-ink:#1A0D06; --accent-soft:#3A2116;
+  --won:#4FC17F; --lost:#F0705F; --wait:#E1A93E; --won-soft:#173323; --lost-soft:#3A1C18; --wait-soft:#33290F;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--pitch)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* header */
+.top{background:var(--pitch);color:var(--pitch-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.top .wrap{display:flex;align-items:center;gap:14px;padding-block:12px 0;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-size:26px;letter-spacing:.2px;line-height:1;display:flex;align-items:baseline;gap:10px}
+.brand small{font-family:var(--f-body);font-size:13px;opacity:.75;font-weight:600}
+.wallet{margin-inline-start:auto;display:flex;align-items:center;gap:10px}
+.chip-pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 12px 5px 6px;font-weight:700}
+.chip-pill .coin{width:22px;height:22px;border-radius:50%;background:var(--accent);box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),inset 0 0 0 6px var(--accent);flex:none}
+.chip-pill b{font-family:var(--f-num);font-size:17px;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:2px;width:100%;overflow-x:auto;scrollbar-width:none}
+.tabs button{background:none;border:0;color:var(--pitch-ink);opacity:.72;padding:12px 14px 11px;font-weight:700;font-size:15px;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-current="true"]{opacity:1;border-bottom-color:var(--accent)}
+.tabs .badge{display:inline-block;min-width:18px;padding:0 5px;margin-inline-start:6px;border-radius:9px;background:var(--accent);color:var(--accent-ink);font-size:12px;line-height:18px;font-family:var(--f-num)}
+
+/* page grid */
+.page{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px;padding-block:20px 120px;align-items:start}
+.page.full{grid-template-columns:minmax(0,1fr)}
+@media (max-width:960px){.page{grid-template-columns:minmax(0,1fr)}}
+
+.notice{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:16px}
+.notice h3{margin:0 0 4px;font-family:var(--f-display);font-weight:400;font-size:19px}
+.notice p{margin:0;color:var(--muted)}
+.notice.warn{border-color:var(--wait);background:var(--wait-soft)}
+.notice .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+/* filters */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.fchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 13px;font-weight:700;font-size:14px;color:var(--muted)}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.fchip .n{font-family:var(--f-num);font-weight:500;opacity:.7;margin-inline-start:4px;font-size:12px}
+.searchbox{flex:1 1 180px;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px}
+
+/* day group */
+.day{margin-top:22px}
+.day-h{display:flex;align-items:baseline;gap:10px;margin:0 2px 8px}
+.day-h h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:22px}
+.day-h span{color:var(--muted);font-size:13px;font-weight:600}
+.board{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.mrow{display:grid;grid-template-columns:62px minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.mrow:first-child{border-top:0}
+.mrow.closed{opacity:.62}
+.ko{font-family:var(--f-num);font-weight:600;font-size:15px;line-height:1.1}
+.ko small{display:block;font-family:var(--f-body);font-size:11px;color:var(--muted);font-weight:600;margin-top:3px}
+.teams{min-width:0}
+.teams .t{font-weight:700;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.teams .meta{font-size:12px;color:var(--muted);font-weight:600;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.tag{display:inline-flex;align-items:center;gap:4px}
+.tag.est::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.tag.mkt::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--won)}
+.oddset{display:grid;grid-auto-flow:column;gap:5px}
+.oddset .lbl{font-size:11px;color:var(--muted);text-align:center;font-weight:700;margin-bottom:3px}
+.odd{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:58px;height:44px;border:1px solid var(--line);background:var(--sunk);border-radius:8px;padding:0 6px;transition:background .12s,border-color .12s}
+.odd b{font-family:var(--f-num);font-weight:600;font-size:15.5px;font-variant-numeric:tabular-nums}
+.odd span{font-size:11px;color:var(--muted);font-weight:700;line-height:1}
+.odd:hover:not(:disabled){border-color:var(--ink)}
+.odd[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.odd[aria-pressed="true"] span{color:var(--accent-ink);opacity:.85}
+.odd:disabled{cursor:not-allowed;opacity:.5}
+.more{border:0;background:none;color:var(--ink);font-weight:800;font-family:var(--f-num);font-size:14px;padding:8px 6px;border-radius:8px;white-space:nowrap}
+.more:hover{background:var(--sunk)}
+.score{font-family:var(--f-num);font-weight:700;font-size:18px;padding:4px 10px;border-radius:8px;background:var(--sunk)}
+@media (max-width:640px){
+  .mrow{grid-template-columns:52px minmax(0,1fr) auto;row-gap:10px}
+  .mrow .oddset.main{grid-column:1 / -1}
+  .mrow .oddset.ou{display:none}
+  .oddset.main{grid-template-columns:repeat(3,1fr)}
+  .odd{min-width:0}
+  .mrow .more{grid-row:1;grid-column:3;align-self:start}
+  .brand small{display:none}
+  .top .wrap{padding-block:10px 0}
+  .tabs button{padding:10px 12px 9px}
+}
+
+/* markets panel */
+.markets{background:var(--sunk);border-top:1px solid var(--line);padding:6px 14px 16px}
+.mgroup{padding-top:12px}
+.mgroup h4{margin:0 0 7px;font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.3px}
+.mgrid{display:grid;gap:5px;grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.mgrid.cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mgrid.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mgrid .odd{flex-direction:row;justify-content:space-between;height:40px;background:var(--surface);gap:6px;min-width:0}
+.mgrid .odd[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.mgrid .odd[aria-pressed="true"] span{color:var(--accent-ink)}
+.mgrid .odd span{font-size:13px;color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.mtabs{display:flex;gap:4px;flex-wrap:wrap;padding-top:10px}
+.mtabs button{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:4px 10px;font-size:13px;font-weight:700;color:var(--muted)}
+.mtabs button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.src{font-size:12px;color:var(--muted);margin-top:12px}
+
+/* slip */
+.slip{position:sticky;top:calc(env(safe-area-inset-top,0px) + 112px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.slip-h{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--ink);color:var(--bg)}
+.slip-h h3{margin:0;font-family:var(--f-display);font-weight:400;font-size:19px}
+.slip-h button{background:none;border:0;color:inherit;opacity:.7;font-weight:700;font-size:13px}
+.slip-empty{padding:26px 18px;color:var(--muted);text-align:center}
+.slip-empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+.legs{max-height:46vh;overflow:auto}
+.leg{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:start;padding:11px 16px;border-bottom:1px dashed var(--line)}
+.leg .sel{font-weight:700}
+.leg .mk{font-size:12.5px;color:var(--muted)}
+.leg .mt{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leg .o{font-family:var(--f-num);font-weight:700}
+.leg .x{border:0;background:none;color:var(--muted);font-size:18px;line-height:1;padding:0 2px}
+.leg.bad{background:var(--lost-soft)}
+.slip-f{padding:14px 16px;display:grid;gap:10px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:7px;font-weight:700;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.stake{display:flex;gap:6px;align-items:center}
+.stake input{flex:1;min-width:0;border:1px solid var(--line);background:var(--sunk);border-radius:8px;padding:9px 12px;font-family:var(--f-num);font-size:17px;font-weight:600}
+.quick{display:flex;gap:5px}
+.quick button{flex:1;border:1px solid var(--line);background:var(--sunk);border-radius:6px;padding:5px 0;font-family:var(--f-num);font-size:13px;font-weight:600}
+.sum{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px}
+.sum dt{color:var(--muted)}
+.sum dd{margin:0;font-family:var(--f-num);font-weight:700;text-align:end}
+.sum .big{font-size:20px;color:var(--accent)}
+.btn{border:0;border-radius:8px;padding:11px 16px;font-weight:800;font-size:15.5px;background:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 12px;font-size:13.5px}
+.btn.dark{background:var(--ink);color:var(--bg)}
+.btn.danger{background:var(--surface);color:var(--lost);border:1px solid var(--lost)}
+.err{color:var(--lost);font-size:13.5px;font-weight:600}
+.ok{color:var(--won);font-size:13.5px;font-weight:700}
+
+/* mobile slip bar */
+.slipbar{display:none}
+@media (max-width:960px){
+  .slip-col{display:none}
+  .slip-col.open{display:block;position:fixed;inset:auto 0 0 0;z-index:40;max-height:88vh;overflow:auto;padding:0 max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+  .slip-col.open .slip{position:static;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:39}
+  .slipbar{display:flex;position:fixed;z-index:35;inset:auto 0 0 0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--ink);color:var(--bg);align-items:center;gap:12px;border:0;width:100%;text-align:start}
+  .slipbar .cnt{background:var(--accent);color:var(--accent-ink);border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-family:var(--f-num);font-weight:700}
+  .slipbar b{font-weight:800}
+  .slipbar .num{margin-inline-start:auto;font-weight:700}
+}
+
+/* tables */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 2px 10px;flex-wrap:wrap}
+.sec-h:first-child{margin-top:4px}
+.sec-h h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:24px}
+.sec-h p{margin:0;color:var(--muted);font-size:13.5px}
+.tbl-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:start;font-size:12px;color:var(--muted);font-weight:800;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--sunk)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:end;font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rank{font-family:var(--f-display);font-size:20px;width:44px;color:var(--muted)}
+tr.lead .rank{color:var(--accent)}
+.who{display:flex;align-items:center;gap:9px;font-weight:700;min-width:0}
+.who img{width:26px;height:26px;border-radius:50%;flex:none}
+.you{font-size:11px;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:0 4px}
+.pos{color:var(--won)} .neg{color:var(--lost)}
+.pill{display:inline-block;font-size:12px;font-weight:800;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill.won{background:var(--won-soft);color:var(--won)}
+.pill.lost{background:var(--lost-soft);color:var(--lost)}
+.pill.pending{background:var(--wait-soft);color:var(--wait)}
+.pill.void{background:var(--sunk);color:var(--muted)}
+
+/* bets list */
+.tickets{display:grid;gap:10px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;border-inline-start:4px solid var(--line)}
+.ticket.won{border-inline-start-color:var(--won)} .ticket.lost{border-inline-start-color:var(--lost)} .ticket.pending{border-inline-start-color:var(--wait)}
+.ticket-h{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px dashed var(--line);flex-wrap:wrap}
+.ticket-h .kind{font-weight:800}
+.ticket-h .when{color:var(--muted);font-size:12.5px}
+.ticket-h .pill{margin-inline-start:auto}
+.ticket .leg{grid-template-columns:minmax(0,1fr) auto auto;padding:9px 14px}
+.ticket-f{display:flex;gap:18px;padding:10px 14px;background:var(--sunk);font-size:13.5px;flex-wrap:wrap}
+.ticket-f span{color:var(--muted)}
+.ticket-f b{font-family:var(--f-num)}
+.mini{font-size:12px;font-weight:800}
+.mini.won{color:var(--won)} .mini.lost{color:var(--lost)} .mini.void{color:var(--muted)} .mini.pending{color:var(--wait)}
+
+/* admin */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.field{display:grid;gap:4px}
+.field label{font-size:12.5px;font-weight:800;color:var(--muted)}
+.inp{border:1px solid var(--line);background:var(--sunk);border-radius:8px;padding:7px 10px;min-width:0;width:100%}
+.inp.num{font-family:var(--f-num)}
+.inp.s{width:64px;text-align:center}
+.inp.m{width:96px}
+.hstack{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.admin-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.empty{padding:22px;text-align:center;color:var(--muted)}
+.foot{color:var(--muted);font-size:12.5px;padding-block:8px 30px}
+.toast{position:fixed;z-index:60;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.25);max-width:calc(100vw - 32px)}
+@media (prefers-reduced-motion:no-preference){.toast{animation:pop .2s ease-out}@keyframes pop{from{transform:translate(-50%,8px);opacity:0}}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">ליגת הצ'יפים <small>הימורים בין חברים · בלי כסף אמיתי</small></div>
+      <div class="wallet" id="wallet"></div>
+      <nav class="tabs" id="tabs" aria-label="ניווט"></nav>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="page" id="page">
+      <main id="view" aria-live="polite"><div class="notice"><h3>טוען את המשחקים…</h3><p>מתחבר למאגר של הליגה.</p></div></main>
+      <aside class="slip-col" id="slipcol"></aside>
+    </div>
+  </div>
+  <div id="scrim"></div>
+  <button class="slipbar" id="slipbar" hidden></button>
+  <div id="toast"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+document.documentElement.lang = "he"; document.documentElement.dir = "rtl";
+
+/* ---------- odds model ---------- */
+const RHO = -0.07, N = 11;
+function fact(n){let f=1;for(let i=2;i<=n;i++)f*=i;return f}
+const FACT = Array.from({length:N},(_,i)=>fact(i));
+function matrix(lh,la){
+  const P=[];let s=0;
+  for(let i=0;i<N;i++){P[i]=[];for(let j=0;j<N;j++){
+    let p=Math.exp(-lh)*lh**i/FACT[i]*Math.exp(-la)*la**j/FACT[j];
+    if(i===0&&j===0)p*=1-lh*la*RHO;else if(i===0&&j===1)p*=1+lh*RHO;else if(i===1&&j===0)p*=1+la*RHO;else if(i===1&&j===1)p*=1-RHO;
+    P[i][j]=p;s+=p}}
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)P[i][j]/=s;
+  return P;
+}
+function summary(P){let H=0,D=0,A=0,O=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++){const p=P[i][j];if(i>j)H+=p;else if(i===j)D+=p;else A+=p;if(i+j>2)O+=p}return{H,D,A,O}}
+const fitCache = new Map();
+function fitLambdas(o){
+  const key=[o.h,o.d,o.a,o.o,o.u].join("|");
+  if(fitCache.has(key))return fitCache.get(key);
+  const ih=1/o.h,id=1/o.d,ia=1/o.a,s=ih+id+ia, tH=ih/s,tA=ia/s;
+  const io=1/o.o,iu=1/o.u,tO=io/(io+iu);
+  const err=(lh,la)=>{const r=summary(matrix(lh,la));return (r.H-tH)**2+(r.A-tA)**2+(r.O-tO)**2};
+  let best=[1.4,1.1],be=Infinity;
+  for(let lh=0.2;lh<=4.4;lh+=0.15)for(let la=0.2;la<=4.4;la+=0.15){const e=err(lh,la);if(e<be){be=e;best=[lh,la]}}
+  for(const step of [0.03,0.006]){const [ch,ca]=best;
+    for(let dh=-6;dh<=6;dh++)for(let da=-6;da<=6;da++){const lh=ch+dh*step,la=ca+da*step;if(lh<=0.05||la<=0.05)continue;const e=err(lh,la);if(e<be){be=e;best=[lh,la]}}}
+  fitCache.set(key,best);return best;
+}
+
+/* selection ids -> settle predicate. true=won, false=lost, null=void(refund) */
+function pred(id,h,a){
+  const p=id.split(":"),t=p[0],r=h>a?"H":h<a?"A":"D",T=h+a;
+  switch(t){
+    case "1x2":return p[1]===r;
+    case "dc":return p[1]==="1X"?r!=="A":p[1]==="12"?r!=="D":r!=="H";
+    case "dnb":return r==="D"?null:p[1]===r;
+    case "ou":{const L=+p[1];return p[2]==="O"?T>L:T<L}
+    case "htg":{const L=+p[1];return p[2]==="O"?h>L:h<L}
+    case "atg":{const L=+p[1];return p[2]==="O"?a>L:a<L}
+    case "btts":return (h>0&&a>0)===(p[1]==="Y");
+    case "ah":{const d=h+(+p[1])-a;return p[2]==="H"?d>0:d<0}
+    case "cs":{if(p[1].includes("-")){const[x,y]=p[1].split("-").map(Number);return h===x&&a===y}return (h>4||a>4)&&p[1][0]===r}
+    case "mg":{const k=p[1];if(k==="D")return r==="D";const diff=k[0]==="H"?h-a:a-h,n=+k[1];return n===3?diff>=3:diff===n}
+    case "oe":return (T%2===1)===(p[1]==="O");
+    case "tg":{const n=+p[1];return n===6?T>=6:T===n}
+    case "cln":{const c=p[1]==="H"?a:h;return (c===0)===(p[2]==="Y")}
+    case "wtn":return p[1]==="H"?(h>a&&a===0):(a>h&&h===0);
+    case "rb":return r===p[1]&&((h>0&&a>0)===(p[2]==="Y"));
+    case "ro":return r===p[1]&&(p[2]==="O"?T>2.5:T<2.5);
+    /* basketball: final score including overtime */
+    case "bw":return r==="D"?null:p[1]===r;
+    case "bs":{const d=h+(+p[1])-a;return d===0?null:p[2]==="H"?d>0:d<0}
+    case "bt":{const L=+p[1];return T===L?null:p[2]==="O"?T>L:T<L}
+    case "bht":{const L=+p[1];return h===L?null:p[2]==="O"?h>L:h<L}
+    case "bat":{const L=+p[1];return a===L?null:p[2]==="O"?a>L:a<L}
+    case "bm":{const k=p[1],diff=k[0]==="H"?h-a:a-h,b=+k[1],lo=(b-1)*5+1;return b===4?diff>=16:diff>=lo&&diff<=lo+4}
+    case "boe":return (T%2===1)===(p[1]==="O");
+  }
+  return null;
+}
+function nice(x){
+  if(!isFinite(x))return null;
+  if(x<1.01)x=1.01;
+  if(x<2)return Math.round(x*100)/100;
+  if(x<5)return Math.round(x*20)/20;
+  if(x<15)return Math.round(x*4)/4;
+  if(x<40)return Math.round(x);
+  if(x<100)return Math.round(x/5)*5;
+  return Math.min(500,Math.round(x/25)*25);
+}
+const fmtO = x => x==null?"—":(x<10?x.toFixed(2):x<100?(Number.isInteger(x)?String(x):x.toFixed(2)):String(x));
+
+const mktCache=new Map();
+function marketsFor(m){
+  const ck=m.id+"|"+m.home+"|"+m.away+"|"+[m.odds.h,m.odds.d,m.odds.a,m.odds.o,m.odds.u].join(",");
+  if(mktCache.has(ck))return mktCache.get(ck);
+  const G=buildMarkets(m);mktCache.set(ck,G);return G;
+}
+/* basketball: margin and total as independent normals on integer scores */
+const SD_M=12, SD_T=15;
+function ncdf(x){const t=1/(1+0.2316419*Math.abs(x)),d=0.3989423*Math.exp(-x*x/2),q=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return x>0?1-q:q}
+function ninv(p){p=Math.min(0.999,Math.max(0.001,p));let lo=-6,hi=6;for(let i=0;i<50;i++){const mid=(lo+hi)/2;if(ncdf(mid)<p)lo=mid;else hi=mid}return (lo+hi)/2}
+function bbCells(o,SD_M,SD_T){
+  const pc=(1/o.sh)/((1/o.sh)+(1/o.sa)), po=(1/o.o)/((1/o.o)+(1/o.u));
+  const mu=-o.sl+SD_M*ninv(pc), T=o.tl+SD_T*ninv(po);
+  const pm=x=>ncdf((x+0.5-mu)/SD_M)-ncdf((x-0.5-mu)/SD_M), pt=x=>ncdf((x+0.5-T)/SD_T)-ncdf((x-0.5-T)/SD_T);
+  const cells=[];let s=0;
+  for(let mg=Math.round(mu-4*SD_M);mg<=Math.round(mu+4*SD_M);mg++){if(mg===0)continue;const a=pm(mg);
+    for(let t=Math.round(T-4*SD_T);t<=Math.round(T+4*SD_T);t++){if((t+mg)%2)continue;const h=(t+mg)/2,aw=(t-mg)/2;if(aw<0||h<0)continue;const p=a*pt(t);cells.push([h,aw,p]);s+=p}}
+  for(const c of cells)c[2]/=s;
+  return{cells,mu,T};
+}
+function buildBB(m){
+  const o=m.odds,H=m.home,A=m.away,{cells,mu,T}=bbCells(o,m.sdm||SD_M,m.sdt||SD_T);
+  const price=(id,margin)=>{let w=0,v=0;for(const [h,a,p] of cells){const r=pred(id,h,a);if(r===true)w+=p;else if(r===null)v+=p}
+    if(v>=0.999)return null;const f=w/(1-v);if(f<0.01)return null;return nice(1/(f*margin))};
+  const G=[];
+  const g=(key,title,cat,sels,margin,cols)=>G.push({key,title,cat,cols,sels:sels.map(([id,label,fixed])=>({id,label,odds:fixed??price(id,margin)})).filter(s=>s.odds)});
+  const sg=x=>ltr((x>0?"+":"")+x);
+  g("bw","מנצחת (כולל הארכה)","main",[["bw:H",H,o.h],["bw:A",A,o.a]],1,2);
+  const base=Math.round(-mu)+0.5;
+  const lines=[...new Set([o.sl,...[-9,-6,-3,3,6,9].map(d=>base+d)])].sort((x,y)=>x-y);
+  for(const L of lines){const main=L===o.sl;
+    g("bs"+L,(main?"הנדיקפ ראשי ":"הנדיקפ ")+H+" "+sg(L),"hcp",[["bs:"+L+":H",H+" ("+sg(L)+")",main?o.sh:undefined],["bs:"+L+":A",A+" ("+sg(-L)+")",main?o.sa:undefined]],1.05,2)}
+  const tb=Math.round(T)+0.5;
+  const tls=[...new Set([o.tl,...[-10,-5,5,10].map(d=>tb+d)])].sort((x,y)=>x-y);
+  for(const L of tls){const main=L===o.tl;
+    g("bt"+L,(main?"סה\"כ נקודות ":"סה\"כ נקודות ")+L,"goals",[["bt:"+L+":O","מעל "+L,main?o.o:undefined],["bt:"+L+":U","מתחת "+L,main?o.u:undefined]],1.05,2)}
+  g("boe","סה\"כ זוגי / אי-זוגי","goals",[["boe:O","אי-זוגי"],["boe:E","זוגי"]],1.05,2);
+  const ht=Math.round((T+mu)/2)+0.5, at=Math.round((T-mu)/2)+0.5;
+  for(const [k,n,L] of [["bht",H,ht],["bat",A,at]])
+    g(k+L,"נקודות של "+n+" "+L,"teams",[[k+":"+L+":O","מעל "+L],[k+":"+L+":U","מתחת "+L]],1.06,2);
+  g("bm","הפרש ניצחון","margin",[["bm:H1",H+" ב-1–5"],["bm:H2",H+" ב-6–10"],["bm:H3",H+" ב-11–15"],["bm:H4",H+" ב-16+"],["bm:A1",A+" ב-1–5"],["bm:A2",A+" ב-6–10"],["bm:A3",A+" ב-11–15"],["bm:A4",A+" ב-16+"]],1.12,2);
+  return G;
+}
+function buildMarkets(m){
+  if(m.sport==="bb")return buildBB(m);
+  const o=m.odds, H=m.home, A=m.away;
+  const P=matrix(...fitLambdas(o));
+  const price=(id,margin)=>{let w=0,v=0;for(let i=0;i<N;i++)for(let j=0;j<N;j++){const r=pred(id,i,j);if(r===true)w+=P[i][j];else if(r===null)v+=P[i][j]}
+    if(v>=0.999)return null;const f=w/(1-v);if(f<0.004)return null;return nice(1/(f*margin))};
+  const G=[];
+  const g=(key,title,cat,sels,margin,cols)=>G.push({key,title,cat,cols,sels:sels.map(([id,label,fixed])=>({id,label,odds:fixed??price(id,margin)})).filter(s=>s.odds)});
+  g("1x2","תוצאת סיום","main",[["1x2:H",H,o.h],["1x2:D","תיקו",o.d],["1x2:A",A,o.a]],1,3);
+  g("dc","סיכוי כפול","main",[["dc:1X",H+" או תיקו"],["dc:12","בלי תיקו"],["dc:X2",A+" או תיקו"]],1.05,3);
+  g("dnb","תיקו = החזר","main",[["dnb:H",H],["dnb:A",A]],1.05,2);
+  g("btts","שתי הקבוצות מבקיעות","goals",[["btts:Y","כן"],["btts:N","לא"]],1.06,2);
+  for(const L of ["0.5","1.5","2.5","3.5","4.5","5.5"]){
+    const fixed=L==="2.5";
+    g("ou"+L,"סה\"כ שערים "+L,"goals",[["ou:"+L+":O","מעל "+L,fixed?o.o:undefined],["ou:"+L+":U","מתחת "+L,fixed?o.u:undefined]],1.06,2);
+  }
+  g("tg","מספר שערים מדויק","goals",[0,1,2,3,4,5,6].map(n=>["tg:"+n,n===6?"6+":String(n)]),1.12);
+  g("oe","זוגי / אי-זוגי","goals",[["oe:O","אי-זוגי"],["oe:E","זוגי"]],1.06,2);
+  for(const [side,name] of [["htg",H],["atg",A]])for(const L of ["0.5","1.5","2.5"])
+    g(side+L,"שערים של "+name+" "+L,"teams",[[side+":"+L+":O","מעל "+L],[side+":"+L+":U","מתחת "+L]],1.07,2);
+  g("cln","שער נקי","teams",[["cln:H:Y",H+" שומרת על רשת נקייה"],["cln:A:Y",A+" שומרת על רשת נקייה"]],1.08,2);
+  g("wtn","ניצחון בלי לספוג","teams",[["wtn:H",H],["wtn:A",A]],1.08,2);
+  for(const L of ["-2.5","-1.5","-0.5","+0.5","+1.5","+2.5"]){
+    const v=+L, inv=ltr((v>0?"-":"+")+Math.abs(v).toFixed(1)), Lr=ltr(L);
+    g("ah"+L,"הנדיקפ "+H+" "+Lr,"hcp",[["ah:"+v+":H",H+" ("+Lr+")"],["ah:"+v+":A",A+" ("+inv+")"]],1.06,2);
+  }
+  g("mg","הפרש ניצחון","hcp",[["mg:H1",H+" ב-1"],["mg:H2",H+" ב-2"],["mg:H3",H+" ב-3+"],["mg:D","תיקו"],["mg:A1",A+" ב-1"],["mg:A2",A+" ב-2"],["mg:A3",A+" ב-3+"]],1.12);
+  g("rb","תוצאה + שתיהן מבקיעות","combo",[["rb:H:Y",H+" + כן"],["rb:H:N",H+" + לא"],["rb:D:Y","תיקו + כן"],["rb:D:N","תיקו + לא"],["rb:A:Y",A+" + כן"],["rb:A:N",A+" + לא"]],1.12,2);
+  g("ro","תוצאה + שערים 2.5","combo",[["ro:H:O",H+" + מעל"],["ro:H:U",H+" + מתחת"],["ro:D:O","תיקו + מעל"],["ro:D:U","תיקו + מתחת"],["ro:A:O",A+" + מעל"],["ro:A:U",A+" + מתחת"]],1.12,2);
+  const cs=[];for(let i=0;i<=4;i++)for(let j=0;j<=4;j++)cs.push(["cs:"+i+"-"+j,i+":"+j]);
+  cs.push(["cs:H+","ניצחון "+H+" אחר"],["cs:D+","תיקו אחר"],["cs:A+","ניצחון "+A+" אחר"]);
+  g("cs","תוצאה מדויקת (בית:חוץ)","score",cs,1.2);
+  return G;
+}
+const CATS=[["all","הכל"],["main","תוצאה"],["goals","שערים"],["teams","קבוצות"],["hcp","הנדיקפ"],["combo","שילובים"],["score","תוצאה מדויקת"]];
+const CATS_BB=[["all","הכל"],["main","מנצחת"],["hcp","הנדיקפ"],["goals","נקודות"],["teams","קבוצות"],["margin","הפרש"]];
+const isBB=m=>m.sport==="bb";
+function ltr(x){return "\u2066"+x+"\u2069"}
+function selLabel(m,id){
+  for(const g of marketsFor(m))for(const s of g.sels)if(s.id===id)return {market:g.title,label:s.label,odds:s.odds};
+  return {market:"",label:id,odds:null};
+}
+
+/* ---------- state ---------- */
+const S={db:null,user:null,uid:null,me:null,isOwner:false,ready:false,dbErr:null,
+  matches:new Map(),settings:{startChips:1000},players:new Map(),ledger:new Map(),bets:new Map(),
+  profiles:{},slip:[],mode:"single",stake:50,view:"games",league:"all",q:"",open:null,cat:"all",
+  adminTab:"players",addSport:"fb",pick:null,bettor:null,canWrite:null,recv:null,share:null,sheet:false,busy:false,msg:null,writeBlocked:false,dirty:false};
+try{S.pick=localStorage.getItem("cl.pick")}catch(e){}
+try{const v=localStorage.getItem("cl.view");if(v)S.view=v;const st=+localStorage.getItem("cl.stake");if(st>0)S.stake=st}catch(e){}
+
+const LEAGUES=[["all","הכל"],["il","ליגת העל"],["epl","פרמייר ליג"],["liga","לה ליגה"],["sa","סרייה א"],["bl","בונדסליגה"],["ucl","ליגת האלופות"],["el","יורוליג"],["ilb","ליגת העל בכדורסל"],["nba","NBA"]];
+const BB_LEAGUES=new Set(["el","ilb","nba"]);
+const tz="Asia/Jerusalem";
+const fTime=new Intl.DateTimeFormat("he-IL",{timeZone:tz,hour:"2-digit",minute:"2-digit",hour12:false});
+const fDay=new Intl.DateTimeFormat("he-IL",{timeZone:tz,weekday:"long"});
+const fDate=new Intl.DateTimeFormat("he-IL",{timeZone:tz,day:"numeric",month:"numeric"});
+const fDayKey=new Intl.DateTimeFormat("en-CA",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit"});
+const fStamp=new Intl.DateTimeFormat("he-IL",{timeZone:tz,day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit",hour12:false});
+const n0=x=>Math.round(x).toLocaleString("he-IL");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=sel=>document.querySelector(sel);
+
+const isEst=m=>m.source==="estimate";
+function isOpen(m){return m.status==="open"&&!m.locked&&!isEst(m)&&Date.now()<Date.parse(m.kickoff)}
+function slipOutcome(slip,voided){
+  if(voided)return{state:"void",ret:slip.stake,mult:1};
+  let mult=1,pending=false,allVoid=true;
+  for(const l of slip.legs){
+    const m=S.matches.get(l.m);
+    if(!m){pending=true;allVoid=false;continue}
+    if(m.status==="void")continue;
+    if(m.status==="final"&&m.result){const r=pred(l.s,m.result.h,m.result.a);
+      if(r===false)return{state:"lost",ret:0,mult:0};
+      if(r===true){mult*=l.o;allVoid=false}
+    }else{pending=true;allVoid=false}
+  }
+  if(pending)return{state:"pending",ret:0,mult};
+  if(allVoid)return{state:"void",ret:slip.stake,mult:1};
+  return{state:"won",ret:slip.stake*mult,mult};
+}
+function legState(l){const m=S.matches.get(l.m);if(!m)return"pending";if(m.status==="void")return"void";
+  if(m.status==="final"&&m.result){const r=pred(l.s,m.result.h,m.result.a);return r===true?"won":r===false?"lost":"void"}return"pending"}
+function account(uid){
+  const led=S.ledger.get(uid)||{}, voided=new Set(led.voided||[]);
+  const slips=(S.bets.get(uid)?.slips)||[];
+  let staked=0,ret=0,open=0,won=0,lost=0,settled=0;
+  for(const s of slips){const o=slipOutcome(s,voided.has(s.id));staked+=s.stake;ret+=o.ret;
+    if(o.state==="pending")open+=s.stake;else{settled++;if(o.state==="won")won++;if(o.state==="lost")lost++}}
+  const start=(+S.settings.startChips||0)+(+led.adjust||0);
+  const balance=start-staked+ret;
+  return{start,balance,open,profit:balance+open-start,count:slips.length,won,lost,settled};
+}
+function myId(){
+  if(S.isOwner||S.canWrite===true)return S.uid&&S.players.has(S.uid)?S.uid:null;
+  return S.pick&&S.players.has(S.pick)?S.pick:null;
+}
+function bettorId(){
+  if(S.isOwner)return S.bettor&&S.players.has(S.bettor)?S.bettor:myId()||[...S.players.keys()][0]||null;
+  return S.canWrite===true?myId():null;
+}
+const viewerMode=()=>!S.isOwner&&S.canWrite!==true;
+function nameOf(uid){const p=S.players.get(uid);return (p&&p.nick)||S.profiles[uid]?.name||"שחקן"}
+async function refreshProfiles(){
+  if(!S.user)return;const ids=[...S.players.keys()];if(!ids.length)return;
+  try{S.profiles=await S.user.profiles(ids)}catch(e){}
+}
+
+/* ---------- render ---------- */
+function toast(t){const el=$("#toast");el.innerHTML='<div class="toast" role="status">'+esc(t)+"</div>";clearTimeout(toast.t);toast.t=setTimeout(()=>el.innerHTML="",2600)}
+function schedule(){ // avoid re-rendering under a focused input
+  const a=document.activeElement;
+  if(a&&a.matches&&a.matches("#view input, #view select, #slipcol input")){S.dirty=true;return}
+  render();
+}
+document.addEventListener("focusout",()=>setTimeout(()=>{if(S.dirty){S.dirty=false;schedule()}},0));
+
+function render(){renderTop();renderView();renderSlip()}
+function renderTop(){
+  const mid=myId(),me=mid?account(mid):null;
+  $("#wallet").innerHTML=(me?`<div class="chip-pill" title="הצ'יפים שלך"><span class="coin"></span><b>${n0(me.balance)}</b></div>`:"")+(S.session?`<button class="chip-pill" data-logout style="color:inherit;font-weight:700" title="יציאה">${esc(nameOf(S.uid))} · יציאה</button>`:"");
+  const myOpen=me?((S.bets.get(mid)?.slips)||[]).filter(s=>slipOutcome(s,(S.ledger.get(mid)?.voided||[]).includes(s.id)).state==="pending").length:0;
+  const tabs=S.session?[["games","משחקים"],["mine","ההימורים שלי",myOpen],["table","טבלה"]]:[];
+  if(S.isOwner)tabs.push(["admin","ניהול"]);
+  if(!tabs.some(t=>t[0]===S.view))S.view="games";
+  $("#tabs").innerHTML=tabs.map(([k,l,b])=>`<button data-tab="${k}" aria-current="${S.view===k}">${l}${b?`<span class="badge">${b}</span>`:""}</button>`).join("");
+  $("#page").classList.toggle("full",S.view!=="games");
+}
+function joinNotice(){
+  if(!S.db)return `<div class="notice warn"><h3>צריך להתחבר כדי לשחק</h3><p>הדף הזה עובד רק למי שהוזמן ומחובר לחשבון Claude. בקשו מהמנהל להזמין אתכם במייל.</p></div>`;
+  if(!S.uid)return `<div class="notice warn"><h3>לא זיהינו אותך</h3><p>התחברו לחשבון Claude שאליו נשלחה ההזמנה, ואז רעננו את הדף.</p></div>`;
+  if(viewerMode()){
+    const ps=[...S.players.keys()].sort((a,b)=>nameOf(a).localeCompare(nameOf(b),"he"));
+    if(myId())return `<div class="notice" style="padding-block:10px"><p>משחק בתור <b>${esc(nameOf(myId()))}</b>. בונים טופס, לוחצים "שליחה למנהל", והמנהל מכניס אותו. <button class="btn sm ghost" data-unpick style="margin-inline-start:8px">החלפה</button></p></div>`;
+    if(!ps.length)return `<div class="notice warn"><h3>המנהל עוד לא הוסיף שחקנים</h3><p>בקשו מהמנהל להוסיף אתכם לליגה, ואז תוכלו לבחור את השם שלכם כאן.</p></div>`;
+    return `<div class="notice"><h3>מי אתה?</h3><p>בחרו את השם שלכם כדי לראות את הצ'יפים וההימורים שלכם. ההימורים נשלחים למנהל, והוא מכניס אותם.</p>
+      <div class="row"><select class="inp" id="pickSel" style="max-width:240px"><option value="">בחירת שם</option>${ps.map(id=>`<option value="${esc(id)}">${esc(nameOf(id))}</option>`).join("")}</select></div></div>`;
+  }
+  if(S.players.has(S.uid))return"";
+  if(S.writeBlocked)return `<div class="notice warn"><h3>אין לך עדיין הרשאה לשחק</h3><p>בקשו מהמנהל לשתף איתכם את הדף במייל עם הרשאת עריכה (Editor). צפייה בלבד לא מאפשרת להמר.</p></div>`;
+  return `<div class="notice"><h3>הצטרפות לליגה</h3><p>בחרו כינוי. תקבלו ${n0(S.settings.startChips)} צ'יפים להתחלה.</p>
+    <form class="row" id="joinForm"><input class="inp" id="nick" maxlength="24" placeholder="הכינוי שלך" required style="max-width:240px"><button class="btn sm" type="submit">הצטרפות</button></form></div>`;
+}
+function renderView(){
+  const v=$("#view");
+  if(!S.ready){return}
+  if(!S.session){v.innerHTML=authView();return}
+  if(S.view==="games")v.innerHTML=joinNotice()+viewGames();
+  else if(S.view==="mine")v.innerHTML=joinNotice()+viewMine();
+  else if(S.view==="table")v.innerHTML=viewTable();
+  else if(S.view==="admin")v.innerHTML=viewAdmin();
+}
+function matchList(){
+  const q=S.q.trim();
+  return [...S.matches.values()].filter(m=>(S.isOwner||!isEst(m)||m.status!=="open")&&(S.league==="all"||m.league===S.league)&&(!q||m.home.includes(q)||m.away.includes(q)))
+    .sort((a,b)=>Date.parse(a.kickoff)-Date.parse(b.kickoff)||a.home.localeCompare(b.home,"he"));
+}
+function inSlip(id){return S.slip.some(l=>l.id===id)}
+function oddBtn(m,id,label,odds,small){
+  const dis=!isOpen(m)||odds==null;
+  return `<button class="odd" data-sel="${esc(m.id)}|${esc(id)}" aria-pressed="${inSlip(m.id+"|"+id)}" ${dis?"disabled":""}>${small?`<span>${esc(label)}</span>`:""}<b class="num">${fmtO(odds)}</b>${small?"":`<span>${esc(label)}</span>`}</button>`;
+}
+function viewGames(){
+  const all=[...S.matches.values()].filter(m=>S.isOwner||!isEst(m)||m.status!=="open");
+  if(!all.length)return `<div class="notice"><h3>עוד אין משחקים פתוחים</h3><p>${S.isOwner?"טענו את 219 המשחקים עם היחסים שהוכנו מראש, או הוסיפו משחקים בלשונית ניהול.":"המנהל עוד לא פרסם יחסים. תחזרו בקרוב."}</p>${S.isOwner?`<div class="row"><button class="btn sm" data-seed ${S.busy?"disabled":""}>${S.busy?"טוען…":"טעינת המשחקים"}</button></div>`:""}</div>`;
+  const nEst=all.filter(m=>isEst(m)&&m.status==="open").length;
+  const counts={};for(const m of all)if(m.status==="open")counts[m.league]=(counts[m.league]||0)+1;
+  let h=S.isOwner&&nEst?`<div class="notice"><h3>${nEst} משחקים ממתינים ליחס אמיתי</h3><p>הם סגורים להימורים והחברים לא רואים אותם. הדביקו יחסים בלשונית ניהול כדי לפתוח אותם.</p><div class="row"><button class="btn sm dark" data-tab="admin" data-goatab="paste">הדבקת יחסים</button></div></div>`:"";
+  h+=`<div class="filters" role="group" aria-label="ליגות">`+LEAGUES.map(([k,l])=>{const c=k==="all"?all.filter(m=>m.status==="open").length:(counts[k]||0);
+    return `<button class="fchip" data-league="${k}" aria-pressed="${S.league===k}">${l}<span class="n">${c}</span></button>`}).join("")+
+    `<input class="searchbox" id="q" type="search" placeholder="חיפוש קבוצה" value="${esc(S.q)}"></div>`;
+  const list=matchList();
+  if(!list.length)return h+`<div class="empty">אין משחקים שמתאימים לחיפוש.</div>`;
+  const days=new Map();for(const m of list){const k=fDayKey.format(new Date(m.kickoff));if(!days.has(k))days.set(k,[]);days.get(k).push(m)}
+  for(const [,ms] of days){
+    const d=new Date(ms[0].kickoff);
+    h+=`<section class="day"><div class="day-h"><h2>${fDay.format(d)}</h2><span class="num">${fDate.format(d)} · ${ms.length} משחקים</span></div><div class="board">`;
+    for(const m of ms){
+      const open=isOpen(m), o=m.odds, groups=open?marketsFor(m):null;
+      const nSel=groups?groups.reduce((s,g)=>s+g.sels.length,0):0;
+      const status=m.status==="final"&&m.result?`<span class="score num">${m.result.h}:${m.result.a}</span>`:m.status==="void"?`<span class="pill void">בוטל</span>`:isEst(m)&&m.status==="open"?`<span class="pill void">ממתין ליחס אמיתי</span>`:!open?`<span class="pill pending">נסגר</span>`:"";
+      h+=`<div class="mrow ${open?"":"closed"}">
+        <div class="ko">${m.tbc?fDate.format(new Date(m.kickoff)):fTime.format(new Date(m.kickoff))}<small>${m.tbc?"שעה לא סופית":esc(m.leagueName)}</small></div>
+        <div class="teams"><div class="t">${esc(m.home)}</div><div class="t">${esc(m.away)}</div>
+          <div class="meta"><span>${isBB(m)?"כדורסל · ":""}${esc(m.leagueName)} · ${esc(m.round||"")}</span><span class="tag ${m.source==="estimate"?"est":"mkt"}">${m.source==="market"?"יחס שוק":m.source==="model"?"יחס סטטיסטי":"יחס מוערך"}</span></div></div>
+        ${status?`<div style="grid-column:span 3;justify-self:end">${status}</div>`:
+        (isBB(m)?`<div class="oddset main">${oddBtn(m,"bw:H","1",o.h)}${oddBtn(m,"bw:A","2",o.a)}${oddBtn(m,"bs:"+o.sl+":H",ltr((o.sl>0?"+":"")+o.sl),o.sh)}</div>
+        <div class="oddset ou">${oddBtn(m,"bt:"+o.tl+":O","מעל "+o.tl,o.o)}${oddBtn(m,"bt:"+o.tl+":U","מתחת "+o.tl,o.u)}</div>`:
+        `<div class="oddset main">${oddBtn(m,"1x2:H","1",o.h)}${oddBtn(m,"1x2:D","X",o.d)}${oddBtn(m,"1x2:A","2",o.a)}</div>
+        <div class="oddset ou">${oddBtn(m,"ou:2.5:O","מעל 2.5",o.o)}${oddBtn(m,"ou:2.5:U","מתחת 2.5",o.u)}</div>`)+`
+        <button class="more" data-open="${esc(m.id)}" aria-expanded="${S.open===m.id}">${S.open===m.id?"סגירה":"+"+(nSel-5)}</button>`}
+      </div>`;
+      if(S.open===m.id&&open)h+=marketsPanel(m,groups);
+    }
+    h+=`</div></section>`;
+  }
+  return h+`<p class="foot">שעות לפי שעון ישראל. "יחס שוק" הוזן מסוכנות הימורים; "יחס סטטיסטי" חושב מנתוני העונה הנוכחית (שערים בעד ונגד, הפרשי נקודות וקווי ניצחונות עונתיים). כל השווקים הנוספים נגזרים מאותו מודל ומתיישבים לפי תוצאת 90 הדקות בכדורגל, ולפי התוצאה הסופית כולל הארכות בכדורסל.</p>`;
+}
+function marketsPanel(m,groups){
+  let h=`<div class="markets"><div class="mtabs">`+(isBB(m)?CATS_BB:CATS).map(([k,l])=>`<button data-cat="${k}" aria-pressed="${S.cat===k}">${l}</button>`).join("")+`</div>`;
+  for(const g of groups){if(S.cat!=="all"&&g.cat!==S.cat)continue;if(!g.sels.length)continue;
+    h+=`<div class="mgroup"><h4>${esc(g.title)}</h4><div class="mgrid ${g.cols?"cols"+g.cols:""}">`+g.sels.map(s=>oddBtn(m,s.id,s.label,s.odds,true)).join("")+`</div></div>`}
+  if(m.sourceNote)h+=`<div class="src">מקור יחס: ${esc(m.sourceNote)}</div>`;
+  return h+`</div>`;
+}
+function ticketHtml(s,uid,adminCtl){
+  const voided=(S.ledger.get(uid)?.voided||[]).includes(s.id);
+  const o=slipOutcome(s,voided);
+  const odds=s.legs.reduce((x,l)=>x*l.o,1);
+  const lbl={won:"זכה",lost:"הפסיד",pending:"פתוח",void:"בוטל / הוחזר"}[o.state];
+  let h=`<article class="ticket ${o.state}"><div class="ticket-h"><span class="kind">${s.legs.length>1?"קומבינציה × "+s.legs.length:"יחיד"}</span>${adminCtl?`<span>${esc(nameOf(uid))}</span>`:""}<span class="when num">${fStamp.format(new Date(s.t))}</span><span class="pill ${o.state}">${lbl}</span></div>`;
+  for(const l of s.legs){const m=S.matches.get(l.m);const ls=legState(l);const info=m?selLabel(m,l.s):{market:"",label:l.s};
+    h+=`<div class="leg"><div><div class="sel">${esc(info.label)}</div><div class="mt">${m?esc(m.home)+" – "+esc(m.away)+" · "+esc(info.market):"משחק שנמחק"}${m&&m.result?" · "+m.result.h+":"+m.result.a:""}</div></div><span class="mini ${ls}">${{won:"✓",lost:"✗",void:"החזר",pending:""}[ls]}</span><span class="o num">${fmtO(l.o)}</span></div>`}
+  h+=`<div class="ticket-f"><div><span>סכום </span><b>${n0(s.stake)}</b></div><div><span>יחס </span><b>${fmtO(Math.round(odds*100)/100)}</b></div><div><span>${o.state==="pending"?"זכייה אפשרית ":"החזר "}</span><b>${n0(o.state==="pending"?s.stake*odds:o.ret)}</b></div>${adminCtl?`<div style="margin-inline-start:auto">${voided?`<button class="btn sm ghost" data-unvoid="${uid}|${s.id}">החזרת ההימור</button>`:`<button class="btn sm danger" data-void="${uid}|${s.id}">ביטול והחזר</button>`}</div>`:""}</div></article>`;
+  return h;
+}
+function viewMine(){
+  const mid=myId();if(!mid)return"";
+  const a=account(mid);
+  const slips=[...((S.bets.get(mid)?.slips)||[])].sort((x,y)=>y.t-x.t);
+  let h=`<div class="sec-h"><h2>ההימורים שלי</h2><p class="num">יתרה ${n0(a.balance)} · בהימור ${n0(a.open)} · רווח <span class="${a.profit>=0?"pos":"neg"}">${a.profit>=0?"+":""}${n0(a.profit)}</span></p></div>`;
+  if(!slips.length)return h+`<div class="card empty">עוד לא הימרת. בחרו יחס בלשונית משחקים והוא ייכנס לטופס.</div>`;
+  return h+`<div class="tickets">`+slips.map(s=>ticketHtml(s,mid,false)).join("")+`</div>`;
+}
+function viewTable(){
+  const rows=[...S.players.keys()].map(uid=>({uid,...account(uid)})).sort((a,b)=>(b.balance+b.open)-(a.balance+a.open));
+  let h=`<div class="sec-h"><h2>טבלת הליגה</h2><p>מדורג לפי סך הצ'יפים (יתרה + מה שבהימור)</p></div>`;
+  if(!rows.length)return h+`<div class="card empty">עוד אין שחקנים בליגה.</div>`;
+  h+=`<div class="tbl-wrap"><table><thead><tr><th>#</th><th>שחקן</th><th class="n">יתרה</th><th class="n">בהימור</th><th class="n">רווח</th><th class="n">הימורים</th><th class="n">אחוז הצלחה</th></tr></thead><tbody>`;
+  rows.forEach((r,i)=>{const pct=r.won+r.lost?Math.round(r.won/(r.won+r.lost)*100)+"%":"—";const p=S.profiles[r.uid];
+    h+=`<tr class="${i===0?"lead":""}"><td class="rank">${i+1}</td><td><div class="who">${p?`<img src="${esc(p.avatarUrl)}" alt="">`:""}<span>${esc(nameOf(r.uid))}</span>${r.uid===myId()?`<span class="you">אני</span>`:""}</div></td>
+    <td class="n">${n0(r.balance)}</td><td class="n">${n0(r.open)}</td><td class="n ${r.profit>=0?"pos":"neg"}">${r.profit>=0?"+":""}${n0(r.profit)}</td><td class="n">${r.count}</td><td class="n">${pct}</td></tr>`});
+  return h+`</tbody></table></div>`;
+}
+
+/* ---------- admin ---------- */
+function viewAdmin(){
+  if(!S.isOwner)return"";
+  const t=S.adminTab;
+  const pend=[...S.matches.values()].filter(m=>m.status==="open"&&Date.now()>=Date.parse(m.kickoff)).length;
+  let h=`<div class="admin-tabs">`+[["players","שחקנים וצ'יפים"],["results","תוצאות"+(pend?` (${pend})`:"")],["paste","הדבקת יחסים"],["matches","משחקים ויחסים"],["bets","כל ההימורים"],["settings","הגדרות"]]
+    .map(([k,l])=>`<button class="fchip" data-atab="${k}" aria-pressed="${t===k}">${l}</button>`).join("")+`</div>`;
+  if(t==="players")h+=adminPlayers();
+  if(t==="results")h+=adminResults();
+  if(t==="matches")h+=adminMatches();
+  if(t==="bets")h+=adminBets();
+  if(t==="settings")h+=adminSettings();
+  if(t==="paste")h+=adminPaste();
+  if(t==="recv")h+=adminRecv();
+  return h;
+}
+function adminPlayers(){
+  const rows=[...S.players.keys()].map(uid=>({uid,...account(uid)})).sort((a,b)=>b.balance-a.balance);
+  let h=`<div class="sec-h"><h2>שחקנים וצ'יפים</h2><p>הוספה או הורדה של צ'יפים לשחקן. מספר שלילי מוריד.</p></div>`;
+  if(!rows.length)return h+`<div class="card empty">עוד אין שחקנים. שלחו לחברים את הקישור לאתר כדי שיירשמו.</div>`;
+  h+=`<div class="tbl-wrap"><table><thead><tr><th>שחקן</th><th class="n">יתרה</th><th class="n">בהימור</th><th class="n">רווח</th><th class="n">התאמות</th><th class="n">הימורים</th><th>הוספה / הורדה</th></tr></thead><tbody>`;
+  for(const r of rows){const led=S.ledger.get(r.uid)||{};
+    h+=`<tr><td><div class="who">${esc(nameOf(r.uid))}${r.uid===S.uid?`<span class="you">אני</span>`:""}</div></td><td class="n"><b>${n0(r.balance)}</b></td><td class="n">${n0(r.open)}</td><td class="n ${r.profit>=0?"pos":"neg"}">${r.profit>=0?"+":""}${n0(r.profit)}</td><td class="n">${led.adjust?(led.adjust>0?"+":"")+n0(led.adjust):"0"}</td><td class="n">${r.count}</td>
+    <td><form class="hstack" data-adjust="${r.uid}"><input class="inp num m" id="adj-${r.uid}" type="number" step="1" placeholder="+500" required><input class="inp" id="adjn-${r.uid}" placeholder="סיבה (לא חובה)" style="width:150px"><button class="btn sm dark">עדכון</button></form></td></tr>`}
+  return h+`</tbody></table></div>`;
+}
+function adminResults(){
+  const now=Date.now();
+  const due=[...S.matches.values()].filter(m=>m.status==="open"&&now>=Date.parse(m.kickoff)).sort((a,b)=>Date.parse(a.kickoff)-Date.parse(b.kickoff));
+  const done=[...S.matches.values()].filter(m=>m.status!=="open").sort((a,b)=>Date.parse(b.kickoff)-Date.parse(a.kickoff));
+  let h=`<div class="sec-h"><h2>ממתינים לתוצאה</h2><p>תוצאת 90 דקות + תוספת זמן. אחרי השמירה כל ההימורים מתיישבים אוטומטית.</p></div>`;
+  h+=due.length?`<div class="tbl-wrap"><table><tbody>`+due.map(m=>`<tr><td><b>${esc(m.home)} – ${esc(m.away)}</b><div class="mt" style="color:var(--muted);font-size:12.5px">${esc(m.leagueName)} · ${fStamp.format(new Date(m.kickoff))}</div></td>
+      <td><form class="hstack" data-result="${esc(m.id)}"><input class="inp num s" id="rh-${esc(m.id)}" type="number" min="0" max="250" required aria-label="תוצאת בית"><span>:</span><input class="inp num s" id="ra-${esc(m.id)}" type="number" min="0" max="250" required aria-label="תוצאת חוץ"><button class="btn sm dark">שמירת תוצאה</button><button type="button" class="btn sm danger" data-mvoid="${esc(m.id)}">ביטול משחק</button></form></td></tr>`).join("")+`</tbody></table></div>`
+    :`<div class="card empty">אין משחקים שממתינים לתוצאה כרגע.</div>`;
+  h+=`<div class="sec-h"><h2>משחקים שנסגרו</h2></div>`;
+  h+=done.length?`<div class="tbl-wrap"><table><tbody>`+done.map(m=>`<tr><td><b>${esc(m.home)} – ${esc(m.away)}</b></td><td class="n">${m.status==="void"?`<span class="pill void">בוטל</span>`:`<span class="score num">${m.result.h}:${m.result.a}</span>`}</td><td style="text-align:end"><button class="btn sm ghost" data-reopen="${esc(m.id)}">פתיחה מחדש</button></td></tr>`).join("")+`</tbody></table></div>`
+    :`<div class="card empty">עוד לא נסגרו משחקים.</div>`;
+  return h;
+}
+function toLocalInput(iso){const d=new Date(iso);const p=new Intl.DateTimeFormat("en-CA",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d);const g=t=>p.find(x=>x.type===t).value;return `${g("year")}-${g("month")}-${g("day")}T${g("hour")}:${g("minute")}`}
+function fromLocalInput(v){ // interpret as Israel time
+  const [d,t]=v.split("T");const [Y,M,D]=d.split("-").map(Number);const [h,mi]=t.split(":").map(Number);
+  let guess=Date.UTC(Y,M-1,D,h,mi);for(let k=0;k<2;k++){const back=toLocalInput(new Date(guess).toISOString());const [bd,bt]=back.split("T");const [bY,bM,bD]=bd.split("-").map(Number);const [bh,bmi]=bt.split(":").map(Number);guess+=Date.UTC(Y,M-1,D,h,mi)-Date.UTC(bY,bM-1,bD,bh,bmi)}
+  return new Date(guess).toISOString();
+}
+function adminMatches(){
+  const list=[...S.matches.values()].filter(m=>m.status==="open").sort((a,b)=>Date.parse(a.kickoff)-Date.parse(b.kickoff));
+  let h=`<div class="sec-h"><h2>הוספת משחק</h2><p>מספיק להזין את היחסים הראשיים. כל שאר השווקים מחושבים מהם. בכדורסל הקווים מסתיימים ב-.5 (למשל ‎-4.5).</p></div>
+  <form class="card" id="addMatch"><div class="grid2">
+    <div class="field"><label for="am-home">קבוצת בית</label><input class="inp" id="am-home" required></div>
+    <div class="field"><label for="am-away">קבוצת חוץ</label><input class="inp" id="am-away" required></div>
+    <div class="field"><label for="am-sport">ענף</label><select class="inp" id="am-sport"><option value="fb" ${S.addSport==="fb"?"selected":""}>כדורגל</option><option value="bb" ${S.addSport==="bb"?"selected":""}>כדורסל</option></select></div>
+    <div class="field"><label for="am-league">ליגה</label><select class="inp" id="am-league">${LEAGUES.slice(1).filter(([k])=>BB_LEAGUES.has(k)===(S.addSport==="bb")).map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}<option value="other">אחר</option></select></div>
+    <div class="field"><label for="am-ko">מועד (שעון ישראל)</label><input class="inp" id="am-ko" type="datetime-local" required></div>
+  </div><div class="hstack" style="margin-top:12px">${oddFields(S.addSport).map(([k,l,isLine])=>`<div class="field"><label for="am-${k}">${l}</label><input class="inp num m" id="am-${k}" type="number" step="${isLine?"0.5":"0.01"}" ${isLine?"":'min="1.01"'} required></div>`).join("")}
+  <button class="btn sm" style="align-self:end">הוספה</button></div></form>`;
+  h+=`<div class="sec-h"><h2>משחקים פתוחים</h2><p>עריכת יחסים, מועד, ונעילה ידנית של הימורים.</p></div><div class="tbl-wrap"><table><thead><tr><th>משחק</th><th>מועד (שעון ישראל)</th><th>יחסים</th><th></th></tr></thead><tbody>`;
+  for(const m of list){const id=esc(m.id);
+    h+=`<tr><td><b>${esc(m.home)} – ${esc(m.away)}</b><div style="color:var(--muted);font-size:12.5px">${esc(m.leagueName)}${m.locked?" · נעול":""}${isEst(m)?" · <b>יחס מוערך, סגור</b>":""}</div></td>
+    <td><input class="inp" type="datetime-local" id="ko-${id}" value="${toLocalInput(m.kickoff)}" style="width:190px"></td>
+    <td><div class="hstack" style="flex-wrap:nowrap">${oddFields(isBB(m)?"bb":"fb").map(([k,l,isLine])=>`<div class="field"><label for="od-${k}-${id}">${l}</label><input class="inp num s" style="width:${isLine?84:70}px" type="number" step="${isLine?"0.5":"0.01"}" id="od-${k}-${id}" value="${m.odds[k]}"></div>`).join("")}</div></td>
+    <td><div class="hstack" style="flex-wrap:nowrap"><button class="btn sm dark" data-msave="${id}">שמירה</button><button class="btn sm ghost" data-mlock="${id}">${m.locked?"פתיחה":"נעילה"}</button><button class="btn sm danger" data-mdel="${id}" title="מחיקת המשחק">מחיקה</button></div></td></tr>`}
+  return h+`</tbody></table></div>`;
+}
+function oddFields(sport){
+  return sport==="bb"?[["h","1"],["a","2"],["sl","קו הנדיקפ (בית)",1],["sh","הנדיקפ בית"],["sa","הנדיקפ חוץ"],["tl","קו נקודות",1],["o","מעל"],["u","מתחת"]]
+    :[["h","1"],["d","X"],["a","2"],["o","מעל 2.5"],["u","מתחת 2.5"]];
+}
+function readOdds(sport,prefix){
+  const od={};for(const [k,,isLine] of oddFields(sport)){const v=+document.getElementById(prefix(k)).value;
+    if(isLine?!(isFinite(v)&&Math.abs(v%1)===0.5):!(v>=1.01))return null;od[k]=v}
+  return od;
+}
+/* ---------- paste odds ---------- */
+function normName(s){
+  return " "+String(s)
+    .replace(/ת["״׳']?א(?![א-ת])/g,"תל אביב").replace(/ב["״]ש/g,"באר שבע").replace(/פ["״]ת/g,"פתח תקווה").replace(/ק["״]ש/g,"קריית שמונה").replace(/י-ם/g,"ירושלים")
+    .replace(/קרית/g,"קריית").replace(/תקוה/g,"תקווה")
+    .replace(/[״"׳'`’()\[\],:|\/]/g," ").replace(/(?<!\d)\.|\.(?!\d)/g," ").replace(/-(?![\d.])/g," ").replace(/–|—/g," ")
+    .replace(/\s+/g," ").trim()+" ";
+}
+function parsePaste(text){
+  const T=normName(text), found=[];
+  const open=[...S.matches.values()].filter(m=>m.status==="open"&&Date.now()<Date.parse(m.kickoff));
+  for(const m of open){
+    const H=normName(m.home).trim(),A=normName(m.away).trim();
+    let i=-1;
+    while((i=T.indexOf(" "+H+" ",i+1))>=0){
+      const j=T.indexOf(" "+A+" ",i+H.length);
+      if(j<0||j-i>160)continue;
+      found.push({m,start:i,end:j+A.length+1});break;
+    }
+  }
+  found.sort((a,b)=>a.start-b.start);
+  return found.map((f,k)=>{
+    const seg=T.slice(f.end,k+1<found.length?found[k+1].start:f.end+260);
+    const nums=(seg.match(/[+-]?\d+(?:\.\d+)?/g)||[]).map(Number);
+    const prices=nums.filter(x=>x>=1.01&&x<=200&&String(x).includes("."));
+    const m=f.m,bb=isBB(m),v={...m.odds};let got=0;
+    if(bb){if(prices.length>=2){v.h=prices[0];v.a=prices[1];got=2}}
+    else if(prices.length>=3){v.h=prices[0];v.d=prices[1];v.a=prices[2];got=3}
+    return{id:m.id,vals:v,on:got>0,got};
+  });
+}
+function adminPaste(){
+  const P=S.paste||{text:"",rows:null};
+  let h=`<div class="sec-h"><h2>הדבקת יחסים</h2><p>העתיקו מאתר ההימורים את רשימת המשחקים עם היחסים והדביקו כאן. האתר מזהה את הקבוצות ולוקח את היחסים שאחרי כל משחק.</p></div>
+  <div class="card"><div class="field"><label for="pasteText">טקסט מאתר ההימורים</label><textarea class="inp" id="pasteText" rows="8" placeholder="לדוגמה:
+מכבי תל אביב - הפועל חיפה  1.55  3.90  5.20
+ברצלונה - ריאל מדריד  1.65  4.50  4.40" style="resize:vertical;font-family:var(--f-num)">${esc(P.text)}</textarea></div>
+  <div class="hstack" style="margin-top:10px"><button class="btn sm dark" data-parse>זיהוי יחסים</button><span class="foot" style="padding:0">כדורגל: 1 X 2 · כדורסל: 1 2. שמות מקוצרים כמו מכבי ת"א מזוהים.</span></div></div>`;
+  if(P.rows){
+    if(!P.rows.length)return h+`<div class="card empty" style="margin-top:12px">לא זוהו משחקים. בדקו שהטקסט כולל את שמות שתי הקבוצות, ושהמשחק עוד לא התחיל.</div>`;
+    h+=`<div class="sec-h"><h2>נמצאו ${P.rows.length} משחקים</h2><p>בדקו ותקנו לפני העדכון. מעל/מתחת והנדיקפ נשארים כמו שהם אם לא תשנו אותם.</p></div><div class="tbl-wrap"><table><thead><tr><th></th><th>משחק</th><th>יחסים</th></tr></thead><tbody>`;
+    for(const r of P.rows){const m=S.matches.get(r.id);if(!m)continue;const id=esc(r.id);
+      h+=`<tr><td><input type="checkbox" id="pvon-${id}" ${r.on?"checked":""} aria-label="לעדכן"></td><td><b>${esc(m.home)} – ${esc(m.away)}</b><div style="color:var(--muted);font-size:12.5px">${esc(m.leagueName)} · ${fStamp.format(new Date(m.kickoff))}${r.got?"":" · <span class='err'>לא נמצאו יחסים</span>"}</div></td>
+      <td><div class="hstack" style="flex-wrap:nowrap">${oddFields(isBB(m)?"bb":"fb").map(([k,l,isLine])=>`<div class="field"><label for="pv-${k}-${id}">${l}</label><input class="inp num s" style="width:${isLine?84:70}px" type="number" step="${isLine?"0.5":"0.01"}" id="pv-${k}-${id}" value="${r.vals[k]}"></div>`).join("")}</div></td></tr>`}
+    h+=`</tbody></table></div><div class="hstack" style="margin-top:12px"><button class="btn" data-applypaste>עדכון ופתיחה להימורים</button></div>`;
+  }
+  return h;
+}
+async function applyPaste(){
+  const rows=(S.paste&&S.paste.rows)||[];let n=0,bad=0;
+  const todo=[];
+  for(const r of rows){const m=S.matches.get(r.id);const cb=document.getElementById("pvon-"+r.id);if(!m||!cb||!cb.checked)continue;
+    const od=readOdds(isBB(m)?"bb":"fb",k=>`pv-${k}-${r.id}`);if(!od){bad++;continue}todo.push([r.id,od])}
+  if(bad){toast(bad+" משחקים עם יחס לא תקין. תקנו אותם או בטלו את הסימון.");return}
+  if(!todo.length){toast("לא סומנו משחקים");return}
+  S.busy=true;
+  try{for(const [id,od] of todo){await S.db.doc("matches/"+id).update({odds:od,source:"market",sourceNote:"הודבק מאתר הימורים · "+fStamp.format(new Date())});n++}
+    S.paste={text:"",rows:null};toast(n+" משחקים עודכנו ונפתחו להימורים")}
+  catch(e){toast("עודכנו "+n+" משחקים, ואז השמירה נכשלה. נסו שוב.")}
+  S.busy=false;render();
+}
+/* ---------- slips sent by viewers ---------- */
+function slipCode(pid,c){return "CL1~"+pid+"~"+c.mode+"~"+c.stake+"~"+c.legs.map(l=>l.m+"|"+l.s+"|"+l.info.odds).join("~")}
+function slipText(pid,c){
+  const lines=c.legs.map((l,i)=>`${i+1}. ${l.match.home} – ${l.match.away} · ${l.info.market}: ${l.info.label} @ ${fmtO(l.info.odds)}`);
+  return `טופס לליגת הצ'יפים – ${nameOf(pid)}\n${lines.join("\n")}\n${c.mode==="combo"?"קומבינציה":"בודדים"} · סכום ${c.mode==="combo"?c.stake:c.stake+" לכל הימור"} · זכייה אפשרית ${n0(c.win)}\n${slipCode(pid,c)}`;
+}
+function parseSlips(text){
+  const out=[];
+  for(const code of (text.match(/CL1~[^\s]+/g)||[])){
+    const [,pid,mode,stake,...legs]=code.split("~");
+    const r={pid,mode:mode==="combo"?"combo":"single",stake:Math.floor(+stake)||0,legs:[],errs:[]};
+    if(!S.players.has(pid))r.errs.push("השחקן לא קיים בליגה");
+    for(const lg of legs){const [m,sid,o]=lg.split("|");const mt=S.matches.get(m);
+      if(!mt){r.errs.push("משחק שלא קיים");continue}
+      const info=selLabel(mt,sid);
+      if(!isOpen(mt))r.errs.push(mt.home+" – "+mt.away+": סגור להימורים");
+      if(!info.odds){r.errs.push("בחירה לא תקינה");continue}
+      r.legs.push({m,s:sid,o:info.odds,asked:+o,match:mt,info})}
+    if(r.mode==="combo"&&new Set(r.legs.map(l=>l.m)).size<r.legs.length)r.errs.push("קומבינציה עם שני הימורים מאותו משחק");
+    const total=r.mode==="combo"?r.stake:r.stake*r.legs.length;r.total=total;
+    if(r.stake<1)r.errs.push("סכום לא תקין");
+    if(S.players.has(pid)&&total>account(pid).balance)r.errs.push("אין מספיק צ'יפים (יתרה "+n0(account(pid).balance)+")");
+    out.push(r)}
+  return out;
+}
+function adminRecv(){
+  const R=S.recv||{text:"",rows:null};
+  let h=`<div class="sec-h"><h2>קליטת טופס</h2><p>החברים לוחצים "שליחה למנהל" ושולחים לך את הטופס. הדביקו כאן את ההודעה כמו שהיא, אפשר כמה טפסים יחד.</p></div>
+  <div class="card"><textarea class="inp" id="recvText" rows="6" placeholder="הדביקו כאן את ההודעה מהחבר" style="resize:vertical">${esc(R.text)}</textarea>
+  <div class="hstack" style="margin-top:10px"><button class="btn sm dark" data-recvparse>בדיקת הטופס</button></div></div>`;
+  if(R.rows){
+    if(!R.rows.length)return h+`<div class="card empty" style="margin-top:12px">לא נמצא קוד טופס. ההודעה צריכה לכלול שורה שמתחילה ב-CL1.</div>`;
+    h+=`<div class="tickets" style="margin-top:12px">`;
+    R.rows.forEach((r,i)=>{const odds=r.legs.reduce((x,l)=>x*l.o,1);
+      h+=`<article class="ticket ${r.errs.length?"lost":"pending"}"><div class="ticket-h"><span class="kind">${esc(nameOf(r.pid))}</span><span>${r.mode==="combo"?"קומבינציה":"בודדים"} · סכום ${n0(r.total)}</span><span class="pill ${r.errs.length?"lost":"pending"}">${r.errs.length?"לא תקין":"מוכן"}</span></div>`+
+      r.legs.map(l=>`<div class="leg"><div><div class="sel">${esc(l.info.label)}</div><div class="mt">${esc(l.match.home)} – ${esc(l.match.away)} · ${esc(l.info.market)}${l.asked&&Math.abs(l.asked-l.o)>0.001?` · <b>היחס השתנה מ-${fmtO(l.asked)}</b>`:""}</div></div><span></span><span class="o num">${fmtO(l.o)}</span></div>`).join("")+
+      `<div class="ticket-f">${r.errs.length?`<span class="err">${esc(r.errs.join(" · "))}</span>`:`<div><span>זכייה אפשרית </span><b>${n0(r.mode==="combo"?r.stake*odds:r.legs.reduce((x,l)=>x+r.stake*l.o,0))}</b></div><div style="margin-inline-start:auto"><button class="btn sm" data-recvok="${i}">הכנסת ההימור</button></div>`}</div></article>`});
+    h+=`</div>`;
+  }
+  return h;
+}
+async function writeSlips(pid,add){
+  for(const x of add){
+    const {error}=await sb.rpc("place_bet",{p_id:x.id,p_stake:x.stake,p_mode:x.legs.length>1?"combo":"single",p_legs:x.legs});
+    if(error)throw{code:"rejected",message:/closed/.test(error.message)?"אחד המשחקים כבר התחיל או נסגר להימורים.":/max/.test(error.message)?"הסכום גבוה מההימור המקסימלי.":"השליחה נכשלה. נסו שוב."};
+  }
+  await reload("bets");
+}
+function makeSlips(mode,stake,legs){
+  const now=Date.now(),rid=()=>now.toString(36)+Math.random().toString(36).slice(2,7);
+  return mode==="combo"?[{id:rid(),t:now,stake,legs}]:legs.map(l=>({id:rid(),t:now,stake,legs:[l]}));
+}
+function adminBets(){
+  const all=[];for(const uid of S.players.keys())for(const s of ((S.bets.get(uid)?.slips)||[]))all.push([uid,s]);
+  all.sort((a,b)=>b[1].t-a[1].t);
+  let h=`<div class="sec-h"><h2>כל ההימורים</h2><p>${all.length} טפסים. ביטול מחזיר לשחקן את הסכום.</p></div>`;
+  if(!all.length)return h+`<div class="card empty">עוד לא נשלחו הימורים.</div>`;
+  return h+`<div class="tickets">`+all.slice(0,200).map(([uid,s])=>ticketHtml(s,uid,true)).join("")+`</div>`;
+}
+function adminSettings(){
+  return `<div class="sec-h"><h2>הגדרות</h2></div><form class="card" id="settingsForm"><div class="grid2"><div class="field"><label for="st-start">צ'יפים התחלתיים לכל שחקן</label><input class="inp num" id="st-start" type="number" min="0" step="10" value="${+S.settings.startChips||0}"></div>
+    <div class="field"><label for="st-max">הימור מקסימלי לטופס (0 = בלי הגבלה)</label><input class="inp num" id="st-max" type="number" min="0" step="10" value="${+S.settings.maxStake||0}"></div></div>
+    <div class="hstack" style="margin-top:12px"><button class="btn sm dark">שמירה</button><span class="foot" style="padding:0">שינוי של הסכום ההתחלתי משפיע על כל השחקנים.</span></div></form>
+    <div class="sec-h"><h2>איך מצרפים חברים</h2></div><div class="card"><ol style="margin:0;padding-inline-start:20px;display:grid;gap:6px">
+    <li>שלחו לחברים את הקישור: <b class="num" dir="ltr">${esc(location.origin+location.pathname)}</b></li>
+    <li>כל חבר לוחץ "הרשמה", בוחר כינוי וסיסמה, ומקבל את הצ'יפים ההתחלתיים.</li>
+    <li>מכאן הם מהמרים לבד. אתם מזינים תוצאות ומנהלים צ'יפים בלשונית הזו.</li></ol>
+    <p class="foot" style="padding-bottom:0">רק המנהל יכול לשנות יחסים, תוצאות וצ'יפים. כל שחקן יכול להמר רק בשם עצמו, והשרת חוסם הימורים אחרי שריקת הפתיחה.</p></div>`;
+}
+
+/* ---------- slip ---------- */
+function slipCalc(){
+  const legs=S.slip.map(l=>{const m=S.matches.get(l.m);const info=m?selLabel(m,l.s):null;return{...l,m:l.m,match:m,info,ok:m&&isOpen(m)&&info&&info.odds}});
+  const sameMatch=new Set(),dup=new Set();for(const l of legs){if(sameMatch.has(l.m))dup.add(l.m);sameMatch.add(l.m)}
+  const comboOk=legs.length>1&&!dup.size;
+  const mode=legs.length<2?"single":(S.mode==="combo"&&!comboOk?"single":S.mode);
+  const stake=Math.max(0,Math.floor(+S.stake||0));
+  const totOdds=legs.reduce((x,l)=>x*(l.info?.odds||1),1);
+  const total=mode==="combo"?stake:stake*legs.length;
+  const win=mode==="combo"?stake*totOdds:legs.reduce((x,l)=>x+stake*(l.info?.odds||0),0);
+  return{legs,dup,comboOk,mode,stake,totOdds,total,win};
+}
+function renderSlip(){
+  const col=$("#slipcol"),bar=$("#slipbar");
+  if(S.view!=="games"||!S.session){col.innerHTML="";bar.hidden=true;$("#scrim").innerHTML="";return}
+  const c=slipCalc(),bid=viewerMode()?myId():bettorId(),me=bid?account(bid):null;
+  let h=`<div class="slip"><div class="slip-h"><h3>טופס ההימור</h3>${S.slip.length?`<button data-clear>ניקוי</button>`:`<span></span>`}</div>`;
+  if(!S.slip.length){h+=`<div class="slip-empty"><b>הטופס ריק</b>לחצו על יחס כדי להוסיף אותו. כמה בחירות ממשחקים שונים אפשר לחבר לקומבינציה.</div></div>`}
+  else{
+    h+=`<div class="legs">`+c.legs.map(l=>`<div class="leg ${l.ok?"":"bad"}"><div><div class="sel">${esc(l.info?.label||"")}</div><div class="mk">${esc(l.info?.market||"")}</div><div class="mt">${l.match?esc(l.match.home)+" – "+esc(l.match.away):"המשחק הוסר"}${l.ok?"":" · סגור להימורים"}</div></div><span class="o num">${fmtO(l.info?.odds)}</span><button class="x" data-rm="${esc(l.id)}" aria-label="הסרה">×</button></div>`).join("")+`</div>`;
+    h+=`<div class="slip-f">`;
+    if(false)h+=`<label class="mk" for="bettorSel" style="font-weight:700;color:var(--muted)">מהמר עבור</label><select class="inp" id="bettorSel">${[...S.players.keys()].map(id=>`<option value="${esc(id)}" ${id===bid?"selected":""}>${esc(nameOf(id))}${id===S.uid?" (אני)":""}</option>`).join("")}</select>`;
+    if(c.legs.length>1)h+=`<div class="seg"><button data-mode="single" aria-pressed="${c.mode==="single"}">בודדים (${c.legs.length})</button><button data-mode="combo" aria-pressed="${c.mode==="combo"}" ${c.comboOk?"":"disabled"}>קומבינציה</button></div>${c.dup.size?`<div class="err" style="font-weight:600">קומבינציה אפשרית רק ממשחקים שונים.</div>`:""}`;
+    h+=`<label class="mk" for="stake" style="font-weight:700;color:var(--muted)">${c.mode==="combo"||c.legs.length===1?"סכום":"סכום לכל הימור"}</label><div class="stake"><input id="stake" class="num" type="number" min="1" step="1" inputmode="numeric" value="${c.stake||""}"></div>
+      <div class="quick">${[10,25,50,100,250].map(v=>`<button data-q="${v}" class="num">${v}</button>`).join("")}${me?`<button data-q="max">הכל</button>`:""}</div>
+      <dl class="sum">${c.mode==="combo"?`<dt>יחס משולב</dt><dd>${fmtO(Math.round(c.totOdds*100)/100)}</dd>`:""}<dt>סה"כ הימור</dt><dd>${n0(c.total)}</dd><dt>זכייה אפשרית</dt><dd class="big">${n0(c.win)}</dd>${me?`<dt>יתרה אחרי</dt><dd>${n0(me.balance-c.total)}</dd>`:""}</dl>`;
+    const err=slipError(c,me);
+    if(viewerMode()){
+      h+=`${err?`<div class="err">${esc(err)}</div>`:""}<button class="btn" data-share ${err?"disabled":""}>שליחה למנהל</button>`;
+      if(S.share&&!err){const t=slipText(bid,c);
+        h+=`<a class="btn dark" style="text-align:center;text-decoration:none" href="https://wa.me/?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">שליחה בוואטסאפ</a><textarea class="inp" id="shareText" rows="5" readonly style="font-size:12.5px">${esc(t)}</textarea><div class="mk" style="color:var(--muted)">אם הוואטסאפ לא נפתח, העתיקו את הטקסט ושלחו למנהל.</div>`}
+      h+=`</div></div>`;
+    }else h+=`${err?`<div class="err">${esc(err)}</div>`:""}<button class="btn" data-place ${err||S.busy?"disabled":""}>${S.busy?"שולח…":S.isOwner&&bid!==S.uid?"הכנסת הטופס עבור "+esc(nameOf(bid)):"שליחת הטופס"}</button></div></div>`;
+  }
+  col.innerHTML=h;
+  col.classList.toggle("open",S.sheet);
+  $("#scrim").innerHTML=S.sheet?`<div class="scrim" data-sheet="close"></div>`:"";
+  bar.hidden=!S.slip.length||S.sheet;
+  bar.innerHTML=`<span class="cnt">${S.slip.length}</span><b>טופס ההימור</b><span class="num">${c.mode==="combo"?"יחס "+fmtO(Math.round(c.totOdds*100)/100):"זכייה "+n0(c.win)}</span>`;
+}
+function slipError(c,me){
+  if(!S.db||!S.uid)return"צריך להתחבר כדי להמר.";
+  if(!me)return viewerMode()?"בחרו את השם שלכם למעלה כדי להמר.":S.isOwner?"הוסיפו שחקנים בלשונית ניהול.":"הצטרפו לליגה כדי להמר.";
+  if(c.legs.some(l=>!l.ok))return"יש בטופס בחירה שנסגרה. הסירו אותה.";
+  if(c.stake<1)return"הזינו סכום.";
+  const max=+S.settings.maxStake||0;
+  if(max&&c.total>max)return"ההימור המקסימלי לטופס הוא "+n0(max)+".";
+  if(c.total>me.balance)return"אין מספיק צ'יפים. היתרה "+n0(me.balance)+".";
+  return"";
+}
+async function placeBet(){
+  const bid=bettorId();if(!bid)return;
+  const c=slipCalc(),me=account(bid);if(slipError(c,me))return;
+  S.busy=true;renderSlip();
+  const add=makeSlips(c.mode,c.stake,c.legs.map(l=>({m:l.m,s:l.s,o:l.info.odds})));
+  try{
+    await writeSlips(bid,add);
+    S.slip=[];S.sheet=false;toast((add.length>1?add.length+" הימורים נשלחו":"ההימור נשלח")+(bid!==S.uid?" עבור "+nameOf(bid):""));
+  }catch(e){toast(e&&e.message?e.message:"השליחה נכשלה. נסו שוב.")}
+  S.busy=false;render();
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("button,[data-sheet]");if(!b)return;
+  const d=b.dataset;
+  if(d.tab){if(d.goatab)S.adminTab=d.goatab;S.view=d.tab;try{localStorage.setItem("cl.view",S.view)}catch(_){}S.sheet=false;render();window.scrollTo({top:0});return}
+  if(d.league){S.league=d.league;render();return}
+  if(d.open){S.open=S.open===d.open?null:d.open;S.cat="all";renderView();return}
+  if(d.cat){S.cat=d.cat;renderView();return}
+  if(d.sel){S.share=false;const [mid,sid]=d.sel.split("|");const id=d.sel;const i=S.slip.findIndex(l=>l.id===id);
+    if(i>=0)S.slip.splice(i,1);else{S.slip=S.slip.filter(l=>l.m!==mid||S.mode!=="combo");S.slip.push({id,m:mid,s:sid});if(S.slip.length>1&&S.mode==="single"&&S.slip.length===2)S.mode="combo"}
+    renderView();renderSlip();return}
+  if(d.rm!==undefined){S.share=false;S.slip=S.slip.filter(l=>l.id!==d.rm);if(!S.slip.length)S.sheet=false;render();return}
+  if(d.clear!==undefined){S.slip=[];S.sheet=false;render();return}
+  if(d.mode){S.mode=d.mode;S.share=false;renderSlip();return}
+  if(d.q){const bid=viewerMode()?myId():bettorId(),me=bid?account(bid):null;const c=slipCalc();
+    S.stake=d.q==="max"?Math.max(0,Math.floor(me?me.balance/(c.mode==="combo"?1:Math.max(1,c.legs.length)):0)):+d.q;try{localStorage.setItem("cl.stake",S.stake)}catch(_){}renderSlip();return}
+  if(d.place!==undefined){placeBet();return}
+  if(d.logout!==undefined){await sb.auth.signOut();return}
+  if(d.authmode){S.authMode=d.authmode;renderView();return}
+  if(d.seed!==undefined){if(!S.busy)seedMatches();return}
+  if(d.share!==undefined){S.share=true;renderSlip();const ta=$("#shareText");if(ta){try{await navigator.clipboard.writeText(ta.value);toast("הטופס הועתק. שלחו אותו למנהל")}catch(_){ta.select()}}return}
+  if(d.unpick!==undefined){S.pick=null;try{localStorage.removeItem("cl.pick")}catch(_){}render();return}
+  if(d.recvparse!==undefined){const t=$("#recvText").value;S.recv={text:t,rows:parseSlips(t)};renderView();return}
+  if(d.recvok!==undefined){const r=S.recv&&S.recv.rows[+d.recvok];if(!r||r.errs.length)return;b.disabled=true;
+    try{await writeSlips(r.pid,makeSlips(r.mode,r.stake,r.legs.map(l=>({m:l.m,s:l.s,o:l.o}))));S.recv.rows.splice(+d.recvok,1);toast("ההימור של "+nameOf(r.pid)+" נכנס")}
+    catch(_){toast("השמירה נכשלה. נסו שוב.")}renderView();return}
+  if(b.id==="slipbar"){S.sheet=true;renderSlip();return}
+  if(d.sheet==="close"){S.sheet=false;renderSlip();return}
+  if(d.atab){S.adminTab=d.atab;renderView();return}
+  if(d.parse!==undefined){const t=$("#pasteText").value;S.paste={text:t,rows:parsePaste(t)};renderView();return}
+  if(d.applypaste!==undefined){if(!S.busy)applyPaste();return}
+  if(d.mvoid){await adminWrite(()=>S.db.doc("matches/"+d.mvoid).update({status:"void",result:null}),"המשחק בוטל וכל ההימורים עליו הוחזרו");return}
+  if(d.reopen){await adminWrite(()=>S.db.doc("matches/"+d.reopen).update({status:"open",result:null}),"המשחק נפתח מחדש");return}
+  if(d.mlock){const m=S.matches.get(d.mlock);await adminWrite(()=>S.db.doc("matches/"+d.mlock).update({locked:!m.locked}),m.locked?"ההימורים נפתחו":"ההימורים ננעלו");return}
+  if(d.mdel){if(b.dataset.confirm!=="1"){b.dataset.confirm="1";b.textContent="בטוח?";setTimeout(()=>{if(b.isConnected){b.dataset.confirm="";b.textContent="מחיקה"}},3000);return}
+    await adminWrite(()=>S.db.doc("matches/"+d.mdel).delete(),"המשחק נמחק");return}
+  if(d.msave){const id=d.msave,m=S.matches.get(id);const od=readOdds(isBB(m)?"bb":"fb",k=>`od-${k}-${id}`);if(!od){toast("יחס לא תקין. קווים חייבים להסתיים ב-.5");return}
+    const ko=document.getElementById("ko-"+id).value;
+    await adminWrite(()=>S.db.doc("matches/"+id).update({odds:od,kickoff:fromLocalInput(ko),tbc:false,source:"market",sourceNote:"הוזן על ידי המנהל"}),"המשחק עודכן ונפתח להימורים");return}
+  if(d.void||d.unvoid){const [uid,sid]=(d.void||d.unvoid).split("|");const led=S.ledger.get(uid)||{};let v=new Set(led.voided||[]);d.void?v.add(sid):v.delete(sid);
+    await adminWrite(()=>S.db.doc("ledger/"+uid).set({adjust:+led.adjust||0,log:led.log||[],voided:[...v]}),d.void?"ההימור בוטל והסכום הוחזר":"ההימור הוחזר לתוקף");return}
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="am-sport"){S.addSport=e.target.value;e.target.blur();renderView()}
+  if(e.target.id==="pickSel"&&e.target.value){S.pick=e.target.value;try{localStorage.setItem("cl.pick",S.pick)}catch(_){}e.target.blur();render()}
+  if(e.target.id==="bettorSel"){S.bettor=e.target.value;e.target.blur();renderSlip()}
+});
+document.addEventListener("input",e=>{
+  if(e.target.id==="q"){S.q=e.target.value;const pos=e.target.selectionStart;renderView();const q=$("#q");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(_){}}}
+  if(e.target.id==="stake"){S.stake=e.target.value;try{localStorage.setItem("cl.stake",S.stake)}catch(_){}
+    S.share=false;const c=slipCalc(),bid=viewerMode()?myId():bettorId(),me=bid?account(bid):null;const sum=$("#slipcol .sum");
+    if(sum){sum.querySelectorAll("dd")[c.mode==="combo"?1:0].textContent=n0(c.total);sum.querySelector(".big").textContent=n0(c.win)}
+    const btn=$("[data-place]");const err=slipError(c,me);if(btn)btn.disabled=!!err;
+    let el=$("#slipcol .err:not([style])");if(err){if(!el){el=document.createElement("div");el.className="err";btn.before(el)}el.textContent=err}else if(el)el.remove()}
+});
+document.addEventListener("submit",async e=>{
+  e.preventDefault();const f=e.target;
+  if(f.id==="authForm"){doAuth();return}
+  if(f.id==="addPlayer"){const nick=$("#np-name").value.trim().slice(0,24);if(!nick)return;
+    const id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);document.activeElement?.blur();
+    await adminWrite(()=>S.db.doc("players/"+id).set({nick,joinedAt:Date.now(),manual:true}),nick+" נוסף לליגה");f.reset();return}
+  if(f.id==="joinForm"){const nick=$("#nick").value.trim().slice(0,24);if(!nick)return;
+    try{await S.db.doc("players/"+S.uid).set({nick,joinedAt:Date.now()});toast("ברוך הבא לליגה!")}
+    catch(err){S.writeBlocked=true;render()}return}
+  if(f.dataset.adjust){const uid=f.dataset.adjust;const delta=Math.round(+document.getElementById("adj-"+uid).value);if(!delta)return;
+    const note=document.getElementById("adjn-"+uid).value.trim().slice(0,80);const led=S.ledger.get(uid)||{};
+    document.activeElement?.blur();
+    await adminWrite(()=>S.db.doc("ledger/"+uid).set({adjust:(+led.adjust||0)+delta,voided:led.voided||[],log:[...(led.log||[]),{d:delta,note,t:Date.now()}].slice(-100)}),(delta>0?"נוספו ":"הורדו ")+n0(Math.abs(delta))+" צ'יפים ל"+nameOf(uid));return}
+  if(f.dataset.result){const id=f.dataset.result;const h=+document.getElementById("rh-"+id).value,a=+document.getElementById("ra-"+id).value;
+    if(!(Number.isInteger(h)&&Number.isInteger(a)&&h>=0&&a>=0)){toast("תוצאה לא תקינה");return}
+    document.activeElement?.blur();
+    await adminWrite(()=>S.db.doc("matches/"+id).update({status:"final",result:{h,a}}),"התוצאה נשמרה וההימורים התיישבו");return}
+  if(f.id==="addMatch"){const g=k=>document.getElementById("am-"+k).value;const od=readOdds(S.addSport,k=>"am-"+k);if(!od){toast("יחס לא תקין. קווים חייבים להסתיים ב-.5");return}
+    const lg=g("league"),ln=(LEAGUES.find(x=>x[0]===lg)||[0,"אחר"])[1];const ko=fromLocalInput(g("ko"));
+    const id=(lg+"-"+Date.now().toString(36)).replace(/[^A-Za-z0-9_-]/g,"");
+    document.activeElement?.blur();
+    await adminWrite(()=>S.db.doc("matches/"+id).set({league:lg,leagueName:ln,round:"",kickoff:ko,tbc:false,sport:S.addSport,...(lg==="nba"?{sdm:13,sdt:18}:{}),home:g("home").trim(),away:g("away").trim(),odds:od,source:"market",sourceNote:"הוזן על ידי המנהל",status:"open",locked:false,result:null}),"המשחק נוסף");f.reset();return}
+  if(f.id==="settingsForm"){const sc=Math.max(0,Math.round(+$("#st-start").value)),mx=Math.max(0,Math.round(+$("#st-max").value));
+    document.activeElement?.blur();
+    await adminWrite(()=>S.db.doc("config/settings").set({startChips:sc,maxStake:mx}),"ההגדרות נשמרו");return}
+});
+async function adminWrite(fn,okMsg){try{await fn();toast(okMsg)}catch(e){toast(e&&e.code==="invalid_argument"?"רק הבעלים של הדף יכול לשנות את זה.":"השמירה נכשלה. נסו שוב.")}}
+
+/* ---------- supabase ---------- */
+const SB_URL="https://dihuzezrjylrohguyyuu.supabase.co", SB_KEY="sb_publishable_IeYdkT-xmB2uxMPM6N0u9g_k_FB7HOb";
+const TABLES=["matches","profiles","bets","ledger","config"];
+let sb=null;
+function fail(r){if(r.error)throw{code:"rejected",message:r.error.message};return r}
+function sbDoc(path){
+  const [col,id]=path.split("/");
+  return{
+    async set(data){
+      if(col==="matches")fail(await sb.from("matches").upsert({id,doc:data}));
+      else if(col==="ledger")fail(await sb.from("ledger").upsert({user_id:id,adjust:+data.adjust||0,voided:data.voided||[],log:data.log||[]}));
+      else if(col==="config")fail(await sb.from("config").upsert({id,doc:data}));
+      else throw{code:"rejected",message:"unsupported"};
+      await reload(col);
+    },
+    async update(patch){
+      const cur=S.matches.get(id);if(col!=="matches"||!cur)throw{code:"rejected",message:"not found"};
+      const {id:_drop,...doc}=cur;fail(await sb.from("matches").upsert({id,doc:{...doc,...patch}}));await reload("matches");
+    },
+    async delete(){if(col==="matches"){fail(await sb.from("matches").delete().eq("id",id));await reload("matches")}}
+  };
+}
+async function reload(t){
+  if(!sb||!S.session)return;
+  if(t==="matches"){const {data}=await sb.from("matches").select("id,doc").limit(5000);if(data){S.matches=new Map(data.map(r=>[r.id,{id:r.id,...r.doc}]));S.slip=S.slip.filter(l=>S.matches.has(l.m))}}
+  if(t==="profiles"){const {data}=await sb.from("profiles").select("id,nick,is_admin");if(data){S.players=new Map(data.map(r=>[r.id,{nick:r.nick,is_admin:r.is_admin}]));S.isOwner=!!S.players.get(S.uid)?.is_admin}}
+  if(t==="bets"){const {data}=await sb.from("bets").select("id,user_id,stake,legs,created_at").order("created_at").limit(10000);
+    if(data){const m=new Map();for(const r of data){if(!m.has(r.user_id))m.set(r.user_id,{slips:[]});m.get(r.user_id).slips.push({id:r.id,t:Date.parse(r.created_at),stake:r.stake,legs:r.legs})}S.bets=m}}
+  if(t==="ledger"){const {data}=await sb.from("ledger").select("*");if(data)S.ledger=new Map(data.map(r=>[r.user_id,{adjust:r.adjust,voided:r.voided||[],log:r.log||[]}]))}
+  if(t==="config"){const {data}=await sb.from("config").select("doc").eq("id","settings").maybeSingle();if(data)S.settings={startChips:1000,...data.doc}}
+  schedule();
+}
+const loadAll=()=>Promise.all(TABLES.map(reload));
+let chan=null;const pend=new Set();let flushT=null;
+function subscribe(){
+  if(chan)return;chan=sb.channel("league");
+  for(const t of TABLES)chan.on("postgres_changes",{event:"*",schema:"public",table:t},()=>{pend.add(t);clearTimeout(flushT);flushT=setTimeout(()=>{const ts=[...pend];pend.clear();ts.forEach(reload)},350)});
+  chan.subscribe();
+  setInterval(()=>{if(S.session)loadAll()},60000);
+  setInterval(()=>{if(S.view==="games"||S.view==="admin")schedule()},30000); // close betting as kickoffs pass
+}
+async function nickEmail(nick){
+  const norm=nick.trim().replace(/\s+/g," ").toLowerCase();
+  const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(norm));
+  return "u"+[...new Uint8Array(buf)].slice(0,16).map(b=>b.toString(16).padStart(2,"0")).join("")+"@chipsleague.com";
+}
+function authView(){
+  const reg=S.authMode==="register";
+  return `<div class="card" style="max-width:420px;margin:28px auto;display:grid;gap:14px">
+    <div><h2 style="margin:0;font-family:var(--f-display);font-weight:400;font-size:26px">${reg?"הרשמה לליגה":"כניסה לליגה"}</h2>
+    <p style="margin:4px 0 0;color:var(--muted)">${reg?"בחרו כינוי וסיסמה. תקבלו "+n0(S.settings.startChips||1000)+" צ'יפים להתחלה.":"הימורים בין חברים, בצ'יפים ולא בכסף אמיתי."}</p></div>
+    <div class="seg"><button data-authmode="login" aria-pressed="${!reg}">כניסה</button><button data-authmode="register" aria-pressed="${reg}">הרשמה</button></div>
+    <form id="authForm" style="display:grid;gap:12px">
+      <div class="field"><label for="au-nick">כינוי</label><input class="inp" id="au-nick" maxlength="24" required autocomplete="username"></div>
+      <div class="field"><label for="au-pw">סיסמה${reg?" (לפחות 6 תווים)":""}</label><input class="inp" id="au-pw" type="password" minlength="6" required autocomplete="${reg?"new-password":"current-password"}"></div>
+      ${S.authErr?`<div class="err">${esc(S.authErr)}</div>`:""}
+      <button class="btn" ${S.busy?"disabled":""}>${S.busy?"רגע…":reg?"הרשמה":"כניסה"}</button>
+    </form></div>`;
+}
+async function doAuth(){
+  const nick=$("#au-nick").value.trim().replace(/\s+/g," ").slice(0,24),pw=$("#au-pw").value;
+  if(!nick||pw.length<6)return;
+  S.busy=true;S.authErr=null;renderView();
+  try{
+    const email=await nickEmail(nick);
+    if(S.authMode==="register"){
+      const {data:taken}=await sb.rpc("nick_taken",{p_nick:nick}).then(r=>r,()=>({data:false}));
+      if(taken)throw new Error("הכינוי הזה כבר תפוס. בחרו כינוי אחר.");
+      const {data,error}=await sb.auth.signUp({email,password:pw,options:{data:{nick}}});
+      if(error)throw new Error(/registered|exists/i.test(error.message)?"הכינוי הזה כבר תפוס. בחרו כינוי אחר.":"ההרשמה נכשלה: "+error.message);
+      if(!data.session)throw new Error("ההרשמה נקלטה, אבל צריך לכבות ב-Supabase את Confirm email כדי להיכנס.");
+    }else{
+      const {error}=await sb.auth.signInWithPassword({email,password:pw});
+      if(error)throw new Error("כינוי או סיסמה לא נכונים.");
+    }
+  }catch(e){S.authErr=e.message||"משהו השתבש. נסו שוב."}
+  S.busy=false;renderView();
+}
+async function onSession(session){
+  S.session=session||null;S.uid=session?.user?.id||null;S.canWrite=true;
+  if(!session){S.isOwner=false;S.players=new Map();S.bets=new Map();S.ledger=new Map();S.ready=true;render();return}
+  await loadAll();
+  if(!S.players.has(S.uid)){
+    const nick=(session.user.user_metadata&&session.user.user_metadata.nick)||"שחקן";
+    const r=await sb.from("profiles").insert({id:S.uid,nick});
+    if(r.error)toast("הכינוי תפוס. התנתקו ונרשמו עם כינוי אחר.");
+    await reload("profiles");
+  }
+  S.ready=true;render();subscribe();
+}
+async function seedMatches(){
+  S.busy=true;renderView();
+  try{
+    const rows=await (await fetch("matches.json",{cache:"no-store"})).json();
+    for(let k=0;k<rows.length;k+=100)fail(await sb.from("matches").upsert(rows.slice(k,k+100)));
+    await reload("matches");toast(rows.length+" משחקים נטענו");
+  }catch(e){toast("הטעינה נכשלה: "+(e.message||""))}
+  S.busy=false;render();
+}
+async function boot(){
+  if(!window.supabase){S.ready=true;render();$("#view").innerHTML=`<div class="notice warn"><h3>לא הצלחנו להתחבר</h3><p>רעננו את הדף. אם זה חוזר, בדקו את החיבור לאינטרנט.</p></div>`;return}
+  sb=supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+  S.db={doc:sbDoc};
+  const {data}=await sb.auth.getSession();
+  await onSession(data.session);
+  sb.auth.onAuthStateChange((_e,s)=>{if((s?.user?.id||null)!==(S.uid||null))onSession(s);else S.session=s});
+}
+boot();
+</script>
+
+</body>
+</html>
