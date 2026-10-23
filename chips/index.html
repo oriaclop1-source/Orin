@@ -425,7 +425,7 @@ const S={db:null,user:null,uid:null,me:null,isOwner:false,ready:false,dbErr:null
 try{S.pick=localStorage.getItem("cl.pick")}catch(e){}
 try{const v=localStorage.getItem("cl.view");if(v)S.view=v;const st=+localStorage.getItem("cl.stake");if(st>0)S.stake=st}catch(e){}
 
-const LEAGUES=[["all","הכל"],["il","ליגת העל"],["epl","פרמייר ליג"],["liga","לה ליגה"],["sa","סרייה א"],["bl","בונדסליגה"],["ucl","ליגת האלופות"],["el","יורוליג"],["ilb","ליגת העל בכדורסל"],["nba","NBA"]];
+const LEAGUES=[["all","הכל"],["il","ליגת העל"],["epl","פרמייר ליג"],["liga","לה ליגה"],["sa","סרייה א"],["bl","בונדסליגה"],["ucl","ליגת האלופות"],["el","יורוליג"],["ilb","ליגת העל בכדורסל"],["nba","NBA"],["ll","ליגה לאומית"],["spl","ליגה סעודית"]];
 const BB_LEAGUES=new Set(["el","ilb","nba"]);
 const tz="Asia/Jerusalem";
 const fTime=new Intl.DateTimeFormat("he-IL",{timeZone:tz,hour:"2-digit",minute:"2-digit",hour12:false});
@@ -656,7 +656,9 @@ function fromLocalInput(v){ // interpret as Israel time
 }
 function adminMatches(){
   const list=[...S.matches.values()].filter(m=>m.status==="open").sort((a,b)=>Date.parse(a.kickoff)-Date.parse(b.kickoff));
-  let h=`<div class="sec-h"><h2>הוספת משחק</h2><p>מספיק להזין את היחסים הראשיים. כל שאר השווקים מחושבים מהם. בכדורסל הקווים מסתיימים ב-.5 (למשל ‎-4.5).</p></div>
+  let h=`<div class="sec-h"><h2>עדכון מהקובץ</h2><p>מוסיף משחקים חדשים ומעדכן יחסים ומועדים של משחקים פתוחים. יחסים שהזנתם ידנית ותוצאות לא משתנים.</p></div>
+  <div class="card hstack"><button class="btn sm dark" data-sync ${S.busy?"disabled":""}>${S.busy?"מעדכן…":"עדכון משחקים ויחסים"}</button></div>
+  <div class="sec-h"><h2>הוספת משחק</h2><p>מספיק להזין את היחסים הראשיים. כל שאר השווקים מחושבים מהם. בכדורסל הקווים מסתיימים ב-.5 (למשל ‎-4.5).</p></div>
   <form class="card" id="addMatch"><div class="grid2">
     <div class="field"><label for="am-home">קבוצת בית</label><input class="inp" id="am-home" required></div>
     <div class="field"><label for="am-away">קבוצת חוץ</label><input class="inp" id="am-away" required></div>
@@ -895,6 +897,7 @@ document.addEventListener("click",async e=>{
   if(d.logout!==undefined){await sb.auth.signOut();return}
   if(d.authmode){S.authMode=d.authmode;renderView();return}
   if(d.seed!==undefined){if(!S.busy)seedMatches();return}
+  if(d.sync!==undefined){if(!S.busy)syncMatches();return}
   if(d.share!==undefined){S.share=true;renderSlip();const ta=$("#shareText");if(ta){try{await navigator.clipboard.writeText(ta.value);toast("הטופס הועתק. שלחו אותו למנהל")}catch(_){ta.select()}}return}
   if(d.unpick!==undefined){S.pick=null;try{localStorage.removeItem("cl.pick")}catch(_){}render();return}
   if(d.recvparse!==undefined){const t=$("#recvText").value;S.recv={text:t,rows:parseSlips(t)};renderView();return}
@@ -1055,6 +1058,24 @@ async function seedMatches(){
     for(let k=0;k<rows.length;k+=100)fail(await sb.from("matches").upsert(rows.slice(k,k+100)));
     await reload("matches");toast(rows.length+" משחקים נטענו");
   }catch(e){toast("הטעינה נכשלה: "+(e.message||""))}
+  S.busy=false;render();
+}
+async function syncMatches(){
+  S.busy=true;renderView();
+  try{
+    const rows=await (await fetch("matches.json",{cache:"no-store"})).json();
+    const up=[];let added=0,updated=0;
+    for(const r of rows){
+      const cur=S.matches.get(r.id);
+      if(!cur){up.push(r);added++;continue}
+      if(cur.status!=="open"||cur.source==="market")continue;
+      const {id:_drop,...doc}=cur;
+      const next={...doc,odds:r.doc.odds,kickoff:r.doc.kickoff,tbc:r.doc.tbc,round:r.doc.round,source:r.doc.source,sourceNote:r.doc.sourceNote};
+      if(JSON.stringify(next)!==JSON.stringify(doc)){up.push({id:r.id,doc:next});updated++}
+    }
+    for(let k=0;k<up.length;k+=100)fail(await sb.from("matches").upsert(up.slice(k,k+100)));
+    await reload("matches");toast(`נוספו ${added} משחקים, עודכנו ${updated}`);
+  }catch(e){toast("העדכון נכשל: "+(e.message||""))}
   S.busy=false;render();
 }
 async function boot(){
