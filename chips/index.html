@@ -425,7 +425,8 @@ const S={db:null,user:null,uid:null,me:null,isOwner:false,ready:false,dbErr:null
 try{S.pick=localStorage.getItem("cl.pick")}catch(e){}
 try{const v=localStorage.getItem("cl.view");if(v)S.view=v;const st=+localStorage.getItem("cl.stake");if(st>0)S.stake=st}catch(e){}
 
-const LEAGUES=[["all","הכל"],["il","ליגת העל"],["epl","פרמייר ליג"],["liga","לה ליגה"],["sa","סרייה א"],["bl","בונדסליגה"],["ucl","ליגת האלופות"],["el","יורוליג"],["ilb","ליגת העל בכדורסל"],["nba","NBA"],["ll","ליגה לאומית"],["spl","ליגה סעודית"]];
+const LEAGUES=[["all","הכל"],["il","ליגת העל"],["epl","פרמייר ליג"],["liga","לה ליגה"],["sa","סרייה א"],["bl","בונדסליגה"],["ucl","ליגת האלופות"],["el","יורוליג"],["ilb","ליגת העל בכדורסל"],["fr","ליגה 1"],["pt","פורטוגל"],["nl","הולנד"],["tr","טורקיה"],["be","בלגיה"],["br","ברזיל"],["ll","ליגה לאומית"],["spl","ליגה סעודית"]];
+const HIDDEN_LEAGUES=new Set(["nba"]);
 const BB_LEAGUES=new Set(["el","ilb","nba"]);
 const tz="Asia/Jerusalem";
 const fTime=new Intl.DateTimeFormat("he-IL",{timeZone:tz,hour:"2-digit",minute:"2-digit",hour12:false});
@@ -639,12 +640,12 @@ function adminResults(){
   const now=Date.now();
   const due=[...S.matches.values()].filter(m=>m.status==="open"&&now>=Date.parse(m.kickoff)).sort((a,b)=>Date.parse(a.kickoff)-Date.parse(b.kickoff));
   const done=[...S.matches.values()].filter(m=>m.status!=="open").sort((a,b)=>Date.parse(b.kickoff)-Date.parse(a.kickoff));
-  let h=`<div class="sec-h"><h2>ממתינים לתוצאה</h2><p>תוצאת 90 דקות + תוספת זמן. אחרי השמירה כל ההימורים מתיישבים אוטומטית.</p></div>`;
-  h+=due.length?`<div class="tbl-wrap"><table><tbody>`+due.map(m=>`<tr><td><b>${esc(m.home)} – ${esc(m.away)}</b><div class="mt" style="color:var(--muted);font-size:12.5px">${esc(m.leagueName)} · ${fStamp.format(new Date(m.kickoff))}</div></td>
+  let h=`<div class="sec-h"><h2>ממתינים לתוצאה</h2><p>הבוט מעדכן תוצאות לבד. כאן נשארים רק משחקים שהוא עוד לא סגר. כדורגל: 90 דקות + תוספת זמן.</p></div>`;
+  h+=due.length?`<div class="tbl-wrap"><table><tbody>`+due.map(m=>`<tr><td><b>${esc(m.home)} – ${esc(m.away)}</b><div class="mt" style="color:var(--muted);font-size:12.5px">${esc(m.leagueName)} · ${fStamp.format(new Date(m.kickoff))}${m.botSkip?" · הבוט לא נוגע (נפתח ידנית)":m.botIssue?` · <span class="err">הבוט: ${esc(m.botIssue)}</span>`:""}</div></td>
       <td><form class="hstack" data-result="${esc(m.id)}"><input class="inp num s" id="rh-${esc(m.id)}" type="number" min="0" max="250" required aria-label="תוצאת בית"><span>:</span><input class="inp num s" id="ra-${esc(m.id)}" type="number" min="0" max="250" required aria-label="תוצאת חוץ"><button class="btn sm dark">שמירת תוצאה</button><button type="button" class="btn sm danger" data-mvoid="${esc(m.id)}">ביטול משחק</button></form></td></tr>`).join("")+`</tbody></table></div>`
     :`<div class="card empty">אין משחקים שממתינים לתוצאה כרגע.</div>`;
   h+=`<div class="sec-h"><h2>משחקים שנסגרו</h2></div>`;
-  h+=done.length?`<div class="tbl-wrap"><table><tbody>`+done.map(m=>`<tr><td><b>${esc(m.home)} – ${esc(m.away)}</b></td><td class="n">${m.status==="void"?`<span class="pill void">בוטל</span>`:`<span class="score num">${m.result.h}:${m.result.a}</span>`}</td><td style="text-align:end"><button class="btn sm ghost" data-reopen="${esc(m.id)}">פתיחה מחדש</button></td></tr>`).join("")+`</tbody></table></div>`
+  h+=done.length?`<div class="tbl-wrap"><table><tbody>`+done.map(m=>`<tr><td><b>${esc(m.home)} – ${esc(m.away)}</b></td><td class="n">${m.status==="void"?`<span class="pill void">בוטל</span>`:`<span class="score num">${m.result.h}:${m.result.a}</span>`}${m.resultBy==="bot"?`<div style="color:var(--muted);font-size:12px;margin-top:3px" title="${esc(m.resultNote||"")}">עודכן ע״י הבוט</div>`:""}</td><td style="text-align:end"><button class="btn sm ghost" data-reopen="${esc(m.id)}">פתיחה מחדש</button></td></tr>`).join("")+`</tbody></table></div>`
     :`<div class="card empty">עוד לא נסגרו משחקים.</div>`;
   return h;
 }
@@ -910,7 +911,7 @@ document.addEventListener("click",async e=>{
   if(d.parse!==undefined){const t=$("#pasteText").value;S.paste={text:t,rows:parsePaste(t)};renderView();return}
   if(d.applypaste!==undefined){if(!S.busy)applyPaste();return}
   if(d.mvoid){await adminWrite(()=>S.db.doc("matches/"+d.mvoid).update({status:"void",result:null}),"המשחק בוטל וכל ההימורים עליו הוחזרו");return}
-  if(d.reopen){await adminWrite(()=>S.db.doc("matches/"+d.reopen).update({status:"open",result:null}),"המשחק נפתח מחדש");return}
+  if(d.reopen){await adminWrite(()=>S.db.doc("matches/"+d.reopen).update({status:"open",result:null,resultBy:null,botSkip:true}),"המשחק נפתח מחדש. הבוט לא יעדכן אותו שוב");return}
   if(d.mlock){const m=S.matches.get(d.mlock);await adminWrite(()=>S.db.doc("matches/"+d.mlock).update({locked:!m.locked}),m.locked?"ההימורים נפתחו":"ההימורים ננעלו");return}
   if(d.mdel){if(b.dataset.confirm!=="1"){b.dataset.confirm="1";b.textContent="בטוח?";setTimeout(()=>{if(b.isConnected){b.dataset.confirm="";b.textContent="מחיקה"}},3000);return}
     await adminWrite(()=>S.db.doc("matches/"+d.mdel).delete(),"המשחק נמחק");return}
@@ -949,7 +950,7 @@ document.addEventListener("submit",async e=>{
   if(f.dataset.result){const id=f.dataset.result;const h=+document.getElementById("rh-"+id).value,a=+document.getElementById("ra-"+id).value;
     if(!(Number.isInteger(h)&&Number.isInteger(a)&&h>=0&&a>=0)){toast("תוצאה לא תקינה");return}
     document.activeElement?.blur();
-    await adminWrite(()=>S.db.doc("matches/"+id).update({status:"final",result:{h,a}}),"התוצאה נשמרה וההימורים התיישבו");return}
+    await adminWrite(()=>S.db.doc("matches/"+id).update({status:"final",result:{h,a},resultBy:"manual"}),"התוצאה נשמרה וההימורים התיישבו");return}
   if(f.id==="addMatch"){const g=k=>document.getElementById("am-"+k).value;const od=readOdds(S.addSport,k=>"am-"+k);if(!od){toast("יחס לא תקין. קווים חייבים להסתיים ב-.5");return}
     const lg=g("league"),ln=(LEAGUES.find(x=>x[0]===lg)||[0,"אחר"])[1];const ko=fromLocalInput(g("ko"));
     const id=(lg+"-"+Date.now().toString(36)).replace(/[^A-Za-z0-9_-]/g,"");
@@ -985,7 +986,7 @@ function sbDoc(path){
 }
 async function reload(t){
   if(!sb||!S.session)return;
-  if(t==="matches"){const {data}=await sb.from("matches").select("id,doc").limit(5000);if(data){S.matches=new Map(data.map(r=>[r.id,{id:r.id,...r.doc}]));S.slip=S.slip.filter(l=>S.matches.has(l.m))}}
+  if(t==="matches"){const {data}=await sb.from("matches").select("id,doc").limit(5000);if(data){S.matches=new Map(data.filter(r=>!HIDDEN_LEAGUES.has(r.doc&&r.doc.league)).map(r=>[r.id,{id:r.id,...r.doc}]));S.slip=S.slip.filter(l=>S.matches.has(l.m))}}
   if(t==="profiles"){const {data}=await sb.from("profiles").select("id,nick,is_admin");if(data){S.players=new Map(data.map(r=>[r.id,{nick:r.nick,is_admin:r.is_admin}]));S.isOwner=!!S.players.get(S.uid)?.is_admin}}
   if(t==="bets"){const {data}=await sb.from("bets").select("id,user_id,stake,legs,created_at").order("created_at").limit(10000);
     if(data){const m=new Map();for(const r of data){if(!m.has(r.user_id))m.set(r.user_id,{slips:[]});m.get(r.user_id).slips.push({id:r.id,t:Date.parse(r.created_at),stake:r.stake,legs:r.legs})}S.bets=m}}
@@ -1000,6 +1001,7 @@ function subscribe(){
   for(const t of TABLES)chan.on("postgres_changes",{event:"*",schema:"public",table:t},()=>{pend.add(t);clearTimeout(flushT);flushT=setTimeout(()=>{const ts=[...pend];pend.clear();ts.forEach(reload)},350)});
   chan.subscribe();
   setInterval(()=>{if(S.session)loadAll()},60000);
+  setInterval(()=>{if(S.isOwner&&!S.busy)syncMatches(true)},10*60000); // admin: keep pulling bot updates
   setInterval(()=>{if(S.view==="games"||S.view==="admin")schedule()},30000); // close betting as kickoffs pass
 }
 async function nickEmail(nick){
@@ -1065,17 +1067,24 @@ async function syncMatches(silent){
   if(!silent){S.busy=true;renderView()}
   try{
     const rows=await (await fetch("matches.json?t="+Date.now(),{cache:"no-store"})).json();
-    const up=[];let added=0,updated=0;
+    const up=[];let added=0,updated=0,results=0;
     for(const r of rows){
       const cur=S.matches.get(r.id);
+      if(HIDDEN_LEAGUES.has(r.doc.league))continue;
       if(!cur){up.push(r);added++;continue}
-      if(cur.status!=="open"||cur.source==="market")continue;
+      if(cur.status!=="open")continue;
       const {id:_drop,...doc}=cur;
-      const next={...doc,odds:r.doc.odds,kickoff:r.doc.kickoff,tbc:r.doc.tbc,round:r.doc.round,source:r.doc.source,sourceNote:r.doc.sourceNote};
+      let next={...doc};
+      if(cur.source!=="market")next={...next,odds:r.doc.odds,kickoff:r.doc.kickoff,tbc:r.doc.tbc,round:r.doc.round,source:r.doc.source,sourceNote:r.doc.sourceNote};
+      if(!cur.botSkip){
+        if(r.doc.status==="final"&&r.doc.result){next={...next,status:"final",result:r.doc.result,resultBy:"bot",resultNote:r.doc.resultNote||""};delete next.botIssue;results++}
+        else if(r.doc.botIssue)next.botIssue=r.doc.botIssue;
+        else delete next.botIssue;
+      }
       if(JSON.stringify(next)!==JSON.stringify(doc)){up.push({id:r.id,doc:next});updated++}
     }
     for(let k=0;k<up.length;k+=100)fail(await sb.from("matches").upsert(up.slice(k,k+100)));
-    await reload("matches");if(!silent||added||updated)toast(`נוספו ${added} משחקים, עודכנו ${updated}`);
+    await reload("matches");if(!silent||added||updated)toast(`נוספו ${added} משחקים, עודכנו ${updated}`+(results?` · ${results} תוצאות`:""));
   }catch(e){toast("עדכון המשחקים נכשל: "+(e.message||""))}
   if(!silent){S.busy=false;render()}
 }
