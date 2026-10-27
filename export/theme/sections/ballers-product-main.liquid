@@ -159,6 +159,7 @@
               {% assign size_order = '3XS,2XS,XS,S,M,L,XL,2XL,3XL,4XL,5XL,6,8,10,12,14,16,18,20,22,24,26,28' | split: ',' %}
               {% assign size_order_check = '|3XS|2XS|XS|S|M|L|XL|2XL|3XL|4XL|5XL|6|8|10|12|14|16|18|20|22|24|26|28|' %}
 
+              {% assign product_has_print_option = false %}
               {% for option in product.options_with_values %}
                 {% assign option_name_down = option.name | downcase %}
                 {% assign is_size_option = false %}
@@ -181,6 +182,13 @@
                   {% assign option_kind = 'sleeve' %}
                 {% endif %}
 
+                {% assign is_print_option = false %}
+                {% if option.name contains 'שם ומספר' %}
+                  {% assign is_print_option = true %}
+                  {% assign option_kind = 'print' %}
+                  {% assign product_has_print_option = true %}
+                {% endif %}
+
                 <div class="ballers-option-group" data-required-option="true" data-option-position="{{ option.position }}" data-option-kind="{{ option_kind }}">
                   <label class="ballers-option-label">
                     {% if is_patch_option %}
@@ -193,6 +201,8 @@
                       בחר מידה
                     {% elsif is_sleeve_option %}
                       בחר סוג שרוול
+                    {% elsif is_print_option %}
+                      בחר שם ומספר
                     {% else %}
                       בחר {{ option.name }}
                     {% endif %}
@@ -288,9 +298,17 @@
             </div>
           {% endunless %}
 
+          {% if product_has_print_option %}
+          <div id="BallersPrintFields" data-print-option="true" hidden>
+          <div class="ballers-print-note">
+            הדפסת שם ומספר: תוספת 5 ₪. מלא את השם ו/או המספר שיודפסו על החולצה.
+          </div>
+          {% else %}
+          <div id="BallersPrintFields">
           <div class="ballers-print-note">
             רוצה חולצה חלקה? השאר את שדות השם והמספר ריקים.
           </div>
+          {% endif %}
 
           <div class="ballers-custom-fields">
 
@@ -318,6 +336,7 @@
 
           <div class="ballers-note-box">
             שם ומספר יועברו לבעל העסק יחד עם ההזמנה.
+          </div>
           </div>
 
           <button
@@ -1294,6 +1313,32 @@
     var addButton = section.querySelector('.ballers-add-to-cart');
     var requiredMessage = section.querySelector('#BallersRequiredMessage');
     var productForm = section.querySelector('#BallersProductForm');
+    var printFields = section.querySelector('#BallersPrintFields[data-print-option]');
+    var printGroup = section.querySelector('.ballers-option-group[data-option-kind="print"]');
+    var printInputs = printFields ? printFields.querySelectorAll('input') : [];
+
+    function isPrintSelected() {
+      if (!printGroup) {
+        return false;
+      }
+
+      var activePrint = printGroup.querySelector('.ballers-option-btn.active');
+
+      return !!activePrint && !isNoPatchValue(activePrint.getAttribute('data-option-value'));
+    }
+
+    function updatePrintFields() {
+      if (!printFields) {
+        return;
+      }
+
+      var showFields = isPrintSelected();
+      printFields.hidden = !showFields;
+
+      printInputs.forEach(function (input) {
+        input.disabled = !showFields;
+      });
+    }
 
     function isNoPatchValue(value) {
       if (!value) {
@@ -1496,6 +1541,14 @@
         return noPatchButton ? noPatchButton.getAttribute('data-option-value') : null;
       }
 
+      if (kind === 'print') {
+        var noPrintButton = buttons.find(function (button) {
+          return isNoPatchValue(button.getAttribute('data-option-value'));
+        });
+
+        return noPrintButton ? noPrintButton.getAttribute('data-option-value') : null;
+      }
+
       if (kind === 'sleeve') {
         var shortSleeveButton = buttons.find(function (button) {
           return isShortSleeveValue(button.getAttribute('data-option-value'));
@@ -1530,7 +1583,7 @@
 
         var kind = groupWrapper.getAttribute('data-option-kind') || 'other';
 
-        if (kind !== 'patch' && kind !== 'sleeve') {
+        if (kind !== 'patch' && kind !== 'sleeve' && kind !== 'print') {
           return;
         }
 
@@ -1541,7 +1594,7 @@
           return;
         }
 
-        if (kind === 'patch' && isNoPatchValue(candidateValue)) {
+        if ((kind === 'patch' || kind === 'print') && isNoPatchValue(candidateValue)) {
           return;
         }
 
@@ -1727,6 +1780,7 @@
 
         updateOptionAvailability();
         updateButtonState();
+        updatePrintFields();
       });
     });
 
@@ -1763,6 +1817,27 @@
 
           return false;
         }
+
+        if (isPrintSelected()) {
+          var hasPrintText = Array.from(printInputs).some(function (input) {
+            return input.value.trim() !== '';
+          });
+
+          if (!hasPrintText) {
+            event.preventDefault();
+
+            if (requiredMessage) {
+              requiredMessage.classList.add('error');
+              requiredMessage.textContent = 'בחרת הדפסת שם ומספר. מלא שם או מספר, או בחר "ללא שם ומספר".';
+              requiredMessage.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+              });
+            }
+
+            return false;
+          }
+        }
       });
     }
 
@@ -1770,6 +1845,7 @@
     updateOptionAvailability();
     updateButtonState();
     updateOptionExtraPrices();
+    updatePrintFields();
 
     var thumbButtons = section.querySelectorAll('.ballers-thumb-btn');
     var thumbImages = section.querySelectorAll('.ballers-thumb-btn img');
