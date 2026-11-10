@@ -1,0 +1,127 @@
+{%- comment -%}
+  Winter collection popup: 10% off tracksuits with code WINTER10.
+  Shows once every 3 days per visitor, after a short delay.
+{%- endcomment -%}
+{%- unless request.path contains '/checkout' or template.name == 'cart' -%}
+<div class="bw-pop" id="BallersWinterPopup" role="dialog" aria-modal="true" aria-labelledby="BallersWinterTitle" hidden>
+  <div class="bw-pop__backdrop" data-bw-close></div>
+  <div class="bw-pop__card" dir="rtl">
+    <button type="button" class="bw-pop__x" aria-label="סגירה" data-bw-close>&times;</button>
+
+    <div class="bw-pop__media">
+      <img src="https://cdn.shopify.com/s/files/1/0843/2746/5200/files/winter-tracksuit-popup.jpg?v=1794349096&width=720"
+           alt="חליפת אימון לחורף" width="720" height="756" loading="lazy">
+      <span class="bw-pop__badge">‎-10%</span>
+      <span class="bw-pop__snow" aria-hidden="true">
+        <i>❄</i><i>❄</i><i>❄</i><i>❄</i><i>❄</i><i>❄</i>
+      </span>
+    </div>
+
+    <div class="bw-pop__body">
+      <p class="bw-pop__eyebrow">קולקציית החורף ❄️</p>
+      <h2 class="bw-pop__title" id="BallersWinterTitle">החורף הגיע. מתלבשים כמו מקצוענים.</h2>
+      <p class="bw-pop__text">‏10% הנחה על כל חליפות האימון של הקבוצות הגדולות.</p>
+
+      <button type="button" class="bw-pop__code" data-bw-copy="WINTER10" aria-label="העתקת הקוד WINTER10">
+        <span class="bw-pop__code-label">קוד הנחה</span>
+        <span class="bw-pop__code-value">WINTER10</span>
+        <span class="bw-pop__code-copy" data-bw-copy-label>העתקה</span>
+      </button>
+
+      <a class="bw-pop__cta" href="{{ routes.collections_url }}/winter">לקולקציית החורף ←</a>
+      <p class="bw-pop__fine">מזינים את הקוד בעמוד התשלום. בתוקף לחליפות האימון בלבד.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bw-pop[hidden]{display:none}
+  .bw-pop{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;font-family:inherit}
+  .bw-pop__backdrop{position:absolute;inset:0;background:rgba(3,10,28,.72);backdrop-filter:blur(3px);animation:bwFade .3s ease}
+  .bw-pop__card{position:relative;width:100%;max-width:400px;max-height:calc(100vh - 32px);overflow:auto;border-radius:20px;
+    background:linear-gradient(180deg,#0b2a63 0%,#071d46 55%,#050f2a 100%);color:#fff;
+    box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08) inset;animation:bwUp .38s cubic-bezier(.2,.8,.2,1)}
+  .bw-pop__x{position:absolute;top:10px;left:10px;z-index:3;width:36px;height:36px;border:0;border-radius:50%;
+    background:rgba(5,15,42,.6);color:#fff;font-size:24px;line-height:36px;cursor:pointer}
+  .bw-pop__media{position:relative;aspect-ratio:5/4;overflow:hidden;background:#dfe6f2}
+  .bw-pop__media img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
+  .bw-pop__media::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(180deg,rgba(7,29,70,0) 0%,#0b2a63 100%)}
+  .bw-pop__badge{position:absolute;top:14px;right:14px;z-index:2;padding:8px 14px;border-radius:999px;background:#0969d8;
+    font-weight:900;font-size:20px;letter-spacing:.5px;box-shadow:0 6px 18px rgba(9,105,216,.55);transform:rotate(-6deg)}
+  .bw-pop__snow{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .bw-pop__snow i{position:absolute;top:-20px;color:#fff;opacity:.85;font-style:normal;animation:bwSnow linear infinite;text-shadow:0 0 6px rgba(255,255,255,.8)}
+  .bw-pop__snow i:nth-child(1){left:8%;font-size:14px;animation-duration:7s}
+  .bw-pop__snow i:nth-child(2){left:24%;font-size:10px;animation-duration:9s;animation-delay:1.5s}
+  .bw-pop__snow i:nth-child(3){left:42%;font-size:16px;animation-duration:8s;animation-delay:.6s}
+  .bw-pop__snow i:nth-child(4){left:60%;font-size:11px;animation-duration:10s;animation-delay:2.2s}
+  .bw-pop__snow i:nth-child(5){left:76%;font-size:15px;animation-duration:7.5s;animation-delay:3s}
+  .bw-pop__snow i:nth-child(6){left:90%;font-size:9px;animation-duration:9.5s;animation-delay:.3s}
+  .bw-pop__body{position:relative;padding:4px 22px 22px;text-align:center}
+  .bw-pop__eyebrow{margin:0 0 6px;color:#8fc2ff;font-size:13px;font-weight:700;letter-spacing:.5px}
+  .bw-pop__title{margin:0 0 8px;font-size:24px;line-height:1.2;font-weight:900;color:#fff}
+  .bw-pop__text{margin:0 0 16px;font-size:15px;line-height:1.5;color:#d6e4ff}
+  .bw-pop__code{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin:0 0 12px;padding:12px 14px;
+    border:2px dashed rgba(143,194,255,.75);border-radius:14px;background:rgba(9,105,216,.14);color:#fff;cursor:pointer;font:inherit}
+  .bw-pop__code-label{font-size:12px;color:#8fc2ff}
+  .bw-pop__code-value{font-size:22px;font-weight:900;letter-spacing:2px;direction:ltr}
+  .bw-pop__code-copy{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:#fff;color:#071d46}
+  .bw-pop__code.is-copied{border-color:#4ade80;background:rgba(74,222,128,.14)}
+  .bw-pop__code.is-copied .bw-pop__code-copy{background:#4ade80}
+  .bw-pop__cta{display:block;padding:15px 18px;border-radius:14px;background:linear-gradient(90deg,#0969d8,#2f8bff);color:#fff;
+    text-decoration:none;font-weight:900;font-size:17px;box-shadow:0 10px 24px rgba(9,105,216,.45)}
+  .bw-pop__cta:hover{filter:brightness(1.08)}
+  .bw-pop__fine{margin:10px 0 0;font-size:11px;color:#8ea6cf}
+  @keyframes bwFade{from{opacity:0}to{opacity:1}}
+  @keyframes bwUp{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+  @keyframes bwSnow{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(460px) rotate(200deg);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.bw-pop__card,.bw-pop__backdrop{animation:none}.bw-pop__snow{display:none}}
+</style>
+
+<script>
+  (function () {
+    var KEY = 'ballersWinterPopupSeen';
+    var DAYS = 3;
+    var pop = document.getElementById('BallersWinterPopup');
+    if (!pop || /[?&]bw_popup=off/.test(location.search)) return;
+    var force = /[?&]bw_popup=1/.test(location.search);
+
+    function seenRecently() {
+      try {
+        var t = parseInt(localStorage.getItem(KEY) || '0', 10);
+        return t && (Date.now() - t) < DAYS * 864e5;
+      } catch (e) { return false; }
+    }
+    function markSeen() {
+      try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+    }
+    function close() {
+      pop.hidden = true;
+      document.documentElement.style.overflow = '';
+      markSeen();
+    }
+    function open() {
+      pop.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+    }
+
+    pop.addEventListener('click', function (e) {
+      if (e.target.closest('[data-bw-close]')) close();
+      var copyBtn = e.target.closest('[data-bw-copy]');
+      if (copyBtn) {
+        var code = copyBtn.getAttribute('data-bw-copy');
+        var label = copyBtn.querySelector('[data-bw-copy-label]');
+        var done = function () { copyBtn.classList.add('is-copied'); if (label) label.textContent = 'הועתק ✓'; };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(code).then(done, done);
+        } else { done(); }
+      }
+      if (e.target.closest('.bw-pop__cta')) markSeen();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !pop.hidden) close();
+    });
+
+    if (force || !seenRecently()) setTimeout(open, force ? 300 : 4000);
+  })();
+</script>
+{%- endunless -%}
