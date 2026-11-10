@@ -148,6 +148,10 @@
           עמוד הבית
         </a>
 
+        <a href="/collections/winter" class="ballers-nav-link {% if collection.handle == 'winter' %}active{% endif %}">
+          ❄️ קולקציית חורף
+        </a>
+
         <a href="{{ season_new_collection_url }}" class="ballers-nav-link {% if collection.handle == 'עונת-2026-2027' %}active{% endif %}">
           עונת 26/27
         </a>
@@ -298,6 +302,8 @@
     });
   });
 </script>
+
+{% render 'ballers-winter-popup' %}
 
 {% schema %}
 {
