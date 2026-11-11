@@ -79,29 +79,35 @@
 
 <script>
   (function () {
-    var KEY = 'ballersWinterPopupSeen';
-    var DAYS = 3;
+    // Shows once per visit, on the visitor's first MAX_SHOWS visits.
+    var COUNT_KEY = 'ballersWinterPopupCount';
+    var VISIT_KEY = 'ballersWinterPopupThisVisit';
+    var MAX_SHOWS = 3;
+    var DELAY_MS = 2000;
     var pop = document.getElementById('BallersWinterPopup');
     if (!pop || /[?&]bw_popup=off/.test(location.search)) return;
     var force = /[?&]bw_popup=1/.test(location.search);
 
-    function seenRecently() {
-      try {
-        var t = parseInt(localStorage.getItem(KEY) || '0', 10);
-        return t && (Date.now() - t) < DAYS * 864e5;
-      } catch (e) { return false; }
+    function shownCount() {
+      try { return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10) || 0; } catch (e) { return 0; }
     }
-    function markSeen() {
-      try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {}
+    function shownThisVisit() {
+      try { return sessionStorage.getItem(VISIT_KEY) === '1'; } catch (e) { return false; }
+    }
+    function markShown() {
+      try {
+        sessionStorage.setItem(VISIT_KEY, '1');
+        localStorage.setItem(COUNT_KEY, String(shownCount() + 1));
+      } catch (e) {}
     }
     function close() {
       pop.hidden = true;
       document.documentElement.style.overflow = '';
-      markSeen();
     }
     function open() {
       pop.hidden = false;
       document.documentElement.style.overflow = 'hidden';
+      if (!force) markShown();
     }
 
     pop.addEventListener('click', function (e) {
@@ -115,13 +121,13 @@
           navigator.clipboard.writeText(code).then(done, done);
         } else { done(); }
       }
-      if (e.target.closest('.bw-pop__cta')) markSeen();
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && !pop.hidden) close();
     });
 
-    if (force || !seenRecently()) setTimeout(open, force ? 300 : 4000);
+    if (force) setTimeout(open, 300);
+    else if (!shownThisVisit() && shownCount() < MAX_SHOWS) setTimeout(open, DELAY_MS);
   })();
 </script>
 {%- endunless -%}
