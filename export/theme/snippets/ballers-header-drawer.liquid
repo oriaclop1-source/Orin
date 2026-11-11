@@ -90,13 +90,15 @@
 
     <div class="ballers-cart-drawer-footer">
 
+      {% render 'pj-deal' %}
+
       <div class="ballers-cart-drawer-total">
         <span>סכום ביניים</span>
         <strong>{{ cart.total_price | money_without_currency }} ₪</strong>
       </div>
 
       <p class="ballers-cart-drawer-note">
-        משלוח חינם. התשלום המאובטח מתבצע בשלב הבא.
+        משלוח: 10 ₪ בהזמנה עד 80 ₪, 20 ₪ מעל 80 ₪, וחינם מעל 300 ₪. התשלום המאובטח מתבצע בשלב הבא.
       </p>
 
       <a href="/checkout" class="ballers-cart-drawer-checkout">
