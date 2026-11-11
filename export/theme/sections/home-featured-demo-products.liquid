@@ -67,7 +67,7 @@
       {%- if season_collection != blank and season_collection.products_count > 0 -%}
         <div class="ballers-title-row pj-row-title">
           <span></span>
-          <h2>חם עכשיו: עונת 2026/2027</h2>
+          <h2>חם עכשיו: עונת 2026/2027 וחורף ❄️</h2>
           <span></span>
         </div>
         <a href="{{ season_collection.url }}" class="pj-see-all">לכל {{ season_collection.products_count }} החולצות ←</a>
@@ -75,8 +75,13 @@
         <div class="ballers-strip-wrap">
           <button class="ballers-arrow ballers-arrow-right" type="button" aria-label="ימינה"><span aria-hidden="true">‹</span></button>
           <div class="ballers-products-row" id="BallersProductsRow-{{ section.id }}-season">
-            {%- comment -%} Famous clubs first, then the newest shirts. Suits are skipped. {%- endcomment -%}
-            {%- assign famous = 'ריאל מדריד,ברצלונה,מנצ׳סטר יונייטד,מנצ׳סטר סיטי,ליברפול,ארסנל,צ׳לסי,פריז סן ז׳רמן,באיירן,מילאן,יובנטוס,אינטר,אתלטיקו,דורטמונד,טוטנהאם,ניוקאסל' | split: ',' -%}
+            {%- comment -%}
+              Only the popular clubs (one shirt each), with a winter-collection item after every third shirt.
+              No filler from other clubs, so less popular teams stay off this row.
+            {%- endcomment -%}
+            {%- assign famous = 'ריאל מדריד,ברצלונה,מנצ׳סטר יונייטד,מנצ׳סטר סיטי,ליברפול,ארסנל,צ׳לסי,פריז סן ז׳רמן,באיירן,מילאן,יובנטוס,אינטר' | split: ',' -%}
+            {%- assign winter_max = 4 -%}
+            {%- assign winter_i = 0 -%}
             {%- assign hot_shown = 0 -%}
             {%- assign hot_ids = ',' -%}
             {%- comment -%} Real Madrid card is pinned to the away shirt (photo on the mannequin, matches the other cards) {%- endcomment -%}
@@ -96,19 +101,21 @@
                     {%- assign hot_ids = hot_ids | append: p.id | append: ',' -%}
                     {%- assign hot_shown = hot_shown | plus: 1 -%}
                     {% render 'pj-product-card', p: p %}
+                    {%- assign hot_mod = hot_shown | modulo: 3 -%}
+                    {%- if hot_mod == 0 and winter_i < winter_max and winter_items[winter_i] -%}
+                      {% render 'pj-product-card', p: winter_items[winter_i] %}
+                      {%- assign winter_i = winter_i | plus: 1 -%}
+                    {%- endif -%}
                     {%- break -%}
                   {%- endunless -%}
                 {%- endif -%}
               {%- endfor -%}
             {%- endfor -%}
-            {%- for p in newest -%}
-              {%- if hot_shown >= 12 -%}{%- break -%}{%- endif -%}
-              {%- assign hot_key = ',' | append: p.id | append: ',' -%}
-              {%- unless hot_ids contains hot_key or p.title contains 'חליפת' -%}
-                {%- assign hot_ids = hot_ids | append: p.id | append: ',' -%}
-                {%- assign hot_shown = hot_shown | plus: 1 -%}
-                {% render 'pj-product-card', p: p %}
-              {%- endunless -%}
+            {%- comment -%} Any winter items not yet placed go at the end. {%- endcomment -%}
+            {%- for p in winter_items offset: winter_i limit: winter_max -%}
+              {%- if winter_i >= winter_max -%}{%- break -%}{%- endif -%}
+              {% render 'pj-product-card', p: p %}
+              {%- assign winter_i = winter_i | plus: 1 -%}
             {%- endfor -%}
           </div>
           <button class="ballers-arrow ballers-arrow-left" type="button" aria-label="שמאלה"><span aria-hidden="true">›</span></button>
