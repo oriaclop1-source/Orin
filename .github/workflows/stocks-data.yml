@@ -1,0 +1,39 @@
+name: Update stock data
+
+on:
+  schedule:
+    # weekdays, during and right after the US session (UTC)
+    - cron: "40 14,16,18,20 * * 1-5"
+    - cron: "20 21 * * 1-5"
+  workflow_dispatch:
+  push:
+    paths:
+      - stocks/fetch_data.py
+      - .github/workflows/stocks-data.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stocks-data-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance
+      - run: python3 stocks/fetch_data.py
+      - name: Commit data
+        run: |
+          git config user.name "stocks-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stocks/data.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Update stock data"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
