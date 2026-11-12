@@ -83,20 +83,23 @@ def tv_symbol(sym, info):
 
 
 def stock_model(price, i):
-    """12-month model target: half valuation (forward EPS x fair P/E), half analyst consensus."""
-    fe = num(i.get("forwardEps"))
-    g_raw = num(i.get("earningsGrowth"))
-    if g_raw is None or abs(g_raw) > 1.5:
-        g_raw = num(i.get("revenueGrowth"))
-    g = clamp(g_raw if g_raw is not None else 0.05, -0.10, 0.40)
+    """12-month model target: 40% valuation (forward EPS x fair P/E), 60% analyst consensus."""
+    fe, te = num(i.get("forwardEps")), num(i.get("trailingEps"))
+    # expected growth: next-year EPS growth implied by the forward estimate, blended with revenue growth
+    g_eps = fe / te - 1 if fe and te and fe > 0 and te > 0 else None
+    g = avg(g_eps, num(i.get("revenueGrowth")))
+    g = clamp(g if g is not None else 0.05, -0.10, 0.30)
     roe, margin, de = num(i.get("returnOnEquity")), num(i.get("profitMargins")), num(i.get("debtToEquity"))
-    fair_pe = 12 + 60 * g
+    fair_pe = 10 + 50 * g
     if roe is not None and roe > 0.20:
-        fair_pe += 2
+        fair_pe += 1.5
     if margin is not None and margin > 0.20:
-        fair_pe += 2
+        fair_pe += 1.5
     if de is not None and de > 150:
         fair_pe -= 2
+    fpe = num(i.get("forwardPE"))
+    if fpe and fpe > 0:  # lean half on what the market pays today
+        fair_pe = (fair_pe + clamp(fpe, 8, 45)) / 2
     fair_pe = clamp(fair_pe, 8, 40)
 
     val = val_bear = val_bull = None
@@ -110,16 +113,18 @@ def stock_model(price, i):
     if n_an < 3:
         a_mean = a_low = a_high = None
 
-    target = avg(val, a_mean)
-    if target is None:
-        target = price * 1.07
-    target = clamp(target, price * 0.5, price * 1.8)
+    if val and a_mean:
+        # keep our valuation within 30% of the street so one noisy input can't dominate
+        target = 0.4 * clamp(val, a_mean * 0.7, a_mean * 1.3) + 0.6 * a_mean
+    else:
+        target = val or a_mean or price * 1.07
+    target = clamp(target, price * 0.6, price * 1.6)
 
     beta = clamp(num(i.get("beta")) or 1.0, 0.6, 2.5)
     bear = avg(price * (1 - 0.30 * beta), a_low, val_bear)
     bull = avg(price * (1 + 0.35 * beta), a_high, val_bull)
-    bear = min(bear, target * 0.92, price * 0.95)
-    bull = max(bull, target * 1.08, price * 1.05)
+    bear = clamp(bear, price * 0.35, min(target * 0.92, price * 0.95))
+    bull = clamp(bull, max(target * 1.08, price * 1.05), price * 2.2)
 
     return {
         "target": round(target, 2), "bear": round(bear, 2), "bull": round(bull, 2),
@@ -130,19 +135,18 @@ def stock_model(price, i):
 def score(price, m, i):
     """0-100 model rating: upside, quality, analyst view, momentum."""
     up = m["target"] / price - 1
-    s = 50 + clamp(up * 100, -30, 30)  # upside
+    s = 50 + clamp(up * 60, -25, 25)  # upside
     roe, margin = num(i.get("returnOnEquity")), num(i.get("profitMargins"))
     if roe is not None:
-        s += clamp(roe * 20, -5, 6)
+        s += clamp(roe * 15, -5, 5)
     if margin is not None:
-        s += clamp(margin * 20, -5, 6)
+        s += clamp(margin * 15, -5, 5)
     rec = num(i.get("recommendationMean"))
     if rec is not None:
-        s += clamp((3 - rec) * 5, -8, 8)
+        s += clamp((2.5 - rec) * 6, -8, 8)
     hi, lo = num(i.get("fiftyTwoWeekHigh")), num(i.get("fiftyTwoWeekLow"))
     if hi and lo and hi > lo:
-        pos = (price - lo) / (hi - lo)
-        s += (pos - 0.5) * 6
+        s += ((price - lo) / (hi - lo) - 0.5) * 6
     return int(round(clamp(s, 0, 100)))
 
 
