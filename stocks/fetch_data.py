@@ -30,10 +30,10 @@ STOCKS = {
     "BA": "בואינג", "CAT": "קטרפילר", "UBER": "אובר", "SHOP": "שופיפיי", "PYPL": "פייפאל", "COIN": "קוינבייס",
     "PANW": "פאלו אלטו", "CRWD": "קראודסטרייק", "ANET": "אריסטה", "NOW": "סרביסנאו", "ISRG": "אינטואיטיב סרג'יקל",
     "TEVA": "טבע", "ESLT": "אלביט מערכות", "CHKP": "צ'ק פוינט", "NICE": "נייס", "MNDY": "מאנדיי",
-    "WIX": "וויקס", "GLBE": "גלובל-אי", "CYBR": "סייברארק",
+    "WIX": "וויקס", "GLBE": "גלובל-אי",
     # Israeli companies traded in the US
     "TSEM": "טאואר", "NVMI": "נובה", "CAMT": "קמטק", "FVRR": "פייבר", "LMND": "למונייד", "PAYO": "פיוניר",
-    "ZIM": "צים", "INMD": "אינמוד", "SEDG": "סולאראדג'", "RDWR": "רדוור", "SPNS": "סאפיינס", "KRNT": "קורנית",
+    "ZIM": "צים", "INMD": "אינמוד", "SEDG": "סולאראדג'", "RDWR": "רדוור", "KRNT": "קורנית",
     "CEVA": "סיווה", "FROG": "ג'יפרוג", "CLBT": "סלברייט", "ORA": "אורמת", "ICL": "כיל",
     # chips & hardware
     "ADI": "אנלוג דיבייסס", "AMAT": "אפלייד מטריאלס", "LRCX": "לאם ריסרץ'", "KLAC": "KLA", "MRVL": "מארוול",
@@ -70,8 +70,8 @@ STOCKS = {
     "AMT": "אמריקן טאואר", "PLD": "פרולוג'יס", "O": "ריאלטי אינקם", "LIN": "לינדה", "FCX": "פריפורט", "NEM": "ניומונט",
     "SAP": "SAP",
 }
-ISRAELI = {"TEVA", "ESLT", "CHKP", "NICE", "MNDY", "WIX", "GLBE", "CYBR", "TSEM", "NVMI", "CAMT", "FVRR", "LMND",
-           "PAYO", "ZIM", "INMD", "SEDG", "RDWR", "SPNS", "KRNT", "CEVA", "FROG", "CLBT", "ORA", "ICL"}
+ISRAELI = {"TEVA", "ESLT", "CHKP", "NICE", "MNDY", "WIX", "GLBE", "TSEM", "NVMI", "CAMT", "FVRR", "LMND",
+           "PAYO", "ZIM", "INMD", "SEDG", "RDWR", "KRNT", "CEVA", "FROG", "CLBT", "ORA", "ICL"}
 # ETFs get a simple scenario model instead of an earnings-based one.
 ETFS = {
     "SPY": ("S&P 500", "stock"), "VOO": ("S&P 500", "stock"), "QQQ": ("נאסד״ק 100", "stock"),
