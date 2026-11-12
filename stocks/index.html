@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>הבורסה של החבר'ה</title>
+<meta name="description" content="מחירי מניות חיים, בונה תיק לפי הכסף והתנאים שלך, ומחשבון שמתרגם כסף לשעות עבודה. לי ולחברים.">
+<meta property="og:title" content="הבורסה של החבר'ה">
+<meta property="og:description" content="מחירים חיים מפתיחת השוק, בונה תיק אישי, וכמה שעות צריך לעבוד כדי להשקיע.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0F1B2D">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230F1B2D'/%3E%3Cpath d='M6 22l6-7 5 4 9-11' stroke='%23F0B451' stroke-width='3.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Rubik:wght@600;800&display=swap">
+<style>
+/* Layout: a navy masthead carrying the live tape and market clock, then one working view at a time (market, watchlist, portfolio builder, work-hours calculator, summaries). */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --sunk:#E9EDF2; --ink:#0F1B2D; --muted:#566275; --line:#D6DCE4;
+  --mast:#0F1B2D; --mast-ink:#EEF2F7; --mast-muted:#A3AEBF;
+  --accent:#C98516; --accent-strong:#F0B451; --accent-ink:#1B1406; --accent-soft:#F8EBD3;
+  --up:#13804A; --down:#C93434; --up-soft:#DDF1E5; --down-soft:#F7E0E0;
+  --c1:#2F6FD6; --c2:#C98516; --c3:#13804A; --c4:#8A4FC7; --c5:#D3532F; --c6:#2A9BA6; --c7:#7A869A; --c8:#B34A86;
+  --f-display:"Rubik","Heebo",system-ui,sans-serif;
+  --f-body:"Heebo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B111B; --surface:#121A27; --sunk:#0E1520; --ink:#E6EBF2; --muted:#97A3B6; --line:#24304A;
+  --mast:#070C14; --mast-ink:#EEF2F7; --mast-muted:#8D99AC;
+  --accent:#F0B451; --accent-strong:#F0B451; --accent-ink:#1B1406; --accent-soft:#2C2312;
+  --up:#3CC27A; --down:#F06A6A; --up-soft:#11291D; --down-soft:#2E1517;
+  --c1:#5A93F0; --c2:#F0B451; --c3:#3CC27A; --c4:#A98AE6; --c5:#F07C5A; --c6:#4BC0CB; --c7:#8D99AC; --c8:#E07AB4;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B111B; --surface:#121A27; --sunk:#0E1520; --ink:#E6EBF2; --muted:#97A3B6; --line:#24304A;
+  --mast:#070C14; --mast-ink:#EEF2F7; --mast-muted:#8D99AC;
+  --accent:#F0B451; --accent-strong:#F0B451; --accent-ink:#1B1406; --accent-soft:#2C2312;
+  --up:#3CC27A; --down:#F06A6A; --up-soft:#11291D; --down-soft:#2E1517;
+  --c1:#5A93F0; --c2:#F0B451; --c3:#3CC27A; --c4:#A98AE6; --c5:#F07C5A; --c6:#4BC0CB; --c7:#8D99AC; --c8:#E07AB4;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--mast)}
+.num{font-variant-numeric:tabular-nums}
+.ltr{direction:ltr;unicode-bidi:isolate}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* masthead */
+.mast{background:var(--mast);color:var(--mast-ink)}
+.mast-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px 10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand svg{flex:none}
+.brand b{font-family:var(--f-display);font-weight:800;font-size:1.35rem;letter-spacing:-.01em}
+.brand small{display:block;color:var(--mast-muted);font-size:.8rem;line-height:1.2}
+.clock{display:flex;align-items:center;gap:10px;font-size:.9rem;color:var(--mast-muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--mast-muted);flex:none}
+.dot.open{background:#3CC27A;box-shadow:0 0 0 4px rgba(60,194,122,.2);animation:pulse 2s infinite}
+.dot.pre{background:#F0B451}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(60,194,122,0)}}
+.clock strong{color:var(--mast-ink);font-weight:700}
+.share-btn{background:var(--accent-strong);color:var(--accent-ink);border:0;border-radius:999px;padding:8px 16px;font-weight:700;cursor:pointer;min-height:40px;display:inline-flex;gap:8px;align-items:center}
+.share-btn:hover{filter:brightness(1.07)}
+.tape{border-top:1px solid rgba(255,255,255,.08);min-height:46px}
+
+/* tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.tabs nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs nav::-webkit-scrollbar{display:none}
+.tabs a{flex:none;text-decoration:none;padding:14px 14px 12px;font-weight:500;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.tabs a:hover{color:var(--ink)}
+.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+
+main{padding-block:28px 64px}
+.view-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.view-head h1{font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800}
+.view-head p{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.eyebrow{font-size:.78rem;letter-spacing:.06em;color:var(--accent);font-weight:700;margin-bottom:6px}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.panel h2{font-size:1.15rem;font-weight:600;margin-bottom:12px}
+.panel h2 small{font-family:var(--f-body);font-weight:400;color:var(--muted);font-size:.85rem;margin-inline-start:6px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px}
+.grid-tool{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);align-items:start}
+.grid-even{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.stack{display:grid;gap:18px}
+.tv{width:100%;min-width:0}
+.h-ov{height:500px}.h-hot{height:500px}.h-news{height:560px}.h-chart{height:520px}.h-ta{height:430px}
+.note{font-size:.85rem;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* market search */
+.search{display:flex;gap:8px;flex-wrap:wrap}
+.search input{flex:1 1 220px;min-width:0;border:1px solid var(--line);background:var(--sunk);border-radius:8px;padding:10px 12px;min-height:44px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;cursor:pointer;font-weight:500}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+.btn.primary:hover{filter:brightness(1.15)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:4px 12px;font-size:.85rem;cursor:pointer;min-height:32px}
+.chip:hover{border-color:var(--accent)}
+
+/* watchlist */
+.watch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.wcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.wcard header{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 0;gap:8px}
+.wcard header b{font-family:var(--f-display);font-weight:600}
+.wcard .mini{height:180px}
+.icon-btn{border:0;background:transparent;cursor:pointer;color:var(--muted);padding:6px 8px;border-radius:6px;min-height:36px;font-size:.85rem}
+.icon-btn:hover{background:var(--sunk);color:var(--ink)}
+
+/* forms */
+.form{display:grid;gap:16px;align-content:start}
+.field{display:grid;gap:6px}
+.field label,.field .lbl{font-weight:500;font-size:.95rem}
+.field .hint{font-size:.82rem;color:var(--muted)}
+.inp{display:flex;align-items:center;border:1px solid var(--line);background:var(--sunk);border-radius:8px;overflow:hidden}
+.inp input,.inp select{border:0;background:transparent;padding:10px 12px;min-height:44px;width:100%;min-width:0}
+.inp span{padding-inline:12px;color:var(--muted);font-size:.9rem;white-space:nowrap}
+.inp:focus-within{border-color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:.9rem;background:var(--sunk);min-height:40px;display:flex;align-items:center}
+.seg input:checked + label{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg input:focus-visible + label{outline:2.5px solid var(--accent);outline-offset:2px}
+.checks{display:grid;gap:8px}
+.checks label{display:flex;gap:10px;align-items:flex-start;font-size:.95rem;cursor:pointer}
+.checks input{width:18px;height:18px;margin-top:4px;accent-color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+/* results */
+.big{font-family:var(--f-display);font-weight:800;font-size:clamp(1.8rem,5vw,2.6rem);line-height:1}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.kpi{background:var(--surface);padding:14px 16px}
+.kpi .k{font-size:.8rem;color:var(--muted)}
+.kpi .v{font-family:var(--f-display);font-weight:600;font-size:1.4rem}
+.kpi .v.up{color:var(--up)}.kpi .v.down{color:var(--down)}
+.alloc-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;margin-block:12px 6px;gap:2px}
+.alloc-bar i{display:block;height:100%}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:start;font-weight:500;color:var(--muted);font-size:.8rem;padding:8px 6px;border-bottom:1px solid var(--line)}
+td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+td .why{display:block;font-size:.82rem;color:var(--muted);line-height:1.45}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:8px;vertical-align:middle}
+.tbl-wrap{overflow-x:auto}
+.callout{border-inline-start:4px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 8px 8px 0;font-size:.93rem}
+.callout.warn{border-color:var(--down);background:var(--down-soft)}
+.callout.ok{border-color:var(--up);background:var(--up-soft)}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.83rem;color:var(--muted);margin-top:6px}
+
+/* hours grid */
+.hours{display:grid;grid-template-columns:repeat(auto-fill,minmax(14px,1fr));gap:3px;margin-top:10px}
+.hours i{aspect-ratio:1;border-radius:3px;display:block;max-width:100%}
+.exp-row{display:grid;grid-template-columns:minmax(0,1fr) 130px 36px;gap:8px;align-items:center}
+.exp-row input[type=text]{border:1px solid var(--line);background:var(--sunk);border-radius:8px;padding:8px 10px;min-height:42px;min-width:0}
+.hours-list{display:grid;gap:6px;margin-top:12px}
+.hours-list div{display:flex;justify-content:space-between;gap:10px;font-size:.93rem;border-bottom:1px dashed var(--line);padding-bottom:6px}
+
+/* summary */
+.article{max-width:68ch}
+.article p{margin:0 0 12px}
+.article ul{margin:0 0 12px;padding-inline-start:20px}
+.rules{counter-reset:r;list-style:none;padding:0;margin:0;display:grid;gap:14px}
+.rules li{display:grid;grid-template-columns:auto 1fr;gap:12px}
+.rules li::before{counter-increment:r;content:counter(r);font-family:var(--f-display);font-weight:800;color:var(--accent);font-size:1.4rem;line-height:1.2;min-width:1.4em}
+.rules b{display:block}
+footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);font-size:.83rem}
+
+.toast{position:fixed;inset-inline:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin-inline:auto;width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:500;z-index:50;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+@media (max-width:860px){
+  .grid-2,.grid-even,.grid-tool{grid-template-columns:minmax(0,1fr)}
+  .h-chart{height:420px}.h-ov{height:460px}
+  .clock{order:3;width:100%}
+}
+@media (max-width:420px){
+  .row2{grid-template-columns:1fr}
+  .exp-row{grid-template-columns:minmax(0,1fr) 104px 36px}
+  .brand small{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap mast-top">
+    <a class="brand" href="#market">
+      <svg width="38" height="38" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#1C2B44"/><path d="M6 22l6-7 5 4 9-11" stroke="#F0B451" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><b>הבורסה של החבר'ה</b><small>מחירים חיים, תיק אישי, וכמה זה בשעות עבודה</small></span>
+    </a>
+    <div class="clock" aria-live="polite"><span class="dot" id="mktDot"></span><span id="mktText">בודק את שעות המסחר…</span></div>
+    <button class="share-btn" id="shareSite" type="button">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+      שתפו חברים
+    </button>
+  </div>
+  <div class="tape" id="tape"></div>
+</header>
+
+<div class="tabs">
+  <nav class="wrap" aria-label="אזורים באתר">
+    <a href="#market" data-tab="market">השוק עכשיו</a>
+    <a href="#watch" data-tab="watch">רשימת מעקב</a>
+    <a href="#portfolio" data-tab="portfolio">בונה תיק</a>
+    <a href="#work" data-tab="work">שעות עבודה ← השקעה</a>
+    <a href="#summary" data-tab="summary">סיכומים וחדשות</a>
+  </nav>
+</div>
+
+<main class="wrap">
+
+<!-- MARKET -->
+<section id="v-market" data-view="market">
+  <div class="view-head">
+    <div>
+      <div class="eyebrow">מחירים חיים · TradingView</div>
+      <h1>מה קורה בשוק עכשיו</h1>
+      <p>המחירים מתעדכנים לבד מרגע פתיחת המסחר בוול סטריט (16:30 שעון ישראל). חפשו כל מניה כדי לראות גרף ואת סיכום האינדיקטורים הטכניים שלה.</p>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:18px">
+    <form class="search" id="symForm">
+      <label for="symInput" class="note" style="width:100%">סימול מניה (למשל AAPL, NVDA, TEVA, SPY)</label>
+      <input id="symInput" class="ltr" type="text" autocomplete="off" spellcheck="false" placeholder="NASDAQ:NVDA" dir="ltr">
+      <button class="btn primary" type="submit">הצג</button>
+      <button class="btn" type="button" id="addToWatch">+ לרשימת המעקב</button>
+    </form>
+    <div class="chips" id="quickSyms"></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel"><h2 id="chartTitle">גרף</h2><div class="tv h-chart" id="tvChart"></div></div>
+    <div class="panel">
+      <h2>סיכום טכני <small>מבוסס אינדיקטורים, לא המלצה</small></h2>
+      <div class="tv h-ta" id="tvTA"></div>
+      <p class="note" style="margin:8px 0 0">"קנייה" או "מכירה" כאן הוא ממוצע של ממוצעים נעים ומתנדים. זה כלי לקריאת מגמה, לא תחזית ולא ייעוץ.</p>
+    </div>
+  </div>
+
+  <div class="grid-even" style="margin-top:18px">
+    <div class="panel"><h2>מדדים, טק וישראל</h2><div class="tv h-ov" id="tvOverview"></div></div>
+    <div class="panel"><h2>העולות והיורדות של היום <small>ארה״ב</small></h2><div class="tv h-hot" id="tvHot"></div></div>
+  </div>
+</section>
+
+<!-- WATCHLIST -->
+<section id="v-watch" data-view="watch" hidden>
+  <div class="view-head">
+    <div>
+      <div class="eyebrow">שלכם בלבד · נשמר בדפדפן</div>
+      <h1>רשימת המעקב</h1>
+      <p>המניות שאתם עוקבים אחריהן, עם מחיר ושינוי חודשי. אפשר לשלוח את הרשימה לחבר בקישור, והוא יוכל להוסיף אותה אצלו.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" type="button" id="shareWatch">שליחת הרשימה לחבר</button>
+    </div>
+  </div>
+  <div class="callout" id="importBox" hidden style="margin-bottom:16px"></div>
+  <form class="panel search" id="watchForm" style="margin-bottom:16px">
+    <label for="watchInput" class="note" style="width:100%">הוספת מניה לרשימה</label>
+    <input id="watchInput" type="text" dir="ltr" class="ltr" autocomplete="off" spellcheck="false" placeholder="MSFT">
+    <button class="btn primary" type="submit">הוספה</button>
+  </form>
+  <div class="watch-grid" id="watchGrid"></div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="v-portfolio" data-view="portfolio" hidden>
+  <div class="view-head">
+    <div>
+      <div class="eyebrow">לפי הכסף, הזמן והאופי שלך</div>
+      <h1>בונה תיק אישי</h1>
+      <p>ענו על כמה שאלות ותקבלו חלוקה מוצעת בין קרנות סל רחבות, כמה שקלים לשים בכל אחת, ואיך הכסף עשוי לגדול. כל המספרים מתעדכנים תוך כדי שינוי.</p>
+    </div>
+    <button class="btn" type="button" id="sharePf">שליחת התיק לחבר</button>
+  </div>
+
+  <div class="grid-2 grid-tool">
+    <form class="panel form" id="pfForm" onsubmit="return false">
+      <div class="row2">
+        <div class="field"><label for="pfNow">סכום להשקעה עכשיו</label><div class="inp"><input id="pfNow" type="number" inputmode="numeric" min="0" step="500" value="10000"><span>₪</span></div></div>
+        <div class="field"><label for="pfMonthly">הפקדה חודשית</label><div class="inp"><input id="pfMonthly" type="number" inputmode="numeric" min="0" step="100" value="1000"><span>₪</span></div></div>
+      </div>
+      <div class="field">
+        <label for="pfYears">מתי תצטרכו את הכסף? <b class="num" id="pfYearsOut">10 שנים</b></label>
+        <input id="pfYears" type="range" min="1" max="40" value="10">
+      </div>
+      <div class="field">
+        <span class="lbl" id="dropLbl">השוק נופל 25% בחודש. מה אתם עושים?</span>
+        <div class="seg" role="radiogroup" aria-labelledby="dropLbl">
+          <input type="radio" name="pfDrop" id="d1" value="1"><label for="d1">מוכר הכול</label>
+          <input type="radio" name="pfDrop" id="d2" value="2"><label for="d2">מוכר חלק</label>
+          <input type="radio" name="pfDrop" id="d3" value="3" checked><label for="d3">לא נוגע</label>
+          <input type="radio" name="pfDrop" id="d4" value="5"><label for="d4">קונה עוד</label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl" id="incLbl">ההכנסה שלכם</span>
+        <div class="seg" role="radiogroup" aria-labelledby="incLbl">
+          <input type="radio" name="pfInc" id="i1" value="1"><label for="i1">לא קבועה</label>
+          <input type="radio" name="pfInc" id="i2" value="3" checked><label for="i2">די יציבה</label>
+          <input type="radio" name="pfInc" id="i3" value="4"><label for="i3">יציבה מאוד</label>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">מה חשוב לכם?</span>
+        <div class="checks">
+          <label><input type="checkbox" id="pfEmergency" checked> כבר יש לי כרית ביטחון של 3 חודשי הוצאות בצד</label>
+          <label><input type="checkbox" id="pfTech"> רוצה משקל יתר לטכנולוגיה (נאסד״ק)</label>
+          <label><input type="checkbox" id="pfIsrael"> רוצה חלק בשוק הישראלי</label>
+          <label><input type="checkbox" id="pfDiv"> מעדיף מניות שמחלקות דיבידנד</label>
+        </div>
+      </div>
+    </form>
+
+    <div class="stack">
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div><div class="note">פרופיל סיכון</div><div class="big" id="pfProfile">מאוזן</div></div>
+          <div style="text-align:end"><div class="note">מניות / אג״ח ומזומן</div><div class="big num" id="pfSplit">60/40</div></div>
+        </div>
+        <div class="alloc-bar" id="pfBar" aria-hidden="true"></div>
+        <div id="pfWarn"></div>
+        <div class="tbl-wrap" style="margin-top:10px">
+          <table>
+            <thead><tr><th>מה קונים</th><th>אחוז</th><th>עכשיו</th><th>כל חודש</th></tr></thead>
+            <tbody id="pfTable"></tbody>
+          </table>
+        </div>
+        <p class="note" style="margin:10px 0 0">בישראל אפשר לקנות את אותם מדדים גם דרך קרן סל או קרן מחקה בשקלים, בלי המרת מט״ח. כדאי להשוות דמי ניהול.</p>
+      </div>
+
+      <div class="panel">
+        <h2>לאן זה יכול להגיע <small id="pfHorizon"></small></h2>
+        <div class="kpis" id="pfKpis"></div>
+        <div class="chart" id="pfChart" style="margin-top:14px"></div>
+        <div class="legend"><span><i class="sw" style="background:var(--c7)"></i>הכסף שהפקדתם</span><span><i class="sw" style="background:var(--accent)"></i>רווח בתרחיש ממוצע</span><span><i class="sw" style="background:transparent;border:2px dashed var(--muted)"></i>טווח פסימי ואופטימי</span></div>
+        <p class="note" style="margin:10px 0 0">ההנחות: תשואה שנתית ממוצעת לפי סוג הנכס (מניות ארה״ב 8%, עולם 7%, נאסד״ק 9%, אג״ח 4%, מזומן 3.5%), לפני מס ודמי ניהול. התרחישים הם ±2% בשנה. העבר לא מבטיח כלום.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK HOURS -->
+<section id="v-work" data-view="work" hidden>
+  <div class="view-head">
+    <div>
+      <div class="eyebrow">כסף = זמן</div>
+      <h1>כמה שעות צריך לעבוד כדי להשקיע</h1>
+      <p>הכניסו כמה אתם מרוויחים לשעה ומה ההוצאות. תראו כמה מהחודש הולך על כל דבר, כמה נשאר, וכמה שעות עבודה עולה כל שקל שאתם רוצים לשים במניות.</p>
+    </div>
+  </div>
+
+  <div class="grid-2 grid-tool">
+    <form class="panel form" id="wkForm" onsubmit="return false">
+      <p class="note" style="margin:0">הערכים כאן הם דוגמה. שנו אותם לנתונים שלכם, הם נשמרים רק אצלכם.</p>
+      <div class="row2">
+        <div class="field"><label for="wkRate">שכר לשעה (ברוטו)</label><div class="inp"><input id="wkRate" type="number" inputmode="decimal" min="0" step="1" value="50"><span>₪</span></div></div>
+        <div class="field"><label for="wkHours">שעות בשבוע</label><div class="inp"><input id="wkHours" type="number" inputmode="numeric" min="1" max="80" step="1" value="40"><span>שעות</span></div></div>
+      </div>
+      <div class="field">
+        <label for="wkNet">כמה נשאר אחרי מסים וניכויים <b class="num" id="wkNetOut">88%</b></label>
+        <input id="wkNet" type="range" min="55" max="100" value="88">
+        <span class="hint">משכורת נמוכה-בינונית בישראל: בערך 85%-92%. אפשר לבדוק בתלוש: נטו חלקי ברוטו.</span>
+      </div>
+      <div class="field">
+        <span class="lbl">הוצאות חודשיות</span>
+        <div id="expList" class="stack" style="gap:8px"></div>
+        <button class="btn" type="button" id="addExp" style="justify-self:start">+ הוצאה</button>
+      </div>
+      <div class="field"><label for="wkInvest">כמה רוצים להשקיע בחודש</label><div class="inp"><input id="wkInvest" type="number" inputmode="numeric" min="0" step="100" value="1000"><span>₪</span></div></div>
+      <div class="field"><label for="wkGoal">יעד חיסכון (לא חובה)</label><div class="inp"><input id="wkGoal" type="number" inputmode="numeric" min="0" step="1000" value="25000"><span>₪</span></div></div>
+    </form>
+
+    <div class="stack">
+      <div class="panel">
+        <div class="note">כדי להשקיע <b class="num" id="wkInvestEcho"></b> בחודש צריך לעבוד</div>
+        <div class="big num" id="wkHoursNeeded">—</div>
+        <div class="note" id="wkHoursSub" style="margin-top:6px"></div>
+        <div class="kpis" id="wkKpis" style="margin-top:16px"></div>
+        <div id="wkVerdict" style="margin-top:14px"></div>
+      </div>
+      <div class="panel">
+        <h2>החודש שלכם בשעות <small>כל ריבוע = שעת עבודה</small></h2>
+        <div class="hours" id="wkGrid" role="img" aria-label="פירוק שעות העבודה בחודש לפי הוצאות"></div>
+        <div class="legend" id="wkLegend"></div>
+        <div class="hours-list" id="wkList"></div>
+      </div>
+      <div class="panel">
+        <h2>כמה שעות עבודה זה?</h2>
+        <div class="search">
+          <label for="buyPrice" class="note" style="width:100%">מחיר של משהו שאתם שוקלים לקנות</label>
+          <div class="inp" style="flex:1 1 200px"><input id="buyPrice" type="number" inputmode="numeric" min="0" step="10" value="4500"><span>₪</span></div>
+        </div>
+        <p id="buyOut" style="margin:12px 0 0"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section id="v-summary" data-view="summary" hidden>
+  <div class="view-head">
+    <div>
+      <div class="eyebrow">סיכומים</div>
+      <h1>מה קרה ומה לעשות עם זה</h1>
+      <p>סיכום קצר של האירועים האחרונים, חדשות שוק שמתעדכנות לבד, וכמה כללים שכדאי לזכור דווקא כשהשוק יורד.</p>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="stack">
+      <article class="panel article">
+        <div class="eyebrow">עודכן: 12 בנובמבר 2026</div>
+        <h2>הירידה של תחילת נובמבר</h2>
+        <p>ביום חמישי, 5 בנובמבר, יום אחרי הבחירות לקונגרס, מניות הבינה המלאכותית נפלו חזק. ה-S&amp;P 500 ירד כ-4.4%, היום הגרוע שלו מאז אפריל 2025. הנאסד״ק ירד כ-5.5% ונכנס ל"תיקון", יותר מ-10% מתחת לשיא של אוקטובר. אנבידיה לבדה ירדה 9.3%.</p>
+        <p>הסיבה שדווחה: חשש שתוצאות הבחירות יביאו להגבלות על מרכזי נתונים ויאטו את ההשקעות בתשתיות AI, אחרי שהמניות האלה עלו מאוד.</p>
+        <p><b>מה ההיסטוריה אומרת (בלי תחזית):</b></p>
+        <ul>
+          <li>ירידות של 10% ומעלה ("תיקון") קורות בממוצע בערך פעם בשנה-שנתיים. רובן לא הפכו לשוק דובי.</li>
+          <li>ירידה של 20% ומעלה קורית בערך פעם ב-5-6 שנים, ואז ההתאוששות לקחה לרוב חודשים עד שנים.</li>
+          <li>כמה מהימים הטובים ביותר בבורסה הגיעו ממש אחרי הימים הגרועים. מי שמכר בפאניקה פספס אותם.</li>
+        </ul>
+        <p class="note">מקורות: <a href="https://www.fox5vegas.com/2026/11/05/brutal-sell-off-ai-stocks-sends-wall-street-reeling-sp-500-sees-worst-day-since-2025-liberation-day-tariffs/" target="_blank" rel="noopener">AP דרך Fox5</a>, <a href="https://stockanalysis.com/news/sp-500-record-one-day-market-value-loss/" target="_blank" rel="noopener">StockAnalysis</a>, <a href="https://www.investmentnews.com/equities/nasdaq-enters-correction-as-ai-stocks-sink-after-midterm-elections/268903" target="_blank" rel="noopener">InvestmentNews</a>.</p>
+      </article>
+      <div class="panel">
+        <h2>כללים לזכור כשאדום על המסך</h2>
+        <ol class="rules">
+          <li><span><b>כסף שצריך בקרוב לא נכנס למניות.</b>מה שתצטרכו בשנתיים הקרובות מקומו בפיקדון או בקרן כספית.</span></li>
+          <li><span><b>קודם כרית ביטחון.</b>3-6 חודשי הוצאות בצד, כדי שלא תיאלצו למכור בירידה.</span></li>
+          <li><span><b>קרן מדד רחבה לפני מניה בודדת.</b>מניה אחת יכולה לרדת 70% ולא לחזור. מדד של 500 חברות מתאושש בדרך כלל.</span></li>
+          <li><span><b>הפקדה קבועה כל חודש.</b>בירידות אותו סכום קונה יותר יחידות. לא צריך לנחש את התחתית.</span></li>
+          <li><span><b>דמי ניהול אוכלים תשואה.</b>הפרש של 1% בשנה הוא בערך רבע מהכסף אחרי 30 שנה.</span></li>
+        </ol>
+      </div>
+    </div>
+    <div class="panel"><h2>חדשות שוק <small>מתעדכן לבד</small></h2><div class="tv h-news" id="tvNews"></div></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">האתר לשימוש אישי ולחברים. שום דבר כאן אינו ייעוץ השקעות או המלצה לקנות או למכור. המחירים והגרפים מגיעים מ-TradingView ועשויים להתעכב בכמה דקות בחלק מהבורסות. שעות המסחר לא כוללות חגים אמריקאיים.</div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+"use strict";
+var $ = function(s){return document.querySelector(s)};
+var store = {
+  get:function(k,d){try{var v=localStorage.getItem("bsh_"+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set:function(k,v){try{localStorage.setItem("bsh_"+k,JSON.stringify(v))}catch(e){}}
+};
+var nf = new Intl.NumberFormat("he-IL",{maximumFractionDigits:0});
+var nf1 = new Intl.NumberFormat("he-IL",{maximumFractionDigits:1});
+var ils = function(n){return "₪"+nf.format(Math.round(n))};
+var short = function(n){var a=Math.abs(n);if(a>=1e6)return "₪"+nf1.format(n/1e6)+"M";if(a>=1e4)return "₪"+nf.format(n/1e3)+"K";return ils(n)};
+function toast(msg){var t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove("show")},2200)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+
+/* ---------- theme for widgets ---------- */
+function isDark(){
+  var t=document.documentElement.getAttribute("data-theme");
+  if(t) return t==="dark";
+  return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches;
+}
+var THEME = isDark()?"dark":"light";
+var LOCALE = "he_IL";
+
+/* ---------- TradingView widget loader ---------- */
+function tv(el,name,cfg){
+  if(typeof el==="string") el=$(el);
+  if(!el) return;
+  el.innerHTML="";
+  var box=document.createElement("div");box.className="tradingview-widget-container";box.style.height="100%";box.style.width="100%";
+  var inner=document.createElement("div");inner.className="tradingview-widget-container__widget";inner.style.height="100%";
+  box.appendChild(inner);
+  var s=document.createElement("script");s.type="text/javascript";s.async=true;
+  s.src="https://s3.tradingview.com/external-embedding/embed-widget-"+name+".js";
+  s.text=JSON.stringify(cfg);
+  box.appendChild(s);el.appendChild(box);
+}
+
+/* ---------- symbols ---------- */
+var KNOWN = {AAPL:"NASDAQ:AAPL",MSFT:"NASDAQ:MSFT",NVDA:"NASDAQ:NVDA",AMZN:"NASDAQ:AMZN",GOOGL:"NASDAQ:GOOGL",GOOG:"NASDAQ:GOOG",META:"NASDAQ:META",TSLA:"NASDAQ:TSLA",NFLX:"NASDAQ:NFLX",AMD:"NASDAQ:AMD",INTC:"NASDAQ:INTC",AVGO:"NASDAQ:AVGO",PLTR:"NASDAQ:PLTR",QQQ:"NASDAQ:QQQ",ESLT:"NASDAQ:ESLT",CHKP:"NASDAQ:CHKP",NICE:"NASDAQ:NICE",WIX:"NASDAQ:WIX",MNDY:"NASDAQ:MNDY",CYBR:"NASDAQ:CYBR",TEVA:"NYSE:TEVA",SPY:"AMEX:SPY",VOO:"AMEX:VOO",VTI:"AMEX:VTI",VT:"AMEX:VT",VXUS:"NASDAQ:VXUS",BND:"NASDAQ:BND",SCHD:"AMEX:SCHD",SGOV:"AMEX:SGOV",JPM:"NYSE:JPM",V:"NYSE:V",KO:"NYSE:KO",DIS:"NYSE:DIS",BRK:"NYSE:BRK.B","BRK.B":"NYSE:BRK.B",BTC:"BITSTAMP:BTCUSD",GOLD:"OANDA:XAUUSD"};
+function norm(s){
+  s=String(s||"").trim().toUpperCase().replace(/\s+/g,"");
+  if(!s) return "";
+  if(!/^[A-Z0-9:._!-]{1,30}$/.test(s)) return "";
+  if(s.indexOf(":")>-1) return s;
+  return KNOWN[s]||s;
+}
+function label(sym){return sym.split(":").pop()}
+
+/* ---------- market clock (NYSE) ---------- */
+function nyParts(d){
+  var f=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"numeric",minute:"numeric",hour12:false});
+  var o={};f.formatToParts(d).forEach(function(p){o[p.type]=p.value});
+  var h=parseInt(o.hour,10)%24, m=parseInt(o.minute,10);
+  return {wd:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(o.weekday),min:h*60+m};
+}
+function ilTime(d){return new Intl.DateTimeFormat("he-IL",{timeZone:"Asia/Jerusalem",hour:"2-digit",minute:"2-digit",hour12:false}).format(d)}
+function dur(mins){var h=Math.floor(mins/60),m=mins%60;return h>0?(h+" ש׳ ו-"+m+" דק׳"):(m+" דק׳")}
+function minsToOpen(p){
+  var OPEN=570, days=0, wd=p.wd, cur=p.min;
+  if(wd>=1&&wd<=5&&cur<OPEN) return OPEN-cur;
+  var total=(1440-cur);wd=(wd+1)%7;
+  while(!(wd>=1&&wd<=5)){total+=1440;wd=(wd+1)%7}
+  return total+OPEN;
+}
+function tick(){
+  var now=new Date(), p=nyParts(now), dot=$("#mktDot"), txt=$("#mktText");
+  var weekday=p.wd>=1&&p.wd<=5, OPEN=570, CLOSE=960;
+  dot.className="dot";
+  if(weekday&&p.min>=OPEN&&p.min<CLOSE){
+    dot.classList.add("open");
+    var left=CLOSE-p.min;
+    txt.innerHTML="<strong>וול סטריט פתוחה</strong> · נסגרת בעוד "+dur(left)+" ("+ilTime(new Date(now.getTime()+left*60000))+")";
+  }else{
+    var to=minsToOpen(p), at=ilTime(new Date(now.getTime()+to*60000));
+    var pre=weekday&&p.min>=240&&p.min<OPEN, post=weekday&&p.min>=CLOSE&&p.min<1200;
+    if(pre) dot.classList.add("pre");
+    txt.innerHTML="<strong>"+(pre?"מסחר מוקדם":post?"מסחר מאוחר":"השוק סגור")+"</strong> · נפתח בעוד "+dur(to)+" (ב-"+at+" שעון ישראל)";
+  }
+}
+tick();setInterval(tick,30000);
+
+/* ---------- ticker tape ---------- */
+tv("#tape","ticker-tape",{symbols:[
+  {proName:"FOREXCOM:SPXUSD",title:"S&P 500"},{proName:"FOREXCOM:NSXUSD",title:"נאסד״ק 100"},{proName:"FOREXCOM:DJI",title:"דאו ג׳ונס"},
+  {proName:"TASE:TA35",title:"ת״א 35"},{proName:"FX_IDC:USDILS",title:"דולר/שקל"},{proName:"NASDAQ:NVDA",title:"אנבידיה"},
+  {proName:"NASDAQ:AAPL",title:"אפל"},{proName:"NASDAQ:MSFT",title:"מיקרוסופט"},{proName:"NYSE:TEVA",title:"טבע"},
+  {proName:"OANDA:XAUUSD",title:"זהב"},{proName:"BITSTAMP:BTCUSD",title:"ביטקוין"}],
+  showSymbolLogo:true,isTransparent:true,displayMode:"adaptive",colorTheme:"dark",locale:LOCALE});
+
+/* ---------- views / routing ---------- */
+var inited={};
+var INIT={
+  market:function(){
+    tv("#tvOverview","market-overview",{colorTheme:THEME,dateRange:"1M",showChart:true,locale:LOCALE,width:"100%",height:"100%",isTransparent:true,showSymbolLogo:true,showFloatingTooltip:true,
+      tabs:[
+        {title:"מדדים",symbols:[{s:"FOREXCOM:SPXUSD",d:"S&P 500"},{s:"FOREXCOM:NSXUSD",d:"Nasdaq 100"},{s:"FOREXCOM:DJI",d:"Dow Jones"},{s:"TASE:TA35",d:"TA-35"},{s:"TASE:TA125",d:"TA-125"}]},
+        {title:"ענקיות טק",symbols:[{s:"NASDAQ:NVDA"},{s:"NASDAQ:AAPL"},{s:"NASDAQ:MSFT"},{s:"NASDAQ:AMZN"},{s:"NASDAQ:GOOGL"},{s:"NASDAQ:META"},{s:"NASDAQ:TSLA"}]},
+        {title:"ישראליות",symbols:[{s:"NYSE:TEVA"},{s:"NASDAQ:ESLT"},{s:"NASDAQ:CHKP"},{s:"NASDAQ:NICE"},{s:"NASDAQ:CYBR"},{s:"NASDAQ:MNDY"}]},
+        {title:"זהב, דולר, קריפטו",symbols:[{s:"OANDA:XAUUSD",d:"Gold"},{s:"FX_IDC:USDILS",d:"USD/ILS"},{s:"BITSTAMP:BTCUSD",d:"Bitcoin"}]}
+      ]});
+    tv("#tvHot","hotlists",{colorTheme:THEME,dateRange:"1D",exchange:"US",showChart:true,locale:LOCALE,width:"100%",height:"100%",isTransparent:true,showSymbolLogo:true});
+    var q=$("#quickSyms");
+    ["NVDA","AAPL","MSFT","TSLA","AMZN","META","TEVA","ESLT","SPY","QQQ"].forEach(function(s){
+      var b=document.createElement("button");b.type="button";b.className="chip ltr";b.textContent=s;
+      b.onclick=function(){showSymbol(norm(s))};q.appendChild(b);
+    });
+    showSymbol(store.get("lastSym","NASDAQ:NVDA"));
+  },
+  watch:function(){renderWatch()},
+  portfolio:function(){},
+  work:function(){},
+  summary:function(){
+    tv("#tvNews","timeline",{feedMode:"all_symbols",isTransparent:true,displayMode:"regular",width:"100%",height:"100%",colorTheme:THEME,locale:LOCALE});
+  }
+};
+function route(){
+  var raw=(location.hash||"").replace(/^#/,"");
+  var parts=raw.split("&"), name=parts[0]||"market";
+  if(!INIT[name]) name="market";
+  var params={};parts.slice(1).forEach(function(kv){var i=kv.indexOf("=");if(i>0)params[kv.slice(0,i)]=decodeURIComponent(kv.slice(i+1))});
+  document.querySelectorAll("[data-view]").forEach(function(v){v.hidden=v.getAttribute("data-view")!==name});
+  document.querySelectorAll("[data-tab]").forEach(function(a){
+    if(a.getAttribute("data-tab")===name) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current");
+  });
+  if(!inited[name]){inited[name]=true;INIT[name]()}
+  if(name==="watch"&&params.w) offerImport(params.w);
+  if(name==="portfolio"&&params.d) loadPfShare(params.d);
+}
+window.addEventListener("hashchange",route);
+
+/* ---------- market: symbol view ---------- */
+var currentSym="NASDAQ:NVDA";
+function showSymbol(sym){
+  if(!sym) return;
+  currentSym=sym;store.set("lastSym",sym);
+  $("#chartTitle").innerHTML="גרף <small class='ltr'>"+esc(sym)+"</small>";
+  $("#symInput").value=label(sym);
+  tv("#tvChart","advanced-chart",{autosize:true,symbol:sym,interval:"D",timezone:"Asia/Jerusalem",theme:THEME,style:"1",locale:LOCALE,allow_symbol_change:true,hide_side_toolbar:true,calendar:false,support_host:"https://www.tradingview.com"});
+  tv("#tvTA","technical-analysis",{interval:"1D",width:"100%",isTransparent:true,height:"100%",symbol:sym,showIntervalTabs:true,displayMode:"single",locale:LOCALE,colorTheme:THEME});
+}
+$("#symForm").addEventListener("submit",function(e){e.preventDefault();var s=norm($("#symInput").value);if(s)showSymbol(s);else toast("סימול לא תקין")});
+$("#addToWatch").addEventListener("click",function(){var s=norm($("#symInput").value)||currentSym;addWatch(s)});
+
+/* ---------- watchlist ---------- */
+var DEFAULT_WATCH=["NASDAQ:NVDA","NASDAQ:AAPL","NASDAQ:MSFT","AMEX:SPY","NYSE:TEVA","NASDAQ:ESLT"];
+var watch=store.get("watch",DEFAULT_WATCH);
+function saveWatch(){store.set("watch",watch)}
+function addWatch(sym){
+  if(!sym) return;
+  if(watch.indexOf(sym)>-1){toast(label(sym)+" כבר ברשימה");return}
+  watch.unshift(sym);saveWatch();toast(label(sym)+" נוסף לרשימה");
+  if(inited.watch) renderWatch();
+}
+function renderWatch(){
+  var g=$("#watchGrid");g.innerHTML="";
+  if(!watch.length){g.innerHTML="<p class='muted'>הרשימה ריקה. הוסיפו מניה למעלה.</p>";return}
+  watch.forEach(function(sym){
+    var c=document.createElement("div");c.className="wcard";
+    c.innerHTML="<header><b class='ltr'>"+esc(label(sym))+"</b><span><button class='icon-btn' data-a='open' type='button'>גרף</button><button class='icon-btn' data-a='rm' type='button' aria-label='הסרת "+esc(label(sym))+"'>הסרה</button></span></header><div class='mini'></div>";
+    c.querySelector("[data-a=open]").onclick=function(){location.hash="market";showSymbol(sym);window.scrollTo({top:0})};
+    c.querySelector("[data-a=rm]").onclick=function(){watch=watch.filter(function(x){return x!==sym});saveWatch();renderWatch()};
+    g.appendChild(c);
+    tv(c.querySelector(".mini"),"mini-symbol-overview",{symbol:sym,width:"100%",height:"100%",locale:LOCALE,dateRange:"1M",colorTheme:THEME,isTransparent:true,autosize:true,chartOnly:false,noTimeScale:false});
+  });
+}
+$("#watchForm").addEventListener("submit",function(e){e.preventDefault();var s=norm($("#watchInput").value);if(!s){toast("סימול לא תקין");return}addWatch(s);$("#watchInput").value=""});
+function offerImport(list){
+  var syms=list.split(",").map(norm).filter(Boolean).slice(0,40);
+  var add=syms.filter(function(s){return watch.indexOf(s)<0});
+  var box=$("#importBox");
+  if(!add.length){box.hidden=true;return}
+  box.hidden=false;
+  box.innerHTML="חבר שלח לכם רשימת מעקב: <b class='ltr'>"+esc(add.map(label).join(", "))+"</b> <button class='btn' type='button' id='doImport' style='margin-inline-start:8px'>הוספה לרשימה שלי</button>";
+  $("#doImport").onclick=function(){watch=add.concat(watch);saveWatch();renderWatch();box.hidden=true;history.replaceState(null,"","#watch");toast("נוספו "+add.length+" מניות")};
+}
+
+/* ---------- sharing ---------- */
+function baseUrl(){return location.href.split("#")[0]}
+function share(url,text){
+  if(navigator.share){navigator.share({title:"הבורסה של החבר'ה",text:text,url:url}).catch(function(){});return}
+  var copied=false;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){toast("הקישור הועתק")},function(){});copied=true}
+  window.open("https://wa.me/?text="+encodeURIComponent(text+"\n"+url),"_blank","noopener");
+  if(!copied) toast("נפתח וואטסאפ עם הקישור");
+}
+$("#shareSite").onclick=function(){share(baseUrl(),"תראו את האתר הזה: מחירי מניות חיים, בונה תיק ומחשבון שעות עבודה")};
+$("#shareWatch").onclick=function(){share(baseUrl()+"#watch&w="+encodeURIComponent(watch.map(label).join(",")),"זאת רשימת המניות שאני עוקב אחריהן")};
+
+/* ---------- portfolio builder ---------- */
+var ASSETS={
+  us:{name:"S&P 500",tk:"VOO",ret:.08,worst:-.37,color:"var(--c1)",why:"500 החברות הגדולות בארה״ב. הבסיס של רוב התיקים."},
+  world:{name:"מניות עולם (בלי ארה״ב)",tk:"VXUS",ret:.07,worst:-.43,color:"var(--c6)",why:"אירופה, אסיה ושווקים מתפתחים. פיזור מעבר לדולר."},
+  tech:{name:"נאסד״ק 100",tk:"QQQ",ret:.09,worst:-.42,color:"var(--c4)",why:"משקל יתר לטכנולוגיה. עולה יותר, וגם נופל יותר."},
+  il:{name:"ת״א 125",tk:"TA-125",ret:.07,worst:-.40,color:"var(--c8)",why:"125 החברות הגדולות בבורסה בתל אביב, בשקלים."},
+  div:{name:"מניות דיבידנד",tk:"SCHD",ret:.075,worst:-.30,color:"var(--c3)",why:"חברות יציבות שמחלקות רווחים. תנודתיות קצת נמוכה יותר."},
+  bond:{name:"אג״ח",tk:"BND",ret:.04,worst:-.13,color:"var(--c7)",why:"מרכך את הירידות. בשנה הגרועה (2022) ירד כ-13%."},
+  cash:{name:"מזומן / קרן כספית",tk:"SGOV",ret:.035,worst:0,color:"var(--c2)",why:"כמעט בלי סיכון. לכסף שתצטרכו בקרוב."}
+};
+var pfIds=["pfNow","pfMonthly","pfYears","pfEmergency","pfTech","pfIsrael","pfDiv"];
+function pfRead(){
+  var v=function(id){return $("#"+id)};
+  return {now:+v("pfNow").value||0,monthly:+v("pfMonthly").value||0,years:+v("pfYears").value||1,
+    drop:+(document.querySelector("input[name=pfDrop]:checked")||{value:3}).value,
+    inc:+(document.querySelector("input[name=pfInc]:checked")||{value:3}).value,
+    em:v("pfEmergency").checked,tech:v("pfTech").checked,il:v("pfIsrael").checked,div:v("pfDiv").checked};
+}
+function pfWrite(s){
+  if(!s) return;
+  $("#pfNow").value=s.now;$("#pfMonthly").value=s.monthly;$("#pfYears").value=s.years;
+  var d=document.querySelector("input[name=pfDrop][value='"+s.drop+"']");if(d)d.checked=true;
+  var i=document.querySelector("input[name=pfInc][value='"+s.inc+"']");if(i)i.checked=true;
+  $("#pfEmergency").checked=!!s.em;$("#pfTech").checked=!!s.tech;$("#pfIsrael").checked=!!s.il;$("#pfDiv").checked=!!s.div;
+}
+function allocate(s){
+  var hz=s.years>=15?5:s.years>=8?4:s.years>=5?3:s.years>=3?2:1;
+  var score=(hz*2+s.drop*2+s.inc)/5;
+  if(s.years<3) score=Math.min(score,1.5);
+  if(s.drop===1) score=Math.min(score,2);
+  score=Math.max(1,Math.min(5,score));
+  var stock=Math.round((.15+score*.15)*20)/20; // 0.30 .. 0.90
+  if(s.years<2) stock=Math.min(stock,.2);
+  var w={},rest=1-stock;
+  var parts={us:.55,world:.25};
+  if(s.tech){parts.tech=.18;parts.us-=.10;parts.world-=.05}
+  if(s.il){parts.il=.15;parts.world-=.07;parts.us-=.05}
+  if(s.div){parts.div=.15;parts.us-=.10}
+  var sum=0;for(var k in parts){parts[k]=Math.max(parts[k],0);sum+=parts[k]}
+  for(k in parts) w[k]=stock*parts[k]/sum;
+  var cashShare=s.years<3?.6:s.years<6?.3:.15;
+  w.bond=rest*(1-cashShare);w.cash=rest*cashShare;
+  var names=["מאוד שמרני","שמרני","מאוזן","צמיחה","אגרסיבי"];
+  return {w:w,stock:stock,score:score,profile:names[Math.min(4,Math.round(score)-1)]};
+}
+function fv(now,monthly,r,years){
+  var out=[],v=now,dep=now;out.push({y:0,v:v,dep:dep});
+  var mr=Math.pow(1+r,1/12)-1;
+  for(var y=1;y<=years;y++){for(var m=0;m<12;m++){v=v*(1+mr)+monthly;dep+=monthly}out.push({y:y,v:v,dep:dep})}
+  return out;
+}
+function renderPf(){
+  var s=pfRead();store.set("pf",s);
+  $("#pfYearsOut").textContent=s.years===1?"שנה אחת":s.years+" שנים";
+  var a=allocate(s),w=a.w,keys=Object.keys(w).filter(function(k){return w[k]>0.004});
+  // order: biggest first
+  keys.sort(function(x,y){return w[y]-w[x]});
+  $("#pfProfile").textContent=a.profile;
+  $("#pfSplit").textContent=Math.round(a.stock*100)+"/"+Math.round((1-a.stock)*100);
+  $("#pfBar").innerHTML=keys.map(function(k){return "<i style='flex:"+w[k]+";background:"+ASSETS[k].color+"' title='"+ASSETS[k].name+"'></i>"}).join("");
+  // pct rounding to 100
+  var pct=keys.map(function(k){return Math.round(w[k]*100)});var diff=100-pct.reduce(function(x,y){return x+y},0);pct[0]+=diff;
+  $("#pfTable").innerHTML=keys.map(function(k,i){var A=ASSETS[k];
+    return "<tr><td><i class='sw' style='background:"+A.color+"'></i><b>"+A.name+"</b> <span class='muted ltr'>"+A.tk+"</span><span class='why'>"+A.why+"</span></td><td class='num'>"+pct[i]+"%</td><td class='num'>"+ils(s.now*w[k])+"</td><td class='num'>"+ils(s.monthly*w[k])+"</td></tr>"}).join("");
+  var warn="";
+  if(!s.em) warn+="<div class='callout warn' style='margin-top:8px'>לפני שקונים מניות: כדאי לשים בצד 3 חודשי הוצאות במקום נזיל. ככה ירידה בשוק לא תכריח אתכם למכור בהפסד.</div>";
+  if(s.years<3) warn+="<div class='callout' style='margin-top:8px'>אופק של פחות מ-3 שנים קצר מדי לרוב התיק במניות. לכן רוב הכסף כאן הולך לאג״ח ולמזומן.</div>";
+  $("#pfWarn").innerHTML=warn;
+  // returns
+  var r=0,worst=0;keys.forEach(function(k){r+=w[k]*ASSETS[k].ret;worst+=w[k]*ASSETS[k].worst});
+  var mid=fv(s.now,s.monthly,r,s.years),lo=fv(s.now,s.monthly,Math.max(r-.02,0),s.years),hi=fv(s.now,s.monthly,r+.02,s.years);
+  var end=mid[mid.length-1];
+  $("#pfHorizon").textContent="בעוד "+(s.years===1?"שנה":s.years+" שנים");
+  $("#pfKpis").innerHTML=
+    kpi("תשואה שנתית צפויה",nf1.format(r*100)+"%")+
+    kpi("הפקדתם בסך הכול",ils(end.dep))+
+    kpi("שווי בתרחיש ממוצע",ils(end.v),"up")+
+    kpi("שנה גרועה, בערך",nf.format(worst*100)+"% ("+ils((s.now)*worst)+")","down");
+  drawPf(mid,lo,hi);
+}
+function kpi(k,v,cls){return "<div class='kpi'><div class='k'>"+k+"</div><div class='v num "+(cls||"")+"'>"+v+"</div></div>"}
+function niceMax(v){if(v<=0)return 1;var p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;var m=n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10;return m*p}
+function drawPf(mid,lo,hi){
+  var W=640,H=260,pl=8,pr=58,pt=12,pb=28,n=mid.length-1||1;
+  var max=niceMax(hi[hi.length-1].v);
+  var x=function(i){return W-pr-(i/n)*(W-pl-pr)}; // RTL: time flows right→left
+  var y=function(v){return pt+(1-v/max)*(H-pt-pb)};
+  var line=function(arr,key){return arr.map(function(p,i){return (i?"L":"M")+x(i).toFixed(1)+" "+y(p[key]).toFixed(1)}).join(" ")};
+  var area=function(arr,key){return line(arr,key)+" L"+x(n).toFixed(1)+" "+y(0)+" L"+x(0).toFixed(1)+" "+y(0)+"Z"};
+  var g="";
+  for(var t=0;t<=4;t++){var v=max*t/4,yy=y(v);g+="<line x1='"+pl+"' x2='"+(W-pr)+"' y1='"+yy+"' y2='"+yy+"' stroke='var(--line)' stroke-width='1'/><text x='"+(W-pr+8)+"' y='"+(yy+4)+"' font-size='11' fill='var(--muted)' text-anchor='start'>"+short(v)+"</text>"}
+  var step=n<=10?1:n<=20?5:10,xl="";
+  for(var i=0;i<=n;i+=step){xl+="<text x='"+x(i)+"' y='"+(H-8)+"' font-size='11' fill='var(--muted)' text-anchor='middle'>"+(i===0?"היום":i)+"</text>"}
+  var ex=x(n),ey=y(mid[n].v);
+  $("#pfChart").innerHTML="<svg viewBox='0 0 "+W+" "+H+"' role='img' aria-label='תחזית צמיחה של התיק לאורך השנים'>"+g+
+    "<path d='"+area(mid,"v")+"' fill='var(--accent)' fill-opacity='.22'/>"+
+    "<path d='"+area(mid,"dep")+"' fill='var(--c7)' fill-opacity='.35'/>"+
+    "<path d='"+line(mid,"v")+"' fill='none' stroke='var(--accent)' stroke-width='2.5'/>"+
+    "<path d='"+line(lo,"v")+"' fill='none' stroke='var(--muted)' stroke-width='1.3' stroke-dasharray='4 4'/>"+
+    "<path d='"+line(hi,"v")+"' fill='none' stroke='var(--muted)' stroke-width='1.3' stroke-dasharray='4 4'/>"+
+    "<circle cx='"+ex+"' cy='"+ey+"' r='4.5' fill='var(--accent)' stroke='var(--surface)' stroke-width='2'/>"+xl+"</svg>"+
+    "<p class='note' style='margin:6px 0 0'>טווח: "+ils(lo[n].v)+" בתרחיש פסימי, "+ils(hi[n].v)+" באופטימי. ציר השנים רץ מימין לשמאל.</p>";
+}
+document.querySelectorAll("#pfForm input").forEach(function(el){el.addEventListener("input",renderPf);el.addEventListener("change",renderPf)});
+function b64e(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function b64d(s){try{s=s.replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(decodeURIComponent(escape(atob(s))))}catch(e){return null}}
+function loadPfShare(d){var s=b64d(d);if(s&&typeof s==="object"){pfWrite(s);renderPf();toast("נטען התיק ששלחו לכם");history.replaceState(null,"","#portfolio")}}
+$("#sharePf").onclick=function(){share(baseUrl()+"#portfolio&d="+b64e(pfRead()),"ככה בניתי את התיק שלי. תשנה לפי הכסף שלך")};
+pfWrite(store.get("pf",null));renderPf();
+
+/* ---------- work hours ---------- */
+var EXP_DEFAULT=[{n:"שכירות / עזרה בבית",v:2500},{n:"אוכל",v:1200},{n:"תחבורה ודלק",v:400},{n:"טלפון ואינטרנט",v:120},{n:"בילויים וביזבוזים",v:900},{n:"אחר",v:300}];
+var exps=store.get("exps",EXP_DEFAULT);
+var EXP_COLORS=["var(--c1)","var(--c5)","var(--c6)","var(--c4)","var(--c8)","var(--c7)","var(--c1)","var(--c5)"];
+function renderExpInputs(){
+  var box=$("#expList");box.innerHTML="";
+  exps.forEach(function(e,i){
+    var r=document.createElement("div");r.className="exp-row";
+    r.innerHTML="<input type='text' aria-label='שם ההוצאה' id='expn"+i+"' value='"+esc(e.n)+"'><div class='inp'><input type='number' inputmode='numeric' min='0' step='50' aria-label='סכום חודשי' id='expv"+i+"' value='"+(+e.v||0)+"'><span>₪</span></div><button class='icon-btn' type='button' aria-label='מחיקת "+esc(e.n)+"'>✕</button>";
+    r.querySelector("input[type=text]").oninput=function(){exps[i].n=this.value;renderWork()};
+    r.querySelector("input[type=number]").oninput=function(){exps[i].v=+this.value||0;renderWork()};
+    r.querySelector("button").onclick=function(){exps.splice(i,1);renderExpInputs();renderWork()};
+    box.appendChild(r);
+  });
+}
+$("#addExp").onclick=function(){exps.push({n:"הוצאה חדשה",v:0});renderExpInputs();renderWork();var l=document.getElementById("expn"+(exps.length-1));if(l){l.focus();l.select()}};
+var wkSaved=store.get("wk",null);
+if(wkSaved){["wkRate","wkHours","wkNet","wkInvest","wkGoal"].forEach(function(id){if(wkSaved[id]!=null)$("#"+id).value=wkSaved[id]});$("#buyPrice").value=wkSaved.buyPrice||4500}
+function hrs(h){return h<1?Math.round(h*60)+" דקות":nf1.format(h)+" שעות"}
+function renderWork(){
+  var rate=+$("#wkRate").value||0,wh=+$("#wkHours").value||0,net=(+$("#wkNet").value||88)/100,inv=+$("#wkInvest").value||0,goal=+$("#wkGoal").value||0;
+  store.set("exps",exps);store.set("wk",{wkRate:rate,wkHours:wh,wkNet:net*100,wkInvest:inv,wkGoal:goal,buyPrice:+$("#buyPrice").value||0});
+  $("#wkNetOut").textContent=Math.round(net*100)+"%";
+  var mh=wh*52/12, gross=rate*mh, netM=gross*net, netH=rate*net;
+  var expTotal=exps.reduce(function(a,e){return a+(+e.v||0)},0);
+  var free=netM-expTotal, after=free-inv;
+  $("#wkInvestEcho").textContent=ils(inv);
+  if(netH<=0){$("#wkHoursNeeded").textContent="—";return}
+  var invH=inv/netH;
+  $("#wkHoursNeeded").textContent=hrs(invH)+" בחודש";
+  $("#wkHoursSub").textContent="בערך "+nf1.format(invH/(wh/5||8))+" ימי עבודה. כל שעה שלכם שווה "+ils(netH)+" נטו.";
+  $("#wkKpis").innerHTML=kpi("נטו בחודש",ils(netM))+kpi("הוצאות",ils(expTotal))+kpi("נשאר אחרי הוצאות",ils(free),free>=0?"up":"down")+kpi("נשאר אחרי השקעה",ils(after),after>=0?"up":"down");
+  var verdict="";
+  if(free<=0) verdict="<div class='callout warn'>ההוצאות גבוהות מההכנסה ב-"+ils(-free)+". לפני השקעה צריך לסגור את הפער: להוסיף "+hrs(-free/netH)+" עבודה בחודש או לקצץ.</div>";
+  else if(after<0) verdict="<div class='callout warn'>כדי להשקיע "+ils(inv)+" חסרים "+ils(-after)+" בחודש. אפשר להשקיע עכשיו עד "+ils(free)+", או להוסיף "+hrs(-after/netH)+" עבודה בחודש.</div>";
+  else{
+    var r=.07,mr=Math.pow(1+r,1/12)-1,f=function(y){var v=0;for(var m=0;m<y*12;m++)v=v*(1+mr)+inv;return v};
+    var months=goal>0&&inv>0?(function(){var v=0,m=0;while(v<goal&&m<1200){v=v*(1+mr)+inv;m++}return m})():0;
+    verdict="<div class='callout ok'>זה אפשרי. אחרי ההשקעה נשארים לכם "+ils(after)+" בחודש."+
+      (months?" ליעד של "+ils(goal)+" תגיעו בעוד כ-"+(months<24?months+" חודשים":nf1.format(months/12)+" שנים")+" ("+hrs(goal/netH)+" עבודה בסך הכול).":"")+
+      "</div><p class='note' style='margin:10px 0 0'>אם תשקיעו "+ils(inv)+" כל חודש בתשואה ממוצעת של 7% בשנה: אחרי 10 שנים כ-<b class='num'>"+ils(f(10))+"</b>, אחרי 20 שנים כ-<b class='num'>"+ils(f(20))+"</b>, אחרי 30 שנים כ-<b class='num'>"+ils(f(30))+"</b>. הנחה, לא הבטחה.</p>";
+  }
+  $("#wkVerdict").innerHTML=verdict;
+  // hours grid
+  var cats=[{n:"מסים וניכויים",h:(gross-netM)/rate,c:"var(--muted)"}];
+  exps.forEach(function(e,i){if(+e.v>0)cats.push({n:e.n||"הוצאה",h:(+e.v)/netH,c:EXP_COLORS[i%EXP_COLORS.length]})});
+  if(inv>0) cats.push({n:"השקעה",h:invH,c:"var(--accent)"});
+  var used=cats.reduce(function(a,c){return a+c.h},0);
+  if(mh-used>0.5) cats.push({n:"נשאר חופשי",h:mh-used,c:"var(--up)",free:true});
+  var total=Math.max(Math.round(mh),1),cells=[],cum=0;
+  cats.forEach(function(c){var start=Math.round(cum);cum+=c.h;var endc=Math.min(Math.round(cum),total);for(var j=start;j<endc;j++)cells.push(c)});
+  var html="";for(var j=0;j<total;j++){var c=cells[j];html+="<i style='background:"+(c?c.c:"var(--sunk)")+";"+(c&&c.free?"opacity:.45":"")+"'></i>"}
+  if(used>mh){var over=Math.round(used-mh);for(j=0;j<Math.min(over,400);j++)html+="<i style='background:transparent;border:1.5px dashed var(--down)'></i>"}
+  $("#wkGrid").innerHTML=html;
+  $("#wkLegend").innerHTML=cats.map(function(c){return "<span><i class='sw' style='background:"+c.c+";"+(c.free?"opacity:.45":"")+"'></i>"+esc(c.n)+"</span>"}).join("")+(used>mh?"<span><i class='sw' style='border:1.5px dashed var(--down)'></i>שעות שחסרות</span>":"");
+  $("#wkList").innerHTML="<div><span class='muted'>שעות עבודה בחודש</span><b class='num'>"+nf.format(mh)+"</b></div>"+cats.filter(function(c){return !c.free}).map(function(c){return "<div><span>"+esc(c.n)+"</span><span class='num'>"+hrs(c.h)+"</span></div>"}).join("");
+  // purchase
+  var price=+$("#buyPrice").value||0,ph=price/netH,in10=price*Math.pow(1.07,10);
+  $("#buyOut").innerHTML=price>0?"זה <b class='num'>"+hrs(ph)+"</b> של עבודה (בערך "+nf1.format(ph/(wh/5||8))+" ימים). אם במקום זה תשקיעו את הסכום ל-10 שנים ב-7% בשנה, הוא עשוי להיות בערך <b class='num'>"+ils(in10)+"</b>.":"";
+}
+document.querySelectorAll("#wkForm input:not([id^=exp]), #buyPrice").forEach(function(el){el.addEventListener("input",renderWork)});
+renderExpInputs();renderWork();
+
+route();
+})();
+</script>
+</body>
+</html>
