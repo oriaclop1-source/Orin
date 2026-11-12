@@ -30,8 +30,48 @@ STOCKS = {
     "BA": "בואינג", "CAT": "קטרפילר", "UBER": "אובר", "SHOP": "שופיפיי", "PYPL": "פייפאל", "COIN": "קוינבייס",
     "PANW": "פאלו אלטו", "CRWD": "קראודסטרייק", "ANET": "אריסטה", "NOW": "סרביסנאו", "ISRG": "אינטואיטיב סרג'יקל",
     "TEVA": "טבע", "ESLT": "אלביט מערכות", "CHKP": "צ'ק פוינט", "NICE": "נייס", "MNDY": "מאנדיי",
-    "WIX": "וויקס", "GLBE": "גלובל-אי", "CYBR": "סייברארק",
+    "WIX": "וויקס", "GLBE": "גלובל-אי",
+    # Israeli companies traded in the US
+    "TSEM": "טאואר", "NVMI": "נובה", "CAMT": "קמטק", "FVRR": "פייבר", "LMND": "למונייד", "PAYO": "פיוניר",
+    "ZIM": "צים", "INMD": "אינמוד", "SEDG": "סולאראדג'", "RDWR": "רדוור", "KRNT": "קורנית",
+    "CEVA": "סיווה", "FROG": "ג'יפרוג", "CLBT": "סלברייט", "ORA": "אורמת", "ICL": "כיל",
+    # chips & hardware
+    "ADI": "אנלוג דיבייסס", "AMAT": "אפלייד מטריאלס", "LRCX": "לאם ריסרץ'", "KLAC": "KLA", "MRVL": "מארוול",
+    "ARM": "ARM", "SMCI": "סופר מיקרו", "DELL": "דל", "HPQ": "HP", "IBM": "IBM", "CSCO": "סיסקו", "TXN": "טקסס אינסטרומנטס",
+    "ON": "און סמיקונדקטור", "VRT": "ורטיב", "IONQ": "איון-קיו",
+    # software & internet
+    "SNOW": "סנופלייק", "DDOG": "דאטהדוג", "NET": "קלאודפלייר", "ZS": "זיסקיילר", "MDB": "מונגו-די-בי",
+    "TEAM": "אטלסיאן", "WDAY": "וורקדיי", "INTU": "אינטואיט", "FTNT": "פורטינט", "OKTA": "אוקטה", "ACN": "אקסנצ'ר",
+    "APP": "אפלוביין", "SPOT": "ספוטיפיי", "RBLX": "רובלוקס", "SNAP": "סנאפ", "PINS": "פינטרסט", "ABNB": "איירביאנבי",
+    "BKNG": "בוקינג", "DASH": "דורדאש", "LYFT": "ליפט", "MELI": "מרקדו ליברה", "SE": "סי לימיטד",
+    "BABA": "עליבאבא", "PDD": "PDD (טמו)", "JD": "JD.com", "MSTR": "מייקרוסטרטג'י",
+    # fintech & finance
+    "NU": "נובנק", "SOFI": "סופיי", "HOOD": "רובינהוד", "AFRM": "אפירם", "XYZ": "בלוק (סקוור)", "C": "סיטיגרופ",
+    "WFC": "וולס פרגו", "MS": "מורגן סטנלי", "SCHW": "צ'רלס שוואב", "AXP": "אמריקן אקספרס", "BLK": "בלאקרוק",
+    "SPGI": "S&P גלובל", "MCO": "מודי'ס", "PGR": "פרוגרסיב", "CB": "צ'אב",
+    # cars & transport
+    "F": "פורד", "GM": "ג'נרל מוטורס", "RIVN": "ריביאן", "LCID": "לוסיד", "NIO": "ניו", "TM": "טויוטה",
+    "UPS": "UPS", "FDX": "פדקס", "UNP": "יוניון פסיפיק", "RKLB": "רוקט לאב",
+    # health
+    "NVO": "נובו נורדיסק", "AZN": "אסטרהזנקה", "AMGN": "אמג'ן", "GILD": "גיליאד", "REGN": "רג'נרון",
+    "VRTX": "ורטקס", "BMY": "בריסטול מאיירס", "ABT": "אבוט", "TMO": "תרמו פישר", "DHR": "דנהר", "MDT": "מדטרוניק",
+    "SYK": "סטרייקר", "BSX": "בוסטון סיינטיפיק", "ZTS": "זואטיס", "MRNA": "מודרנה", "CVS": "CVS", "CI": "סיגנה",
+    "ELV": "אלבנס",
+    # industry & defense
+    "GE": "ג'נרל אלקטריק", "HON": "האניוול", "DE": "ג'ון דיר", "MMM": "3M", "LMT": "לוקהיד מרטין", "RTX": "RTX (רייתאון)",
+    "NOC": "נורת'רופ גראמן", "GD": "ג'נרל דיינמיקס",
+    # consumer
+    "LOW": "לואו'ס", "TGT": "טארגט", "TJX": "TJX", "LULU": "לולולמון", "CMG": "צ'יפוטלה", "YUM": "יאם! (KFC, פיצה האט)",
+    "MO": "אלטריה", "PM": "פיליפ מוריס", "CL": "קולגייט", "MDLZ": "מונדלז", "KHC": "קראפט היינץ", "EL": "אסתי לאודר",
+    "SONY": "סוני", "GME": "גיימסטופ",
+    # telecom, energy, utilities, real estate, materials
+    "T": "AT&T", "VZ": "וריזון", "TMUS": "טי-מובייל", "CMCSA": "קומקאסט", "COP": "קונוקו פיליפס", "OXY": "אוקסידנטל",
+    "SLB": "שלומברז'ה", "NEE": "נקסטרה אנרג'י", "DUK": "דיוק אנרג'י", "SO": "סאות'רן", "ENPH": "אנפייז", "FSLR": "פירסט סולאר",
+    "AMT": "אמריקן טאואר", "PLD": "פרולוג'יס", "O": "ריאלטי אינקם", "LIN": "לינדה", "FCX": "פריפורט", "NEM": "ניומונט",
+    "SAP": "SAP",
 }
+ISRAELI = {"TEVA", "ESLT", "CHKP", "NICE", "MNDY", "WIX", "GLBE", "TSEM", "NVMI", "CAMT", "FVRR", "LMND",
+           "PAYO", "ZIM", "INMD", "SEDG", "RDWR", "KRNT", "CEVA", "FROG", "CLBT", "ORA", "ICL"}
 # ETFs get a simple scenario model instead of an earnings-based one.
 ETFS = {
     "SPY": ("S&P 500", "stock"), "VOO": ("S&P 500", "stock"), "QQQ": ("נאסד״ק 100", "stock"),
@@ -164,7 +204,7 @@ def main():
         m = stock_model(price, i)
         div_rate = num(i.get("dividendRate"))
         out["stocks"].append({
-            "s": sym, "tv": tv_symbol(sym, i), "he": he, "name": i.get("shortName") or sym,
+            "s": sym, "tv": tv_symbol(sym, i), "he": he, "name": i.get("shortName") or sym, "il": sym in ISRAELI,
             "sector": SECTORS.get(i.get("sector"), i.get("sector") or "אחר"),
             "price": round(price, 2), "chg": num(i.get("regularMarketChangePercent")),
             "mcap": num(i.get("marketCap")), "pe": num(i.get("trailingPE")), "fpe": num(i.get("forwardPE")),
@@ -180,7 +220,7 @@ def main():
             "rec": num(i.get("recommendationMean")),
             **m, "score": score(price, m, i),
         })
-        time.sleep(0.4)
+        time.sleep(0.3)
 
     for sym, (he, kind) in ETFS.items():
         i = info_for(sym)

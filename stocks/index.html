@@ -831,7 +831,7 @@ function onData(){
   $("#dataStamp").textContent="עודכן "+new Intl.DateTimeFormat("he-IL",{timeZone:"Asia/Jerusalem",day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"}).format(dt);
   $("#symList").innerHTML=DATA.stocks.concat(DATA.etfs).map(function(d){return "<option value='"+d.s+"'>"+esc(d.he)+"</option>"}).join("");
   var secs={};DATA.stocks.forEach(function(d){secs[d.sector]=1});
-  $("#stSector").innerHTML="<option value=''>כל התחומים</option>"+Object.keys(secs).sort().map(function(x){return "<option>"+esc(x)+"</option>"}).join("");
+  $("#stSector").innerHTML="<option value=''>כל התחומים</option><option value='__il'>ישראליות</option>"+Object.keys(secs).sort().map(function(x){return "<option>"+esc(x)+"</option>"}).join("");
   renderPicks();renderPf();
   if(inited.stocks) renderStocks();
   if(inited.mine) renderMine();
@@ -849,7 +849,7 @@ INIT.stocks=function(){
 function renderStocks(){
   if(!DATA) return;
   var q=$("#stQ").value.trim().toLowerCase(),sec=$("#stSector").value,sort=$("#stSort").value;
-  var list=DATA.stocks.filter(function(d){return (!sec||d.sector===sec)&&(!q||(d.s+" "+d.he+" "+d.name).toLowerCase().indexOf(q)>-1)});
+  var list=DATA.stocks.filter(function(d){return (!sec||d.sector===sec||(sec==="__il"&&d.il))&&(!q||(d.s+" "+d.he+" "+d.name).toLowerCase().indexOf(q)>-1)});
   var key={score:function(d){return -d.score},up:function(d){return -(d.target/d.price)},mcap:function(d){return -(d.mcap||0)},
     fpe:function(d){return d.fpe>0?d.fpe:1e9},g:function(d){return -(d.epsG==null?-9:d.epsG)},div:function(d){return -(d.div||0)},ch52:function(d){return -(d.ch52==null?-9:d.ch52)}}[sort];
   list.sort(function(a,b){return key(a)-key(b)});
@@ -1222,7 +1222,7 @@ var GLOSS=[
   [/ריבית דריבית|ריבית מצטברת/i,"<b>ריבית דריבית</b>: הרווח מרוויח בעצמו. 7% בשנה מכפיל את הכסף בערך כל 10 שנים, ולכן הזמן בשוק חשוב יותר מהתזמון."]
 ];
 var SECTOR_WORDS=[["טכנולוג","טכנולוגיה"],["בריאות","בריאות"],["תרופ","בריאות"],["אנרגי","אנרגיה"],["נפט","אנרגיה"],["בנק","פיננסים"],["פיננס","פיננסים"],["צריכה","צריכה"],["תעשי","תעשייה"],["תקשורת","תקשורת ומדיה"]];
-var IL_SYMS=["TEVA","ESLT","CHKP","NICE","MNDY","WIX","GLBE","CYBR"];
+var IL_SYMS=["TEVA","ESLT","CHKP","NICE","MNDY","WIX","GLBE"];
 function nameKey(t){return t.replace(/\(.*?\)/g,"").replace(/[׳'"״\-\s]/g,"").toLowerCase()}
 function findStocks(q){
   if(!DATA) return [];
@@ -1231,7 +1231,7 @@ function findStocks(q){
     var sym=d.s.replace("-",".");
     var re=new RegExp("(^|[^A-Z])("+d.s.replace(/[-.]/,"[-.]?")+")([^A-Z]|$)");
     var heK=nameKey(d.he);
-    var hit=(re.test(raw)&&(d.s.length>1||/\bV\b/.test(raw)))||(heK.length>=3&&norm.indexOf(heK)>-1)||(d.he.split(" ")[0].length>=4&&q.indexOf(d.he.split(" ")[0])>-1);
+    var hit=(re.test(raw)&&(d.s.length>1||raw.trim().replace(/^\$/,"")===d.s))||(heK.length>=3&&norm.indexOf(heK)>-1)||(d.he.split(" ")[0].length>=4&&q.indexOf(d.he.split(" ")[0])>-1);
     if(hit&&found.indexOf(d)<0) found.push(d);
   });
   return found;
@@ -1290,7 +1290,7 @@ function answer(q){
   }
   // rankings
   var pool=DATA.stocks.slice(),label="";
-  if(/ישראל/.test(t)){pool=pool.filter(function(d){return IL_SYMS.indexOf(d.s)>-1});label=" · ישראליות"}
+  if(/ישראל/.test(t)){pool=pool.filter(function(d){return d.il||IL_SYMS.indexOf(d.s)>-1});label=" · ישראליות"}
   SECTOR_WORDS.forEach(function(w){if(t.indexOf(w[0])>-1){pool=pool.filter(function(d){return d.sector.indexOf(w[1])>-1});label=" · "+w[1]}});
   var top=function(sorter,fmt,title){var l=pool.slice().sort(sorter).slice(0,5);return l.length?title+label+":"+topTable(l,null,fmt)+"<span class='muted'>לחצו על שם לפרטים.</span>":"לא מצאתי מניות"+label+"."};
   if(!hits.length||/הכי|הטובות|מומלצ|כדאי|להשקיע ב|מה לקנות|איזה מני/.test(t)){
