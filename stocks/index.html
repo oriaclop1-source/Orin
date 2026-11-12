@@ -220,6 +220,26 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 .scen .v{font-family:var(--f-display);font-weight:600;font-size:1.3rem}
 .scen .d{font-size:.85rem}
 @media (max-width:560px){.scen{grid-template-columns:1fr}.st-table .hide-s,.st-table .chg{display:none}.st-table td,.st-table th{padding-inline:4px;font-size:.85rem}.st-table td:first-child{min-width:110px}}
+/* personal assistant */
+.bot-fab{position:fixed;z-index:40;inset-inline-start:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:inline-flex;gap:8px;align-items:center;background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:12px 18px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(15,27,45,.25);min-height:48px}
+.bot-fab:hover{filter:brightness(1.15)}
+.bot{position:fixed;z-index:45;inset-inline-start:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(400px,calc(100vw - 32px));height:min(600px,calc(100vh - 100px));background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
+.bot[hidden]{display:none!important}
+.bot header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--mast);color:var(--mast-ink)}
+.bot header small{display:block;color:var(--mast-muted);font-size:.75rem}
+.bot header .icon-btn{color:var(--mast-ink)}
+.bot-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:9px 12px;border-radius:12px;font-size:.93rem;line-height:1.5;overflow-wrap:anywhere}
+.msg.me{align-self:flex-start;background:var(--ink);color:var(--bg);border-end-start-radius:4px}
+.msg.bot-a{align-self:flex-end;background:var(--sunk);border-end-end-radius:4px}
+.msg.bot-a table{font-size:.85rem;margin-top:6px}
+.msg.bot-a td,.msg.bot-a th{padding:4px 6px}
+.msg.bot-a .btn{min-height:34px;padding:4px 10px;margin-top:6px;font-size:.85rem}
+.bot-sugg{display:flex;gap:6px;overflow-x:auto;padding:0 14px 8px;scrollbar-width:none}
+.bot-sugg .chip{flex:none}
+.bot-in{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
+.bot-in input{flex:1}
+footer{padding-bottom:84px}
 .toast{position:fixed;inset-inline:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin-inline:auto;width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:500;z-index:50;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
 .toast.show{opacity:1;transform:none}
 
@@ -591,6 +611,18 @@ footer{border-top:1px solid var(--line);padding-block:20px;color:var(--muted);fo
 </footer>
 
 <div class="toast" id="toast" role="status"></div>
+
+<button class="bot-fab" id="botFab" type="button" aria-expanded="false" aria-controls="botPanel">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+  שאלו את העוזר
+</button>
+<section class="bot" id="botPanel" hidden aria-label="העוזר האישי">
+  <header><div><b>העוזר</b><small>עונה מהנתונים באתר · לא ייעוץ השקעות</small></div><button class="icon-btn" id="botClose" type="button" aria-label="סגירה">✕</button></header>
+  <div class="bot-log" id="botLog" aria-live="polite"></div>
+  <div class="bot-sugg" id="botSugg"></div>
+  <form class="bot-in" id="botForm"><input id="botQ" class="cell" type="text" autocomplete="off" placeholder="למשל: מה היעד של אנבידיה?" aria-label="שאלה לעוזר"><button class="btn primary" type="submit">שליחה</button></form>
+</section>
+
 
 <script>
 (function(){
@@ -1176,6 +1208,116 @@ function renderWork(){
 }
 document.querySelectorAll("#wkForm input:not([id^=exp]), #buyPrice").forEach(function(el){el.addEventListener("input",renderWork)});
 renderExpInputs();renderWork();
+
+/* ---------- personal assistant: answers from the site's own data ---------- */
+var GLOSS=[
+  [/מכפיל רווח|p\/?e\b|מכפיל/i,"<b>מכפיל רווח (P/E)</b>: כמה דולר משלמים על כל דולר רווח שנתי. מכפיל 20 = משלמים פי 20 מהרווח. <b>מכפיל צפוי</b> מחושב על הרווח של השנה הבאה. מכפיל נמוך יכול להעיד על מניה זולה, או על חברה שהשוק לא מאמין בה."],
+  [/בטא|beta/i,"<b>בטא</b>: כמה המניה זזה ביחס לשוק. בטא 1 = כמו השוק, 2 = כפול (עולה וגם יורדת חזק יותר), 0.6 = רגועה יותר."],
+  [/קרן סל|etf|קרן מחקה|מדד/i,"<b>קרן סל / מדד</b>: קונים בבת אחת סל של הרבה מניות, למשל 500 החברות הגדולות בארה״ב (VOO). הסיכון קטן יותר ממניה בודדת, ודמי הניהול נמוכים."],
+  [/דיבידנד/i,"<b>דיבידנד</b>: חלק מהרווח שהחברה מחלקת לבעלי המניות במזומן, בדרך כלל כל רבעון. 3% דיבידנד = על כל ₪1,000 מקבלים כ-₪30 בשנה."],
+  [/תיקון|שוק דובי|דובי|קריסה/i,"<b>תיקון</b> = ירידה של 10% מהשיא. <b>שוק דובי</b> = ירידה של 20% ומעלה. תיקונים קורים בממוצע פעם בשנה-שנתיים, שוק דובי בערך פעם ב-5-6 שנים."],
+  [/אג״ח|אג"ח|אגח|אגרות חוב/i,"<b>אג״ח</b>: הלוואה לממשלה או לחברה תמורת ריבית. פחות תנודתי ממניות, ולכן מרכך ירידות בתיק."],
+  [/מחיר יעד|יעד/i,"<b>מחיר יעד</b>: הערכה למחיר בעוד שנה. באתר הוא 60% ממוצע יעדי האנליסטים ו-40% הערכת שווי לפי הרווח הצפוי. זה לא הבטחה, ומחירי יעד טועים הרבה."],
+  [/דירוג/i,"<b>דירוג המודל (0-100)</b>: משלב את הפוטנציאל עד היעד, איכות (תשואה על ההון ושולי רווח), דעת האנליסטים, ומיקום המחיר בטווח השנתי. 70+ = חזק, 56-69 = חיובי, 45-55 = ניטרלי."],
+  [/ריבית דריבית|ריבית מצטברת/i,"<b>ריבית דריבית</b>: הרווח מרוויח בעצמו. 7% בשנה מכפיל את הכסף בערך כל 10 שנים, ולכן הזמן בשוק חשוב יותר מהתזמון."]
+];
+var SECTOR_WORDS=[["טכנולוג","טכנולוגיה"],["בריאות","בריאות"],["תרופ","בריאות"],["אנרגי","אנרגיה"],["נפט","אנרגיה"],["בנק","פיננסים"],["פיננס","פיננסים"],["צריכה","צריכה"],["תעשי","תעשייה"],["תקשורת","תקשורת ומדיה"]];
+var IL_SYMS=["TEVA","ESLT","CHKP","NICE","MNDY","WIX","GLBE","CYBR"];
+function nameKey(t){return t.replace(/\(.*?\)/g,"").replace(/[׳'"״\-\s]/g,"").toLowerCase()}
+function findStocks(q){
+  if(!DATA) return [];
+  var found=[],raw=q.toUpperCase(),norm=nameKey(q);
+  DATA.stocks.concat(DATA.etfs).forEach(function(d){
+    var sym=d.s.replace("-",".");
+    var re=new RegExp("(^|[^A-Z])("+d.s.replace(/[-.]/,"[-.]?")+")([^A-Z]|$)");
+    var heK=nameKey(d.he);
+    var hit=(re.test(raw)&&(d.s.length>1||/\bV\b/.test(raw)))||(heK.length>=3&&norm.indexOf(heK)>-1)||(d.he.split(" ")[0].length>=4&&q.indexOf(d.he.split(" ")[0])>-1);
+    if(hit&&found.indexOf(d)<0) found.push(d);
+  });
+  return found;
+}
+function stockCard(d){
+  if(!d.score&&d.score!==0) return "<b>"+esc(d.he)+"</b> <span class='ltr'>"+d.s+"</span>: קרן סל, מחיר "+usd(d.price)+". תרחיש לשנה: פסימי "+pctS(d.bear/d.price-1,0)+", רגיל "+pctS(d.target/d.price-1,0)+", אופטימי "+pctS(d.bull/d.price-1,0)+".";
+  var up=d.target/d.price-1,r=rate(d.score);
+  return "<b>"+esc(d.he)+"</b> <span class='ltr muted'>"+d.s+"</span> <span class='pill "+r[0]+"'>"+d.score+" · "+r[1]+"</span><br>"+
+    "מחיר "+usd(d.price)+" · <b>יעד שלנו "+usd(d.target)+" ("+pctS(up)+")</b><br>"+
+    "פסימי "+usd(d.bear,0)+" · אופטימי "+usd(d.bull,0)+"<br>"+
+    "מכפיל צפוי "+(d.fpe>0?nf1.format(d.fpe):"—")+" · צמיחת הכנסות "+pctS(d.revG,0)+" · בטא "+(d.beta!=null?nf1.format(d.beta):"—")+(d.div?" · דיבידנד "+pctS(d.div):"")+"<br>"+
+    (d.aMean&&d.aN>=3?"אנליסטים ("+d.aN+"): ממוצע "+usd(d.aMean,0)+"<br>":"")+
+    "<button class='btn' type='button' data-open='"+d.s+"'>כל הפרטים</button>";
+}
+function topTable(list,col,fmt){
+  return "<table><tbody>"+list.map(function(d){return "<tr><td><button class='st-name' type='button' data-open='"+d.s+"'>"+esc(d.he)+"</button></td><td class='num'>"+fmt(d)+"</td></tr>"}).join("")+"</tbody></table>";
+}
+function nums(q){return (q.replace(/,/g,"").match(/\d+(\.\d+)?/g)||[]).map(Number)}
+function answer(q){
+  var t=q.trim(),low=t.toLowerCase();
+  if(!t) return "";
+  // glossary: "מה זה ..."
+  if(/מה זה|מה הפירוש|מה ההבדל|תסביר|הסבר/.test(t)) for(var g=0;g<GLOSS.length;g++) if(GLOSS[g][0].test(t)) return GLOSS[g][1];
+  // market hours
+  if(/פתוח|נפתח|נסגר|שעות מסחר|מתי השוק/.test(t)) return $("#mktText").textContent+". שעות המסחר בוול סטריט: 16:30-23:00 שעון ישראל (שעה פחות בחלק מהשנה), שני עד שישי.";
+  // compound growth: "כמה יהיה לי אם אשקיע 1000 בחודש 20 שנה"
+  if(/כמה יהיה|כמה יצטבר|אם אשקיע|אם אחסוך/.test(t)){
+    var n=nums(t),amt=n[0]||1000,yrs=n[1]||10,monthly=/חודש/.test(t),r=.07,mr=Math.pow(1+r,1/12)-1,v=0;
+    if(monthly){for(var m=0;m<yrs*12;m++)v=v*(1+mr)+amt;return "אם תשקיעו "+ils(amt)+" בחודש במשך "+yrs+" שנים בתשואה ממוצעת של 7%: בערך <b>"+ils(v)+"</b>. מתוכם הפקדתם "+ils(amt*yrs*12)+" והשאר רווח. בתשואה של 5% זה יוצא "+ils(fvM(amt,yrs,.05))+", וב-9% "+ils(fvM(amt,yrs,.09))+"."}
+    v=amt*Math.pow(1+r,yrs);return ils(amt)+" חד פעמי ל-"+yrs+" שנים ב-7% בשנה: בערך <b>"+ils(v)+"</b> (ב-5%: "+ils(amt*Math.pow(1.05,yrs))+", ב-9%: "+ils(amt*Math.pow(1.09,yrs))+").";
+  }
+  // work hours
+  if(/שעות|לעבוד/.test(t)&&nums(t).length){
+    var rateH=+$("#wkRate").value||0,net=(+$("#wkNet").value||88)/100,nh=rateH*net,price=nums(t)[0];
+    if(nh>0) return ils(price)+" זה <b>"+hrs(price/nh)+"</b> עבודה, לפי שכר של "+ils(rateH)+" לשעה ו-"+Math.round(net*100)+"% נטו (אפשר לשנות בלשונית שעות עבודה).";
+  }
+  if(!DATA) return "הנתונים על המניות עוד נטענים. נסו שוב בעוד רגע.";
+  // my portfolio
+  if(/התיק שלי|התיק שלו|בתיק שלי/.test(t)){
+    var tot=0,sc=[0,0,0],rows=[];
+    mine.hold.forEach(function(x){var d=BY[x.s];if(!d||!x.q)return;var v=d.price*x.q;tot+=v;rows.push({d:d,v:v});[d.bear,d.target,d.bull].forEach(function(p,j){sc[j]+=x.q*(p-d.price)})});
+    if(!tot) return "עוד לא הכנסתם מניות בלשונית \"התיק שלי\". אחרי שתכניסו, אוכל לסכם אותו.";
+    rows.sort(function(a,b){return b.v-a.v});
+    return "התיק שלכם שווה בערך <b>"+usd(tot,0)+"</b> ("+ils(tot*(DATA.usdils||3.7))+"). הגדולה ביותר: "+esc(rows[0].d.he)+" ("+nf.format(rows[0].v/tot*100)+"%).<br>תרחישים לשנה: פסימי "+pctS(sc[0]/tot)+", רגיל "+pctS(sc[1]/tot)+", אופטימי "+pctS(sc[2]/tot)+"."+(mine.example?"<br><span class='muted'>(אלה עדיין נתוני הדוגמה)</span>":"");
+  }
+  var hits=findStocks(t);
+  // comparison
+  if(hits.length>=2&&/השוו|השווה|לעומת|מול|או | vs|עדיף|יותר טוב/i.test(t)){
+    var a=hits[0],b=hits[1],row=function(k,f){return "<tr><td>"+k+"</td><td class='num'>"+f(a)+"</td><td class='num'>"+f(b)+"</td></tr>"};
+    var better=(a.score||0)>=(b.score||0)?a:b;
+    return "<table><thead><tr><th></th><th>"+esc(a.he)+"</th><th>"+esc(b.he)+"</th></tr></thead><tbody>"+
+      row("דירוג",function(d){return d.score!=null?d.score:"—"})+row("פוטנציאל",function(d){return pctS(d.target/d.price-1,0)})+
+      row("פסימי",function(d){return pctS(d.bear/d.price-1,0)})+row("מכפיל צפוי",function(d){return d.fpe>0?nf1.format(d.fpe):"—"})+
+      row("צמיחה",function(d){return pctS(d.revG,0)})+row("בטא",function(d){return d.beta!=null?nf1.format(d.beta):"—"})+row("דיבידנד",function(d){return d.div?pctS(d.div):"—"})+
+      "</tbody></table>לפי המודל <b>"+esc(better.he)+"</b> בדירוג גבוה יותר. זה לא אומר שהיא תעלה יותר, רק שהמספרים שלה נראים טוב יותר כרגע.";
+  }
+  // rankings
+  var pool=DATA.stocks.slice(),label="";
+  if(/ישראל/.test(t)){pool=pool.filter(function(d){return IL_SYMS.indexOf(d.s)>-1});label=" · ישראליות"}
+  SECTOR_WORDS.forEach(function(w){if(t.indexOf(w[0])>-1){pool=pool.filter(function(d){return d.sector.indexOf(w[1])>-1});label=" · "+w[1]}});
+  var top=function(sorter,fmt,title){var l=pool.slice().sort(sorter).slice(0,5);return l.length?title+label+":"+topTable(l,null,fmt)+"<span class='muted'>לחצו על שם לפרטים.</span>":"לא מצאתי מניות"+label+"."};
+  if(!hits.length||/הכי|הטובות|מומלצ|כדאי|להשקיע ב|מה לקנות|איזה מני/.test(t)){
+    if(/זול|מכפיל נמוך|הכי זולה/.test(t)) return top(function(a,b){return (a.fpe>0?a.fpe:999)-(b.fpe>0?b.fpe:999)},function(d){return "מכפיל "+(d.fpe>0?nf1.format(d.fpe):"—")},"המניות עם המכפיל הצפוי הנמוך ביותר");
+    if(/דיבידנד/.test(t)) return top(function(a,b){return (b.div||0)-(a.div||0)},function(d){return pctS(d.div)},"הדיבידנד הגבוה ביותר");
+    if(/פוטנציאל|יעלו|עלייה|לעלות/.test(t)) return top(function(a,b){return b.target/b.price-a.target/a.price},function(d){return pctS(d.target/d.price-1,0)},"הפוטנציאל הגבוה ביותר לפי היעד שלנו");
+    if(/ירדו היום|נפלו היום|יורדות היום|ירדו|נפלו/.test(t)) return top(function(a,b){return (a.chg||0)-(b.chg||0)},function(d){return pctS((d.chg||0)/100)},"הירידות הגדולות בעדכון האחרון");
+    if(/עלו היום|עולות היום|עלו/.test(t)) return top(function(a,b){return (b.chg||0)-(a.chg||0)},function(d){return pctS((d.chg||0)/100)},"העליות הגדולות בעדכון האחרון");
+    if(/בטוח|יציב|סיכון נמוך|שמרני/.test(t)) return top(function(a,b){return (a.beta||1)-(b.beta||1)},function(d){return "בטא "+(d.beta!=null?nf1.format(d.beta):"—")},"המניות הכי פחות תנודתיות (בטא נמוכה)")+"<br>לסיכון נמוך באמת עדיפה קרן מדד רחבה כמו VOO.";
+    if(/הכי|הטובות|מומלצ|כדאי|מה לקנות|איזה מני|דירוג/.test(t)) return top(function(a,b){return b.score-a.score},function(d){return d.score+" · "+pctS(d.target/d.price-1,0)},"הדירוג הגבוה ביותר במודל")+"<br>זה מודל מספרים, לא ייעוץ. כדאי לפזר ולא לשים הכול במניה אחת.";
+  }
+  if(hits.length) return hits.slice(0,2).map(stockCard).join("<hr style='border:0;border-top:1px solid var(--line);margin:10px 0'>");
+  for(g=0;g<GLOSS.length;g++) if(GLOSS[g][0].test(t)) return GLOSS[g][1];
+  return "לא הבנתי עד הסוף. אני יודע לענות על:<br>• מניה ספציפית (\"מה עם טסלה?\")<br>• השוואה (\"אפל או מיקרוסופט?\")<br>• רשימות (\"הכי זולות\", \"דיבידנד\", \"ישראליות הכי טובות\")<br>• התיק שלך, שעות עבודה, ריבית דריבית ומושגים (\"מה זה בטא?\").";
+}
+function fvM(amt,yrs,r){var mr=Math.pow(1+r,1/12)-1,v=0;for(var m=0;m<yrs*12;m++)v=v*(1+mr)+amt;return v}
+var BOT_SUGG=["מה היעד של אנבידיה?","אפל או מיקרוסופט?","המניות הכי טובות לפי המודל","ישראליות הכי טובות","הכי זולות","דיבידנד גבוה","סכם את התיק שלי","כמה יהיה לי אם אשקיע 1000 בחודש 20 שנה","כמה שעות עבודה זה 3000","מה זה בטא?","מתי השוק נפתח?"];
+function botSay(html,who){var m=document.createElement("div");m.className="msg "+(who==="me"?"me":"bot-a");if(who==="me")m.textContent=html;else m.innerHTML=html;$("#botLog").appendChild(m);$("#botLog").scrollTop=1e9}
+function botAsk(q){botSay(q,"me");var a;try{a=answer(q)}catch(e){a="משהו השתבש בחישוב. נסו לנסח אחרת."}setTimeout(function(){botSay(a)},180)}
+$("#botSugg").innerHTML=BOT_SUGG.map(function(s){return "<button type='button' class='chip'>"+s+"</button>"}).join("");
+$("#botSugg").addEventListener("click",function(e){var b=e.target.closest(".chip");if(b)botAsk(b.textContent)});
+$("#botForm").addEventListener("submit",function(e){e.preventDefault();var q=$("#botQ").value;if(!q.trim())return;$("#botQ").value="";botAsk(q)});
+$("#botLog").addEventListener("click",function(e){var b=e.target.closest("[data-open]");if(!b)return;location.hash="stocks";var s=b.getAttribute("data-open");setTimeout(function(){if(BY[s]&&BY[s].score!=null)showDetail(s)},50)});
+function botOpen(open){$("#botPanel").hidden=!open;$("#botFab").hidden=open;$("#botFab").setAttribute("aria-expanded",open);if(open){if(!$("#botLog").children.length)botSay("היי! אני העוזר של האתר. שאלו אותי על מניה, בקשו השוואה או רשימה, או שאלו על התיק שלכם. אני עונה מהנתונים שבאתר, בלי ניחושים.");$("#botQ").focus()}}
+$("#botFab").onclick=function(){botOpen(true)};
+$("#botClose").onclick=function(){botOpen(false)};
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("#botPanel").hidden)botOpen(false)});
 
 route();
 })();
