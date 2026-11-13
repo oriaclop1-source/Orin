@@ -347,6 +347,7 @@ footer{padding-bottom:84px}
       <tbody id="stBody"><tr><td colspan="9" class="muted">טוען…</td></tr></tbody>
     </table>
   </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap"><span class="note" id="stCount"></span><button class="btn" type="button" id="stMore" hidden>הצג עוד 200</button></div>
   <p class="note">מחירי היעד הם תוצאה של נוסחה על נתונים פומביים (Yahoo Finance), לא ייעוץ ולא הבטחה. מחירים כאן מתעדכנים כמה פעמים ביום. מחיר חי רואים בגרף.</p>
 </section>
 
@@ -829,7 +830,7 @@ function onData(){
   BY={};DATA.stocks.forEach(function(d){BY[d.s]=d});DATA.etfs.forEach(function(d){BY[d.s]=d});
   var dt=new Date(DATA.updated);
   $("#dataStamp").textContent="עודכן "+new Intl.DateTimeFormat("he-IL",{timeZone:"Asia/Jerusalem",day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"}).format(dt);
-  $("#symList").innerHTML=DATA.stocks.concat(DATA.etfs).map(function(d){return "<option value='"+d.s+"'>"+esc(d.he)+"</option>"}).join("");
+  $("#symList").innerHTML=DATA.etfs.concat(DATA.stocks.slice().sort(function(a,b){return (b.mcap||0)-(a.mcap||0)}).slice(0,500)).map(function(d){return "<option value='"+d.s+"'>"+esc(d.he)+"</option>"}).join("");
   var secs={};DATA.stocks.forEach(function(d){secs[d.sector]=1});
   $("#stSector").innerHTML="<option value=''>כל התחומים</option><option value='__il'>ישראליות</option>"+Object.keys(secs).sort().map(function(x){return "<option>"+esc(x)+"</option>"}).join("");
   renderPicks();renderPf();
@@ -842,10 +843,12 @@ fetch("data.json",{cache:"no-cache"}).then(function(r){if(!r.ok)throw 0;return r
 
 /* ---------- stocks & targets view ---------- */
 INIT.stocks=function(){
-  ["stQ","stSector","stSort"].forEach(function(id){$("#"+id).addEventListener("input",renderStocks)});
+  ["stQ","stSector","stSort"].forEach(function(id){$("#"+id).addEventListener("input",function(){stLimit=100;renderStocks()})});
+  $("#stMore").onclick=function(){stLimit+=200;renderStocks()};
   $("#stBody").addEventListener("click",function(e){var tr=e.target.closest("tr[data-s]");if(tr)showDetail(tr.getAttribute("data-s"))});
   if(DATA) renderStocks();
 };
+var stLimit=100;
 function renderStocks(){
   if(!DATA) return;
   var q=$("#stQ").value.trim().toLowerCase(),sec=$("#stSector").value,sort=$("#stSort").value;
@@ -853,6 +856,10 @@ function renderStocks(){
   var key={score:function(d){return -d.score},up:function(d){return -(d.target/d.price)},mcap:function(d){return -(d.mcap||0)},
     fpe:function(d){return d.fpe>0?d.fpe:1e9},g:function(d){return -(d.epsG==null?-9:d.epsG)},div:function(d){return -(d.div||0)},ch52:function(d){return -(d.ch52==null?-9:d.ch52)}}[sort];
   list.sort(function(a,b){return key(a)-key(b)});
+  var total=list.length;
+  $("#stCount").textContent=total+" מניות";
+  $("#stMore").hidden=total<=stLimit;
+  list=list.slice(0,stLimit);
   $("#stBody").innerHTML=list.length?list.map(function(d){
     var up=d.target/d.price-1,r=rate(d.score),lo=Math.min(d.bear,d.price),hi=Math.max(d.bull,d.price),sp=hi-lo||1;
     var pos=function(v){return ((v-lo)/sp*100).toFixed(1)+"%"};
@@ -1226,12 +1233,13 @@ var IL_SYMS=["TEVA","ESLT","CHKP","NICE","MNDY","WIX","GLBE"];
 function nameKey(t){return t.replace(/\(.*?\)/g,"").replace(/[׳'"״\-\s]/g,"").toLowerCase()}
 function findStocks(q){
   if(!DATA) return [];
-  var found=[],raw=q.toUpperCase(),norm=nameKey(q);
+  var found=[],whole=q.trim().toUpperCase().replace(/^\$/,""),norm=nameKey(q);
   DATA.stocks.concat(DATA.etfs).forEach(function(d){
     var sym=d.s.replace("-",".");
     var re=new RegExp("(^|[^A-Z])("+d.s.replace(/[-.]/,"[-.]?")+")([^A-Z]|$)");
     var heK=nameKey(d.he);
-    var hit=(re.test(raw)&&(d.s.length>1||raw.trim().replace(/^\$/,"")===d.s))||(heK.length>=3&&norm.indexOf(heK)>-1)||(d.he.split(" ")[0].length>=4&&q.indexOf(d.he.split(" ")[0])>-1);
+    var heb=/[\u0590-\u05FF]/.test(d.he),w0=d.he.split(" ")[0];
+    var hit=whole===d.s||(d.s.length>1&&re.test(q))||(heK.length>=(heb?3:5)&&norm.indexOf(heK)>-1)||(heb&&w0.length>=4&&q.indexOf(w0)>-1);
     if(hit&&found.indexOf(d)<0) found.push(d);
   });
   return found;
@@ -1289,7 +1297,7 @@ function answer(q){
       "</tbody></table>לפי המודל <b>"+esc(better.he)+"</b> בדירוג גבוה יותר. זה לא אומר שהיא תעלה יותר, רק שהמספרים שלה נראים טוב יותר כרגע.";
   }
   // rankings
-  var pool=DATA.stocks.slice(),label="";
+  var pool=DATA.stocks.filter(function(d){return d.aN>=5}),label="";
   if(/ישראל/.test(t)){pool=pool.filter(function(d){return d.il||IL_SYMS.indexOf(d.s)>-1});label=" · ישראליות"}
   SECTOR_WORDS.forEach(function(w){if(t.indexOf(w[0])>-1){pool=pool.filter(function(d){return d.sector.indexOf(w[1])>-1});label=" · "+w[1]}});
   var top=function(sorter,fmt,title){var l=pool.slice().sort(sorter).slice(0,5);return l.length?title+label+":"+topTable(l,null,fmt)+"<span class='muted'>לחצו על שם לפרטים.</span>":"לא מצאתי מניות"+label+"."};

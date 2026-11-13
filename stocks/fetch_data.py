@@ -11,6 +11,7 @@ import math
 import os
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
 import yfinance as yf
@@ -224,7 +225,47 @@ def score(price, m, i):
     hi, lo = num(i.get("fiftyTwoWeekHigh")), num(i.get("fiftyTwoWeekLow"))
     if hi and lo and hi > lo:
         s += ((price - lo) / (hi - lo) - 0.5) * 6
-    return int(round(clamp(s, 0, 100)))
+    # the parts above sum to 4..96; stretch to a true 0-100 scale
+    return int(round(clamp((s - 4) / 92 * 100, 0, 100)))
+
+
+def universe():
+    """Extra symbols from universe.txt (shown with their English name)."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "universe.txt")
+    try:
+        with open(path, encoding="utf-8") as f:
+            syms = [ln.strip() for ln in f if ln.strip() and not ln.startswith("#")]
+    except OSError:
+        return []
+    return [x for x in syms if x not in STOCKS and x not in ETFS]
+
+
+def stock_row(sym, he, curated):
+    i = info_for(sym, tries=3 if curated else 2)
+    if not i or (not curated and i.get("quoteType") != "EQUITY"):
+        print(f"skip {sym}", file=sys.stderr)
+        return None
+    price = num(i.get("currentPrice") or i.get("regularMarketPrice"))
+    m = stock_model(price, i)
+    div_rate = num(i.get("dividendRate"))
+    name = i.get("shortName") or sym
+    return {
+        "s": sym, "tv": tv_symbol(sym, i), "he": he or name, "name": name, "il": sym in ISRAELI,
+        "sector": SECTORS.get(i.get("sector"), i.get("sector") or "אחר"),
+        "price": round(price, 2), "chg": num(i.get("regularMarketChangePercent")),
+        "mcap": num(i.get("marketCap")), "pe": num(i.get("trailingPE")), "fpe": num(i.get("forwardPE")),
+        "eps": num(i.get("trailingEps")), "feps": num(i.get("forwardEps")),
+        "revG": num(i.get("revenueGrowth")), "epsG": num(i.get("earningsGrowth")),
+        "margin": num(i.get("profitMargins")), "roe": num(i.get("returnOnEquity")),
+        "de": num(i.get("debtToEquity")), "beta": num(i.get("beta")),
+        "div": round(div_rate / price, 4) if div_rate and price else 0,
+        "hi52": num(i.get("fiftyTwoWeekHigh")), "lo52": num(i.get("fiftyTwoWeekLow")),
+        "ch52": num(i.get("52WeekChange")),
+        "aMean": num(i.get("targetMeanPrice")), "aLow": num(i.get("targetLowPrice")),
+        "aHigh": num(i.get("targetHighPrice")), "aN": int(num(i.get("numberOfAnalystOpinions")) or 0),
+        "rec": num(i.get("recommendationMean")),
+        **m, "score": score(price, m, i),
+    }
 
 
 def main():
@@ -232,32 +273,11 @@ def main():
     fx = info_for("ILS=X")
     out["usdils"] = num((fx or {}).get("regularMarketPrice"))
 
-    for sym, he in STOCKS.items():
-        i = info_for(sym)
-        if not i:
-            print(f"skip {sym}", file=sys.stderr)
-            continue
-        price = num(i.get("currentPrice") or i.get("regularMarketPrice"))
-        m = stock_model(price, i)
-        div_rate = num(i.get("dividendRate"))
-        out["stocks"].append({
-            "s": sym, "tv": tv_symbol(sym, i), "he": he, "name": i.get("shortName") or sym, "il": sym in ISRAELI,
-            "sector": SECTORS.get(i.get("sector"), i.get("sector") or "אחר"),
-            "price": round(price, 2), "chg": num(i.get("regularMarketChangePercent")),
-            "mcap": num(i.get("marketCap")), "pe": num(i.get("trailingPE")), "fpe": num(i.get("forwardPE")),
-            "eps": num(i.get("trailingEps")), "feps": num(i.get("forwardEps")),
-            "revG": num(i.get("revenueGrowth")), "epsG": num(i.get("earningsGrowth")),
-            "margin": num(i.get("profitMargins")), "roe": num(i.get("returnOnEquity")),
-            "de": num(i.get("debtToEquity")), "beta": num(i.get("beta")),
-            "div": round(div_rate / price, 4) if div_rate and price else 0,
-            "hi52": num(i.get("fiftyTwoWeekHigh")), "lo52": num(i.get("fiftyTwoWeekLow")),
-            "ch52": num(i.get("52WeekChange")),
-            "aMean": num(i.get("targetMeanPrice")), "aLow": num(i.get("targetLowPrice")),
-            "aHigh": num(i.get("targetHighPrice")), "aN": int(num(i.get("numberOfAnalystOpinions")) or 0),
-            "rec": num(i.get("recommendationMean")),
-            **m, "score": score(price, m, i),
-        })
-        time.sleep(0.3)
+    jobs = [(sym, he, True) for sym, he in STOCKS.items()] + [(sym, None, False) for sym in universe()]
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        rows = pool.map(lambda j: stock_row(*j), jobs)
+        out["stocks"] = [r for r in rows if r]
+    curated = sum(1 for r in out["stocks"] if r["s"] in STOCKS)
 
     for sym, (he, kind) in ETFS.items():
         i = info_for(sym)
@@ -271,8 +291,8 @@ def main():
             "target": round(price * base, 2), "bear": round(price * bear, 2), "bull": round(price * bull, 2),
         })
 
-    if len(out["stocks"]) < 10:
-        sys.exit(f"only {len(out['stocks'])} stocks fetched; keeping the previous data.json")
+    if curated < len(STOCKS) * 0.8:  # rate-limited or offline: don't overwrite good data with a partial pull
+        sys.exit(f"only {curated} of {len(STOCKS)} main stocks fetched; keeping the previous data.json")
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     print(f"wrote {len(out['stocks'])} stocks, {len(out['etfs'])} ETFs")
