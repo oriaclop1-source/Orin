@@ -998,6 +998,53 @@
     });
   }
 
+  /* ---------- sale banner ---------- */
+
+  function bindPromo() {
+    var promo = cfg.promo;
+    var box = document.getElementById('PromoBanner');
+    if (!promo || !promo.enabled || !box) { return; }
+    var starts = new Date(promo.starts).getTime();
+    var ends = new Date(promo.ends).getTime();
+    if (isNaN(starts) || isNaN(ends)) { return; }
+    var timer;
+    var phase = '';
+
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+    function tick() {
+      var now = Date.now();
+      if (now >= ends) {
+        box.hidden = true;
+        clearInterval(timer);
+        return;
+      }
+      var live = now >= starts;
+      var next = live ? 'during' : 'before';
+      if (next !== phase) {
+        phase = next;
+        box.className = 'promo-banner' + (live ? ' promo-live' : '');
+        box.innerHTML = '<div class="promo-text"><strong>' + esc(promo.title) + '</strong>' +
+          '<span>' + esc(live ? promo.textDuring : promo.textBefore) + '</span></div>' +
+          '<div class="promo-clock" role="timer" aria-label="' + (live ? 'הזמן שנשאר למבצע' : 'הזמן עד תחילת המבצע') + '">' +
+          '<span class="promo-clock-label">' + (live ? 'נגמר בעוד' : 'מתחיל בעוד') + '</span>' +
+          ['ימים', 'שעות', 'דקות', 'שניות'].map(function (unit, i) {
+            return '<span class="promo-unit"><b data-unit="' + i + '">00</b><small>' + unit + '</small></span>';
+          }).join('') + '</div>' +
+          (promo.link ? '<a class="promo-link" href="' + esc(promo.link) + '">' + esc(promo.linkText || 'לחנות') + '</a>' : '');
+        box.hidden = false;
+      }
+      var left = Math.floor(((live ? ends : starts) - now) / 1000);
+      var parts = [Math.floor(left / 86400), Math.floor(left % 86400 / 3600), Math.floor(left % 3600 / 60), left % 60];
+      box.querySelectorAll('[data-unit]').forEach(function (el, i) {
+        el.textContent = pad(parts[i]);
+      });
+    }
+
+    tick();
+    timer = setInterval(tick, 1000);
+  }
+
   /* ---------- header ---------- */
 
   function bindHeader() {
@@ -1057,6 +1104,7 @@
   /* ---------- start ---------- */
 
   bindHeader();
+  bindPromo();
   renderCartDrawer();
 
   fetch('data/catalog.json')

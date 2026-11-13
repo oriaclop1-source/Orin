@@ -227,3 +227,102 @@ body {
     position: static;
   }
 }
+
+/* Sale banner with countdown (config.js -> promo). */
+
+.promo-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 24px;
+  padding: 12px 16px;
+  background: #0b0b0d;
+  color: #ffffff;
+  font-family: "Rubik", "Heebo", Arial, sans-serif;
+  text-align: center;
+}
+
+.promo-banner.promo-live {
+  background: #0b0b0d linear-gradient(90deg, rgba(246, 201, 14, 0.16), transparent 30%, transparent 70%, rgba(246, 201, 14, 0.16));
+}
+
+.promo-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 12px;
+}
+
+.promo-text strong {
+  color: #f6c90e;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  direction: ltr;
+}
+
+.promo-text span {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.promo-clock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  direction: rtl;
+}
+
+.promo-clock-label {
+  margin-inline-end: 4px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.promo-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 46px;
+  padding: 5px 4px 4px;
+  border: 1px solid rgba(246, 201, 14, 0.45);
+  border-radius: 6px;
+  background: #17171b;
+}
+
+.promo-unit b {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.promo-unit small {
+  margin-top: 3px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.promo-link {
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: #f6c90e;
+  color: #0b0b0d;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.promo-link:hover,
+.promo-link:focus-visible {
+  background: #ffffff;
+}
+
+@media (max-width: 520px) {
+  .promo-text strong { font-size: 19px; }
+  .promo-unit { min-width: 42px; }
+  .promo-clock-label { width: 100%; margin: 0; }
+  .promo-clock { flex-wrap: wrap; justify-content: center; }
+}
