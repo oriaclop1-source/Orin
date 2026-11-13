@@ -1,0 +1,100 @@
+{%- comment -%}
+  Sale banner with a countdown (Black Friday).
+  Before "starts" it counts down to the sale, until "ends" it counts down to the end, then it hides itself.
+  Add it in the theme editor: Customize -> Header -> Add section -> "באנר מבצע עם ספירה לאחור".
+{%- endcomment -%}
+
+<aside class="psc" dir="rtl" hidden
+  data-starts="{{ section.settings.starts | escape }}"
+  data-ends="{{ section.settings.ends | escape }}"
+  data-before="{{ section.settings.text_before | escape }}"
+  data-during="{{ section.settings.text_during | escape }}">
+  <div class="psc-text">
+    <strong>{{ section.settings.title | escape }}</strong>
+    <span class="psc-msg"></span>
+  </div>
+  <div class="psc-clock" role="timer">
+    <span class="psc-label"></span>
+    <span class="psc-unit"><b data-unit="0">00</b><small>ימים</small></span>
+    <span class="psc-unit"><b data-unit="1">00</b><small>שעות</small></span>
+    <span class="psc-unit"><b data-unit="2">00</b><small>דקות</small></span>
+    <span class="psc-unit"><b data-unit="3">00</b><small>שניות</small></span>
+  </div>
+  {%- if section.settings.link != blank -%}
+    <a class="psc-link" href="{{ section.settings.link }}">{{ section.settings.link_text | escape }}</a>
+  {%- endif -%}
+</aside>
+
+<style>
+.psc{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 24px;padding:12px 16px;background:#0b0b0d;color:#fff;font-family:"Rubik","Heebo",Arial,sans-serif;text-align:center}
+.psc[hidden]{display:none}
+.psc.psc-live{background:#0b0b0d linear-gradient(90deg,rgba(246,201,14,.16),transparent 30%,transparent 70%,rgba(246,201,14,.16))}
+.psc-text{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:4px 12px}
+.psc-text strong{color:#f6c90e;font-size:22px;font-weight:900;letter-spacing:.06em;direction:ltr}
+.psc-msg{font-size:15px;font-weight:500}
+.psc-clock{display:flex;align-items:center;gap:6px}
+.psc-label{margin-inline-end:4px;font-size:13px;color:rgba(255,255,255,.75)}
+.psc-unit{display:flex;flex-direction:column;align-items:center;min-width:46px;padding:5px 4px 4px;border:1px solid rgba(246,201,14,.45);border-radius:6px;background:#17171b}
+.psc-unit b{font-size:20px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.psc-unit small{margin-top:3px;font-size:10px;color:rgba(255,255,255,.7)}
+.psc-link{padding:9px 18px;border-radius:999px;background:#f6c90e;color:#0b0b0d;font-size:14px;font-weight:800;text-decoration:none}
+.psc-link:hover,.psc-link:focus-visible{background:#fff}
+@media (max-width:520px){
+  .psc-text strong{font-size:19px}
+  .psc-unit{min-width:42px}
+  .psc-label{width:100%;margin:0}
+  .psc-clock{flex-wrap:wrap;justify-content:center}
+}
+</style>
+
+<script>
+(function () {
+  var box = document.currentScript.parentElement.querySelector('.psc');
+  if (!box) { return; }
+  var starts = new Date(box.getAttribute('data-starts')).getTime();
+  var ends = new Date(box.getAttribute('data-ends')).getTime();
+  if (isNaN(starts) || isNaN(ends)) { return; }
+  var units = box.querySelectorAll('[data-unit]');
+  var timer;
+
+  function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+  function tick() {
+    var now = Date.now();
+    if (now >= ends) {
+      box.hidden = true;
+      clearInterval(timer);
+      return;
+    }
+    var live = now >= starts;
+    box.classList.toggle('psc-live', live);
+    box.querySelector('.psc-msg').textContent = box.getAttribute(live ? 'data-during' : 'data-before');
+    box.querySelector('.psc-label').textContent = live ? 'נגמר בעוד' : 'מתחיל בעוד';
+    var left = Math.floor(((live ? ends : starts) - now) / 1000);
+    var parts = [Math.floor(left / 86400), Math.floor(left % 86400 / 3600), Math.floor(left % 3600 / 60), left % 60];
+    for (var i = 0; i < units.length; i++) { units[i].textContent = pad(parts[i]); }
+    box.hidden = false;
+  }
+
+  tick();
+  timer = setInterval(tick, 1000);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "באנר מבצע עם ספירה לאחור",
+  "settings": [
+    { "type": "text", "id": "title", "label": "כותרת", "default": "BLACK FRIDAY" },
+    { "type": "text", "id": "text_before", "label": "טקסט לפני תחילת המבצע", "default": "בלאק פריידיי מתחיל ביום שישי 27.11" },
+    { "type": "text", "id": "text_during", "label": "טקסט בזמן המבצע", "default": "3+1 מתנה על כל האתר" },
+    { "type": "text", "id": "starts", "label": "תחילת המבצע", "info": "בפורמט 2026-11-27T00:00:00+02:00", "default": "2026-11-27T00:00:00+02:00" },
+    { "type": "text", "id": "ends", "label": "סוף המבצע", "info": "אחרי התאריך הזה הבאנר נעלם לבד", "default": "2026-11-30T23:59:59+02:00" },
+    { "type": "url", "id": "link", "label": "קישור הכפתור" },
+    { "type": "text", "id": "link_text", "label": "טקסט הכפתור", "default": "לקולקציה" }
+  ],
+  "presets": [
+    { "name": "באנר מבצע עם ספירה לאחור" }
+  ]
+}
+{% endschema %}
