@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name "stocks-data-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add stocks/data.json
+          git add stocks/data.json stocks/hist.json
           git diff --cached --quiet && exit 0
           git commit -m "Update stock data"
           git pull --rebase origin "${GITHUB_REF_NAME}"
