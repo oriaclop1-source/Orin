@@ -185,11 +185,12 @@ def history(sym, cache):
     return h
 
 
-def stock_model(price, i, h):
+def stock_model(price, i, h, cal=1.0):
     """Fair value from reported fundamentals only: no analyst targets, estimates or ratings.
 
     Up to three methods, averaged: Graham's earnings formula on cycle-normalised EPS,
     a 10-year discounted cash flow, and (banks/insurers) book value x ROE / cost of equity.
+    cal is the market calibration factor (see calibrate).
     """
     same_ccy = (i.get("financialCurrency") or "USD") == (i.get("currency") or "USD")
     shares = num(i.get("marketCap")) / price if num(i.get("marketCap")) else None
@@ -211,7 +212,7 @@ def stock_model(price, i, h):
     norm, cyc = 1.0, 0.3  # unknown history: assume some cyclicality
     if h and margin and margin > 0:
         margins = [n / rv for n, rv in zip(h["ni"], h["rev"])]
-        norm = clamp(sum(margins) / len(margins) / margin, 0.5, 1.2)
+        norm = clamp(sum(margins) / len(margins) / margin, 0.25, 1.2)
         # cyclicality: the deepest fall in margin from an earlier peak (1 = fell into a loss).
         # Margins that only rose over time are improvement, not a cycle.
         peak, cyc = None, 0.0
@@ -221,8 +222,11 @@ def stock_model(price, i, h):
                 cyc = max(cyc, clamp((peak - mg) / peak, 0, 1))
         if margin < peak:
             cyc = max(cyc, clamp((peak - margin) / peak, 0, 1))
+        if min(margins) < 0:  # a loss year inside the window, even if it is the oldest one
+            cyc = max(cyc, 0.7)
     haircut = 1 - 0.25 * cyc
-    eps_n = eps * (0.5 + 0.5 * norm) if eps and eps > 0 else None
+    w = 0.5 + 0.5 * cyc  # the more cyclical the business, the more weight on the multi-year average
+    eps_n = eps * (1 - w + w * norm) if eps and eps > 0 else None
     fcf = num(i.get("freeCashflow"))
     ni_ttm = num(i.get("netIncomeToCommon"))
     # skip the DCF when cash flow is squeezed by a build-out (FCF under 40% of profit): it would value the
@@ -245,7 +249,7 @@ def stock_model(price, i, h):
             vals["book"] = bv * clamp(roe / rr, 0.5, 4)
         if len(vals) > 1 and max(vals.values()) > 4 * min(vals.values()):
             vals = {k: v for k, v in vals.items() if v == min(vals.values())}  # methods disagree wildly: keep the low one
-        return vals
+        return {name: v * cal for name, v in vals.items()}
 
     base = value(0, 0)
     spec = not base  # no positive earnings or cash flow to value
@@ -256,9 +260,11 @@ def stock_model(price, i, h):
         lo, hi = value(-0.05, 0.015), value(0.05, -0.01)
         fair_lo, fair_hi = sum(lo.values()) / len(lo), sum(hi.values()) / len(hi)
 
-    target = clamp(fair, price * 0.4, price * 2.0)
-    bear = clamp(min(fair_lo, price * (1 - 0.25 * beta)), price * 0.3, min(target * 0.9, price * 0.95))
-    bull = clamp(max(fair_hi, price * (1 + 0.25 * beta)), max(target * 1.1, price * 1.05), price * 2.5)
+    # 12-month target: the price closes half the gap to fair value (geometric midpoint)
+    half = lambda v: price * math.sqrt(max(v, 0.01) / price)
+    target = clamp(half(fair), price * 0.5, price * 1.8)
+    bear = clamp(min(half(fair_lo), price * (1 - 0.25 * beta)), price * 0.3, min(target * 0.9, price * 0.95))
+    bull = clamp(max(half(fair_hi), price * (1 + 0.25 * beta)), max(target * 1.1, price * 1.05), price * 2.5)
     return {
         "target": round(target, 2), "bear": round(bear, 2), "bull": round(bull, 2),
         "fair": round(fair, 2), "methods": {k: round(v, 2) for k, v in base.items()}, "spec": spec,
@@ -267,11 +273,24 @@ def stock_model(price, i, h):
     }
 
 
+def calibrate(ratios):
+    """Factor that makes the median stock fairly valued.
+
+    The textbook formulas price every stock well below today's market, so on their own they
+    mostly say "the market is expensive". Scaling by one common factor keeps the ranking purely
+    fundamental while making targets say which stocks are cheap or dear relative to the market.
+    """
+    ratios = sorted(ratios)
+    if len(ratios) < 30:
+        return 1.0
+    return clamp(1 / ratios[len(ratios) // 2], 1.0, 2.5)
+
+
 def score(price, m, i, h):
     """0-100 rating from reported numbers: value 40, quality 25, growth 15, balance sheet 10, momentum 10."""
     roe, margin = num(i.get("returnOnEquity")), num(i.get("profitMargins"))
     de, ch52 = num(i.get("debtToEquity")), num(i.get("52WeekChange"))
-    val = 20.0 if m["spec"] else clamp(20 + (m["fair"] / price - 1) * 40, 0, 40)
+    val = 20.0 if m["spec"] else 20 + 20 * clamp(math.log2(max(m["fair"], 0.01) / price), -1, 1)  # half price = 0, double = 40
     quality = clamp((roe or 0) * 40, 0, 10) + clamp((margin or 0) * 32, 0, 8)
     quality += 7 * sum(1 for n in h["ni"] if n > 0) / len(h["ni"]) if h else 3.5
     growth = clamp(m["g"] / 0.20, 0, 1) * 15
@@ -305,8 +324,6 @@ def stock_row(sym, he, curated, cache):
         return None
     price = num(i.get("currentPrice") or i.get("regularMarketPrice"))
     h = history(sym, cache)
-    m = stock_model(price, i, h)
-    sc, parts = score(price, m, i, h)
     div_rate = num(i.get("dividendRate"))
     name = i.get("shortName") or sym
     return {
@@ -326,7 +343,7 @@ def stock_row(sym, he, curated, cache):
         "aMean": num(i.get("targetMeanPrice")), "aLow": num(i.get("targetLowPrice")),
         "aHigh": num(i.get("targetHighPrice")), "aN": int(num(i.get("numberOfAnalystOpinions")) or 0),
         "rec": num(i.get("recommendationMean")),
-        **m, "score": sc, "parts": parts,
+        "_": (price, i, h),
     }
 
 
@@ -344,6 +361,14 @@ def main():
     with ThreadPoolExecutor(max_workers=4) as pool:
         rows = pool.map(lambda j: stock_row(*j, cache), jobs)
         out["stocks"] = [r for r in rows if r]
+    raw = [stock_model(*r["_"]) for r in out["stocks"]]
+    k = calibrate([m["fair"] / r["_"][0] for m, r in zip(raw, out["stocks"]) if not m["spec"]])
+    out["k"] = round(k, 3)
+    for r in out["stocks"]:
+        price, i, h = r.pop("_")
+        m = stock_model(price, i, h, k)
+        sc, parts = score(price, m, i, h)
+        r.update(m, score=sc, parts=parts)
     curated = sum(1 for r in out["stocks"] if r["s"] in STOCKS)
 
     for sym, (he, kind) in ETFS.items():
