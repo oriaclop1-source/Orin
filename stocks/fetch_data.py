@@ -189,7 +189,7 @@ def stock_model(price, i, h):
     """Fair value from reported fundamentals only: no analyst targets, estimates or ratings.
 
     Up to three methods, averaged: Graham's earnings formula on cycle-normalised EPS,
-    a 5-year discounted cash flow, and (banks/insurers) book value x ROE / cost of equity.
+    a 10-year discounted cash flow, and (banks/insurers) book value x ROE / cost of equity.
     """
     same_ccy = (i.get("financialCurrency") or "USD") == (i.get("currency") or "USD")
     shares = num(i.get("marketCap")) / price if num(i.get("marketCap")) else None
@@ -211,14 +211,24 @@ def stock_model(price, i, h):
     norm, cyc = 1.0, 0.3  # unknown history: assume some cyclicality
     if h and margin and margin > 0:
         margins = [n / rv for n, rv in zip(h["ni"], h["rev"])]
-        norm = clamp(sum(margins) / len(margins) / margin, 0.4, 1.5)
-        # cyclicality: how far the worst year's margin sits below the best (1 = had a loss year)
-        margins.append(margin)
-        cyc = 1 - clamp(min(margins) / max(margins), 0, 1)
-    haircut = 1 - 0.35 * cyc
+        norm = clamp(sum(margins) / len(margins) / margin, 0.5, 1.2)
+        # cyclicality: the deepest fall in margin from an earlier peak (1 = fell into a loss).
+        # Margins that only rose over time are improvement, not a cycle.
+        peak, cyc = None, 0.0
+        for mg in reversed(margins):  # history is newest first
+            peak = mg if peak is None else max(peak, mg)
+            if peak > 0:
+                cyc = max(cyc, clamp((peak - mg) / peak, 0, 1))
+        if margin < peak:
+            cyc = max(cyc, clamp((peak - margin) / peak, 0, 1))
+    haircut = 1 - 0.25 * cyc
     eps_n = eps * (0.5 + 0.5 * norm) if eps and eps > 0 else None
     fcf = num(i.get("freeCashflow"))
-    fcf_ps = fcf / shares if fcf and fcf > 0 and shares and same_ccy and not financial else None
+    ni_ttm = num(i.get("netIncomeToCommon"))
+    # skip the DCF when cash flow is squeezed by a build-out (FCF under 40% of profit): it would value the
+    # investment as if it were permanent
+    squeezed = bool(fcf and ni_ttm and ni_ttm > 0 and fcf < 0.4 * ni_ttm)
+    fcf_ps = fcf / shares if fcf and fcf > 0 and shares and same_ccy and not financial and not squeezed else None
     bv = num(i.get("bookValue")) if same_ccy and financial else None
 
     def value(dg, dr):
@@ -227,12 +237,14 @@ def stock_model(price, i, h):
             vals["graham"] = eps_n * max(8.5 + 2 * min(gg * 100, 10), 7) * GRAHAM_RATE_ADJ * haircut
         if fcf_ps:
             v, cf = 0.0, fcf_ps
-            for t in range(1, 6):
-                cf *= 1 + gg
+            for t in range(1, 11):  # 5 years at g, then 5 years fading to the terminal rate
+                cf *= 1 + (gg if t <= 5 else gg + (TERMINAL_G - gg) * (t - 5) / 5)
                 v += cf / (1 + rr) ** t
-            vals["dcf"] = (v + cf * (1 + TERMINAL_G) / (rr - TERMINAL_G) / (1 + rr) ** 5) * haircut
+            vals["dcf"] = (v + cf * (1 + TERMINAL_G) / (rr - TERMINAL_G) / (1 + rr) ** 10) * haircut
         if bv and bv > 0 and roe and roe > 0:
             vals["book"] = bv * clamp(roe / rr, 0.5, 4)
+        if len(vals) > 1 and max(vals.values()) > 4 * min(vals.values()):
+            vals = {k: v for k, v in vals.items() if v == min(vals.values())}  # methods disagree wildly: keep the low one
         return vals
 
     base = value(0, 0)
@@ -307,6 +319,8 @@ def stock_row(sym, he, curated, cache):
         "margin": num(i.get("profitMargins")), "roe": num(i.get("returnOnEquity")),
         "de": num(i.get("debtToEquity")), "beta": num(i.get("beta")),
         "div": round(div_rate / price, 4) if div_rate and price else 0,
+        "fcf": num(i.get("freeCashflow")), "ni": num(i.get("netIncomeToCommon")), "bv": num(i.get("bookValue")),
+        "ccyOk": (i.get("financialCurrency") or "USD") == (i.get("currency") or "USD"),
         "hi52": num(i.get("fiftyTwoWeekHigh")), "lo52": num(i.get("fiftyTwoWeekLow")),
         "ch52": num(i.get("52WeekChange")),
         "aMean": num(i.get("targetMeanPrice")), "aLow": num(i.get("targetLowPrice")),
