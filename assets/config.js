@@ -15,6 +15,20 @@ window.SITE_CONFIG = {
   // Rotating texts in the blue bar at the top.
   announcements: ['משלוח חינם לכל הארץ', 'איכות מעולה', 'על כל האתר 3+1', 'שירות לקוחות זמין'],
 
+  // Sale banner with a countdown, shown on every page under the menu.
+  // Before `starts` it counts down to the sale; until `ends` it counts down to the end; after that it disappears.
+  // To turn it off set enabled to false.
+  promo: {
+    enabled: true,
+    title: 'BLACK FRIDAY',
+    textBefore: 'בלאק פריידיי מתחיל ביום שישי 27.11',
+    textDuring: '3+1 מתנה על כל האתר + משלוח חינם',
+    starts: '2026-11-27T00:00:00+02:00',
+    ends: '2026-11-30T23:59:59+02:00',
+    link: '#/collections/season-26-27',
+    linkText: 'לקולקציה'
+  },
+
   // Where theme images (logo, category pictures, size charts) are loaded from.
   // After running tools/download_images.py this becomes 'assets/img/theme/'.
   themeAssetBase: 'https://cdn.shopify.com/s/files/1/0843/2746/5200/t/8/assets/',
