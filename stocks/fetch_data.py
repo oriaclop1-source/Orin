@@ -198,19 +198,24 @@ def stock_model(price, i, h):
     beta = clamp(num(i.get("beta")) or 1.0, 0.7, 1.8)
     r = RISK_FREE + EQUITY_PREMIUM * beta
 
-    # growth: multi-year revenue CAGR blended with the latest reported year-over-year growth
+    # growth: the lower of multi-year revenue CAGR and the latest reported year-over-year growth
     cagr = None
     if h and len(h["rev"]) >= 3 and h["rev"][-1] > 0 and h["rev"][0] > 0:
         cagr = (h["rev"][0] / h["rev"][-1]) ** (1 / (len(h["rev"]) - 1)) - 1
-    g = avg(cagr, num(i.get("revenueGrowth")))
-    g = clamp(g if g is not None else 0.03, -0.05, 0.25)
+    latest = num(i.get("revenueGrowth"))
+    g = min(cagr, latest) if cagr is not None and latest is not None else avg(cagr, latest)  # the cautious one
+    g = clamp(g if g is not None else 0.03, -0.05, 0.20)
 
     # cycle-normalised EPS: scale trailing EPS by (multi-year average margin / current margin)
     eps = num(i.get("trailingEps"))
-    norm = 1.0
+    norm, cyc = 1.0, 0.3  # unknown history: assume some cyclicality
     if h and margin and margin > 0:
-        avg_margin = sum(n / rv for n, rv in zip(h["ni"], h["rev"])) / len(h["rev"])
-        norm = clamp(avg_margin / margin, 0.3, 1.5)
+        margins = [n / rv for n, rv in zip(h["ni"], h["rev"])]
+        norm = clamp(sum(margins) / len(margins) / margin, 0.4, 1.5)
+        # cyclicality: how far the worst year's margin sits below the best (1 = had a loss year)
+        margins.append(margin)
+        cyc = 1 - clamp(min(margins) / max(margins), 0, 1)
+    haircut = 1 - 0.35 * cyc
     eps_n = eps * (0.5 + 0.5 * norm) if eps and eps > 0 else None
     fcf = num(i.get("freeCashflow"))
     fcf_ps = fcf / shares if fcf and fcf > 0 and shares and same_ccy and not financial else None
@@ -219,13 +224,13 @@ def stock_model(price, i, h):
     def value(dg, dr):
         gg, rr, vals = g + dg, r + dr, {}
         if eps_n:
-            vals["graham"] = eps_n * max(8.5 + 2 * min(gg * 100, 15), 7) * GRAHAM_RATE_ADJ
+            vals["graham"] = eps_n * max(8.5 + 2 * min(gg * 100, 10), 7) * GRAHAM_RATE_ADJ * haircut
         if fcf_ps:
             v, cf = 0.0, fcf_ps
             for t in range(1, 6):
                 cf *= 1 + gg
                 v += cf / (1 + rr) ** t
-            vals["dcf"] = v + cf * (1 + TERMINAL_G) / (rr - TERMINAL_G) / (1 + rr) ** 5
+            vals["dcf"] = (v + cf * (1 + TERMINAL_G) / (rr - TERMINAL_G) / (1 + rr) ** 5) * haircut
         if bv and bv > 0 and roe and roe > 0:
             vals["book"] = bv * clamp(roe / rr, 0.5, 4)
         return vals
@@ -245,7 +250,7 @@ def stock_model(price, i, h):
     return {
         "target": round(target, 2), "bear": round(bear, 2), "bull": round(bull, 2),
         "fair": round(fair, 2), "methods": {k: round(v, 2) for k, v in base.items()}, "spec": spec,
-        "g": round(g, 3), "r": round(r, 3), "norm": round(norm, 2), "epsN": round(eps_n, 2) if eps_n else None,
+        "g": round(g, 3), "r": round(r, 3), "norm": round(norm, 2), "cyc": round(cyc, 2), "epsN": round(eps_n, 2) if eps_n else None,
         "cagr": round(cagr, 3) if cagr is not None else None,
     }
 
@@ -257,7 +262,7 @@ def score(price, m, i, h):
     val = 20.0 if m["spec"] else clamp(20 + (m["fair"] / price - 1) * 40, 0, 40)
     quality = clamp((roe or 0) * 40, 0, 10) + clamp((margin or 0) * 32, 0, 8)
     quality += 7 * sum(1 for n in h["ni"] if n > 0) / len(h["ni"]) if h else 3.5
-    growth = clamp(m["g"] / 0.25, 0, 1) * 15
+    growth = clamp(m["g"] / 0.20, 0, 1) * 15
     if i.get("sector") == "Financial Services" or de is None:
         strength = 5.0  # leverage is the business model for banks; no data otherwise
     else:
